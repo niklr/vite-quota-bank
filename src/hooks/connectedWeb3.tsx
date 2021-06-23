@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Network, networks } from '../common/networks';
 import { ViteService } from '../services/vite';
+import { Account } from '../wallet/account';
+import { WalletConstants } from '../wallet/constants';
 
 export interface IConnectedWeb3Context {
-  account: Maybe<string>
+  account: Maybe<Account>
   network: Network
   vite: ViteService
 }
@@ -43,11 +45,12 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       const network = networks.find(e => e.id === props.networkId)
       if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
 
-      const address = null
       const vite = new ViteService()
+      const account = vite.createAccount(WalletConstants.DefaultMnemonics, 0)
+      console.log('account.address', account.address)
 
       const value = {
-        account: address || null,
+        account: account || null,
         vite,
         network
       }
