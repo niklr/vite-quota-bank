@@ -1,6 +1,7 @@
 import { Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { Header } from './components/common';
 import { ConnectedWeb3 } from './hooks';
 import { getNetworkFromChain } from './util/tools';
 
@@ -21,10 +22,11 @@ const App: React.FC = () => {
     <Container>
       {!status ? (
         <>
-          <span>What should we show here?</span>
+          <Header />
         </>
       ) : (
         <>
+          <Header />
           <ConnectedWeb3 networkId={network?.id} setStatus={setStatus}>
             <Button>Press me</Button>
             <div>NetworkId: {networkId}</div>
