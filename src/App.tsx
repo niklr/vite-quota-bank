@@ -1,13 +1,8 @@
-import { Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { Main } from './components';
 import { Header } from './components/common';
 import { ConnectedWeb3 } from './hooks';
 import { getNetworkFromChain } from './util/tools';
-
-const Container = styled.div`
-  text-align: center;
-`
 
 const App: React.FC = () => {
   const networkId = '2'
@@ -19,22 +14,19 @@ const App: React.FC = () => {
   }, [network])
 
   return (
-    <Container>
+    <>
       {!status ? (
         <>
           <Header />
         </>
       ) : (
         <>
-          <Header />
           <ConnectedWeb3 networkId={network?.id} setStatus={setStatus}>
-            <Button>Press me</Button>
-            <div>NetworkId: {networkId}</div>
-            <div>Status: {String(status)}</div>
+            <Main />
           </ConnectedWeb3>
         </>
       )}
-    </Container>
+    </>
   );
 }
 

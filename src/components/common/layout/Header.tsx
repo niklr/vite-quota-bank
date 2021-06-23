@@ -1,9 +1,26 @@
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core'
+import styled from 'styled-components'
+
+const Root = styled.div`
+  flex-grow: 1;
+`
+
+const TitleTypography = styled(Typography)`
+  flex-grow: 1;
+`
 
 const HeaderContainer: React.FC = (props: any) => {
   return (
-    <>
-      <div>Header</div>
-    </>
+    <Root>
+      <AppBar position="static">
+        <Toolbar>
+          <TitleTypography variant="h6">
+            Vite Quota Bank
+          </TitleTypography>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+    </Root>
   )
 }
 
