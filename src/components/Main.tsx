@@ -1,14 +1,19 @@
-import { Button } from '@material-ui/core'
+import { Button, Typography } from '@material-ui/core'
 import { useConnectedWeb3Context } from '../hooks'
-import { Header } from './common'
+import { Footer, Header, MainScroll, MainWrapper } from './common'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
   return (
     <>
-      <Header />
-      <Button>Press me</Button>
-      <div>NetworkId: {context.network.id}</div>
+      <MainWrapper>
+        <Header />
+        <MainScroll>
+          <Button>Press me</Button>
+          <Typography>NetworkId: {context.network.id}</Typography>
+        </MainScroll>
+        <Footer />
+      </MainWrapper>
     </>
   )
 }
