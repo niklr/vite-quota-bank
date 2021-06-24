@@ -1,9 +1,9 @@
 export class Task {
   private _taskTimer: NodeJS.Timeout | undefined
   private _taskInterval: number
-  private _task: () => Promise<void>
+  private _task: () => Promise<any>
 
-  constructor(task: () => Promise<void>, interval: number) {
+  constructor(task: () => Promise<any>, interval: number) {
     this._task = task;
     this._taskInterval = interval;
 
