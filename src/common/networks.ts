@@ -4,6 +4,10 @@ export interface Network {
   url: string
 }
 
+export interface NetworkStatus {
+  blockHeight: number
+}
+
 export const networks = [
   {
     id: 1,

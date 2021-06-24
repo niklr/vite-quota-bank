@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Network, networks } from '../common/networks';
+import { Network, networks, NetworkStatus } from '../common/networks';
 import { ViteService } from '../services/vite';
 import { Account } from '../wallet/account';
 import { WalletConstants } from '../wallet/constants';
@@ -7,6 +7,7 @@ import { WalletConstants } from '../wallet/constants';
 export interface IConnectedWeb3Context {
   account: Maybe<Account>
   network: Network
+  networkStatus: NetworkStatus
   vite: ViteService
 }
 
@@ -52,7 +53,10 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       const value = {
         account: account || null,
         vite,
-        network
+        network,
+        networkStatus: {
+          blockHeight: 0
+        }
       }
 
       setConnection(value)
@@ -62,6 +66,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (connection) {
       const initAsync = async () => {
+        console.log('initAsync')
         await connection.vite.initAsync(connection.network.url)
       }
       initAsync()
