@@ -38,7 +38,7 @@ interface Props {
  */
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<IConnectedWeb3Context | null>(null)
-  // const [networkId, setNetworkId] = useState<number | null>(null)
+  const [isReady, setIsReady] = useState<boolean>(false)
 
   useEffect(() => {
     if (props.networkId) {
@@ -66,8 +66,10 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (connection) {
       const initAsync = async () => {
+        setIsReady(false)
         console.log('initAsync')
         await connection.vite.initAsync(connection.network.url)
+        setIsReady(true)
       }
       initAsync()
     }
@@ -83,7 +85,17 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   }
 
   props.setStatus(true)
-  return <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
+  return (
+    <>
+      {isReady ? (
+        <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
+      ) : (
+        <>
+          <div>Connecting...</div>
+        </>
+      )}
+    </>
+  )
 }
 
 export const WhenConnected: React.FC<Props> = props => {

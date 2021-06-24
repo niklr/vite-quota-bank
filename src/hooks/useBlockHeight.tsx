@@ -5,7 +5,7 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
   const [blockHeight, setBlockHeight] = useState(0)
 
   const fetchBlockHeight = async () => {
-    const newBlockHeight = blockHeight + 1
+    const newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
     setBlockHeight(newBlockHeight)
     context.networkStatus.blockHeight = newBlockHeight
   }
