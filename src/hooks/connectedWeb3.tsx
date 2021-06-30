@@ -40,7 +40,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const context = useWeb3Context()
 
-  const { accountContainer, vite } = context
+  const { wallet, vite } = context
 
   useEffect(() => {
     if (props.networkId) {
@@ -49,7 +49,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
 
       const value = {
-        account: accountContainer?.active?.address,
+        account: wallet?.active?.address,
         network,
         networkStatus: {
           blockHeight: 0
@@ -57,11 +57,11 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         vite
       }
 
-      console.log('ConnectedWeb3.account', accountContainer?.active?.address)
+      console.log('ConnectedWeb3.account', wallet?.active?.address)
 
       setConnection(value)
     }
-  }, [props.networkId, accountContainer, vite])
+  }, [props.networkId, wallet, vite])
 
   useEffect(() => {
     if (connection) {

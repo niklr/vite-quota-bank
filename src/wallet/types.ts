@@ -16,12 +16,12 @@ export class Account {
   }
 }
 
-export class AccountContainer {
+export class Wallet {
   active?: Account
   mnemonic?: string
-  accounts: string[] = [];
+  accounts: Account[] = [];
 
-  constructor(init?: Partial<AccountContainer>) {
+  constructor(init?: Partial<Wallet>) {
     this.init(init)
     if (!this.accounts) {
       this.accounts = []
@@ -32,7 +32,11 @@ export class AccountContainer {
     if (data) {
       this.active = data.active ? new Account(data.active) : undefined
       this.mnemonic = data.mnemonic
-      this.accounts = Array.isArray(data.accounts) ? [...data.accounts] : []
+      if (data.accounts && Array.isArray(data.accounts)) {
+        data.accounts.forEach((account: any) => {
+          this.accounts.push(new Account(account))
+        });
+      }
     }
   }
 }

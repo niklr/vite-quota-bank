@@ -1,11 +1,11 @@
 import React from 'react';
 import { ViteService } from '../services/vite';
-import { AccountContainer } from '../wallet';
+import { Wallet } from '../wallet';
 import { useWeb3Manager } from './web3Manager';
 
 export interface IWeb3Context {
-  setAccountContainer: (account: AccountContainer) => void,
-  accountContainer?: AccountContainer,
+  setWallet: (wallet: Wallet) => void,
+  wallet?: Wallet,
   setError: (error: Error) => void,
   error?: Error,
   vite: ViteService,
@@ -30,15 +30,15 @@ interface Props {
 export const Web3Provider: React.FC<Props> = (props: Props) => {
   const vite = new ViteService()
   const {
-    setAccountContainer,
-    accountContainer,
+    setWallet,
+    wallet,
     setError,
     error
   } = useWeb3Manager()
 
   const context: IWeb3Context = {
-    setAccountContainer,
-    accountContainer,
+    setWallet,
+    wallet,
     setError,
     error,
     vite

@@ -1,4 +1,5 @@
 export { WalletConstants } from './constants';
+export { WalletManager } from './manager';
 export { WalletStore } from './store';
-export { Account, AccountContainer } from './types';
+export { Account, Wallet } from './types';
 

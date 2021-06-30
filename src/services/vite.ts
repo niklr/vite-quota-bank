@@ -1,5 +1,4 @@
-import { ViteAPI, wallet } from '@vite/vitejs';
-import { Account } from '../wallet';
+import { ViteAPI } from '@vite/vitejs';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -9,7 +8,6 @@ export class ViteService {
 
   private _provider: any;
   private _client: any;
-  private _mnemonicsDeriveIndex = 0;
   private _isConnected = false;
 
   get isConnected(): boolean {
@@ -44,27 +42,6 @@ export class ViteService {
       resolve();
     });
   });
-
-  createAccount(mnemonics: string, index = this._mnemonicsDeriveIndex): Account {
-    const { privateKey } = wallet.deriveAddress({
-      mnemonics,
-      index
-    });
-    let account = new Account({
-      id: index.toString(),
-      privateKey,
-      address: wallet.createAddressByPrivateKey(privateKey).address
-    });
-    this._mnemonicsDeriveIndex = index + 1;
-    return account;
-  }
-
-  validateMnemonics(mnemonics: Maybe<string>): Boolean {
-    if (mnemonics) {
-      return wallet.validateMnemonics(mnemonics);
-    }
-    return false;
-  }
 
   async getSnapshotChainHeightAsync(): Promise<number> {
     return this.requestAsync('ledger_getSnapshotChainHeight');

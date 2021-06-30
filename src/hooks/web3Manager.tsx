@@ -1,8 +1,8 @@
 import { useCallback, useReducer } from 'react'
-import { AccountContainer } from '../wallet'
+import { Wallet } from '../wallet'
 
 interface Web3ManagerState {
-  accountContainer?: AccountContainer
+  wallet?: Wallet
   onError?: (error: Error) => void
   error?: Error
 }
@@ -40,10 +40,10 @@ function reducer(state: Web3ManagerState, { type, payload }: Action): Web3Manage
 export const useWeb3Manager = () => {
   const [state, dispatch] = useReducer(reducer, {})
   // const { account, onError, error } = state
-  const { accountContainer, error } = state
+  const { wallet, error } = state
 
-  const setAccountContainer = useCallback((accountContainer: AccountContainer): void => {
-    dispatch({ type: ActionType.UPDATE, payload: { accountContainer } })
+  const setWallet = useCallback((wallet: Wallet): void => {
+    dispatch({ type: ActionType.UPDATE, payload: { wallet } })
   }, [])
 
   const setError = useCallback((error: Error): void => {
@@ -76,5 +76,5 @@ export const useWeb3Manager = () => {
   //   }
   // }, [connector, handleUpdate, handleError, handleDeactivate])
 
-  return { setAccountContainer, accountContainer, setError, error }
+  return { setWallet, wallet, setError, error }
 }

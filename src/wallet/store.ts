@@ -1,15 +1,18 @@
-import { Account, WalletConstants } from '.';
+import { Wallet, WalletConstants } from '.';
 
 export class WalletStore {
-  getKey(name: string): string {
-    return `${WalletConstants.WalletSpace}:${name}`;
+
+  private readonly _key = WalletConstants.WebWalletSpace;
+
+  clear(): void {
+    localStorage.removeItem(this._key);
   }
 
-  getItem(key: string): any {
+  getItem(): Maybe<Wallet> {
     let data;
 
     try {
-      data = localStorage.getItem(this.getKey(key));
+      data = localStorage.getItem(this._key);
     } catch (err) {
       console.error(err);
       return null;
@@ -20,27 +23,20 @@ export class WalletStore {
     }
 
     try {
-      data = JSON.parse(data);
-      return data;
+      return new Wallet(JSON.parse(data));
     } catch (err) {
-      return data;
+      console.log(err);
+      return null;
     }
   }
 
-  setItem(key: string, data: any): void {
+  setItem(data: Wallet): void {
     const saveData = typeof data === 'string' ? data : JSON.stringify(data);
 
     try {
-      localStorage.setItem(this.getKey(key), saveData);
+      localStorage.setItem(this._key, saveData);
     } catch (err) {
       console.error(err);
     }
-  }
-
-  setLastAcc(acc: Account): void {
-    if (!acc || !acc.id) {
-      return;
-    }
-    this.setItem(WalletConstants.LastAccKey, acc.id);
   }
 }
