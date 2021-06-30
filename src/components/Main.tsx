@@ -24,6 +24,7 @@ export const Main: React.FC = (props: any) => {
         <MainScroll>
           <Button onClick={onClickHandler}>Press me</Button>
           <Typography>NetworkId: {context.network.id} / {blockHeight}</Typography>
+          <Typography>IS_DEV: {String(process.env.REACT_APP_IS_DEV)}</Typography>
         </MainScroll>
         <Footer />
       </MainWrapper>

@@ -29,7 +29,7 @@ export const Footer = () => {
   return (
     <>
       <Root paddingBottomSmall={true}>
-        <Typography>Block Height: {blockHeight}</Typography>
+        <Typography>Block Height: {blockHeight} / v{process.env.REACT_APP_VERSION}</Typography>
       </Root>
     </>
   )
