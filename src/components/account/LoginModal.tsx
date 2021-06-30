@@ -50,7 +50,7 @@ export const LoginModal = () => {
 
   const handleLogin = () => {
     if (vite.validateMnemonics(mnemonic)) {
-      const newAccount = vite.createAccount(mnemonic, 1)
+      const newAccount = vite.createAccount(mnemonic)
       setAccountContainer(new AccountContainer({
         active: newAccount
       }))

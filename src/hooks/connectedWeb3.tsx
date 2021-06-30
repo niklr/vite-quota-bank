@@ -43,14 +43,6 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const { accountContainer, vite } = context
 
   useEffect(() => {
-    console.log('connectedWeb3.context', context)
-  }, [context])
-
-  useEffect(() => {
-    console.log('connectedWeb3.account', accountContainer?.active?.address)
-  }, [accountContainer])
-
-  useEffect(() => {
     if (props.networkId) {
       console.log('networkId', props.networkId)
       const network = networks.find(e => e.id === props.networkId)
@@ -74,12 +66,13 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (connection) {
       const initAsync = async () => {
-        setIsReady(false)
         console.log('initAsync')
         await connection.vite.initAsync(connection.network.url)
         setIsReady(true)
       }
-      initAsync()
+      if (!connection.vite.isConnected) {
+        initAsync()
+      }
     }
   }, [connection])
 

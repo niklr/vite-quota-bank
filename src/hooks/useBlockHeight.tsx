@@ -16,7 +16,7 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
   }
 
   useEffect(() => {
-    console.log('useBlockHeightEffect')
+    // console.log('useBlockHeightEffect')
     fetchBlockHeight()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context])

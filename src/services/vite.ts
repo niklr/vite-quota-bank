@@ -10,14 +10,14 @@ export class ViteService {
   private _provider: any;
   private _client: any;
   private _mnemonicsDeriveIndex = 0;
-  private _isReady = false;
+  private _isConnected = false;
 
-  get isReady(): boolean {
-    return this._isReady;
+  get isConnected(): boolean {
+    return this._isConnected;
   }
 
   private async requestAsync(method: string, params?: any): Promise<any> {
-    if (this._isReady) {
+    if (this._isConnected) {
       return this._client.request(method, params);
     } else {
       return Promise.reject('Vite client is not ready to make requests.');
@@ -25,7 +25,7 @@ export class ViteService {
   }
 
   initAsync = async (url: string) => new Promise<void>((resolve, reject) => {
-    this._isReady = false;
+    this._isConnected = false;
     if (this._provider) {
       this._provider.destroy();
     }
@@ -35,9 +35,10 @@ export class ViteService {
       console.log(err);
       if (isResolved) return;
       reject(err);
+      this._isConnected = false;
     });
     this._client = new ViteAPI(this._provider, () => {
-      this._isReady = true;
+      this._isConnected = true;
       console.log(`ViteAPI connected to ${this._provider.path}`);
       isResolved = true;
       resolve();
