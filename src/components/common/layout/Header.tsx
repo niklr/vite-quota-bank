@@ -1,6 +1,8 @@
-import { AppBar, Button, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import styled from 'styled-components'
-import { AccountList } from '../../account'
+import { useWeb3Context } from '../../../hooks'
+import { truncateStringInTheMiddle } from '../../../util/tools'
+import { AccountList, LoginModal } from '../../account'
 
 const Root = styled.div`
   flex-grow: 1;
@@ -11,6 +13,10 @@ const TitleTypography = styled(Typography)`
 `
 
 const HeaderContainer: React.FC = (props: any) => {
+  const context = useWeb3Context()
+
+  const { account } = context
+
   return (
     <Root>
       <AppBar position="static">
@@ -18,7 +24,8 @@ const HeaderContainer: React.FC = (props: any) => {
           <TitleTypography variant="h6">
             Vite Quota Bank
           </TitleTypography>
-          <Button color="inherit">Login</Button>
+          <LoginModal></LoginModal>
+          <Typography>{truncateStringInTheMiddle(account?.address, 10, 5)}</Typography>
           <AccountList></AccountList>
         </Toolbar>
       </AppBar>
