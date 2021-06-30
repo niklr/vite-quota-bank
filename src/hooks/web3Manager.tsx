@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useReducer } from 'react'
+import { useCallback, useReducer } from 'react'
+import { AccountContainer } from '../wallet'
 
 interface Web3ManagerState {
-  account?: null | string
-
+  accountContainer?: AccountContainer
   onError?: (error: Error) => void
-
   error?: Error
 }
 
@@ -21,10 +20,10 @@ interface Action {
 function reducer(state: Web3ManagerState, { type, payload }: Action): Web3ManagerState {
   switch (type) {
     case ActionType.UPDATE: {
-      const { account } = payload
+      const { accountContainer } = payload
       return {
         ...state,
-        ...(account === undefined ? {} : { account })
+        ...(accountContainer === undefined ? {} : { accountContainer })
       }
     }
     case ActionType.ERROR: {
@@ -40,18 +39,23 @@ function reducer(state: Web3ManagerState, { type, payload }: Action): Web3Manage
 
 export const useWeb3Manager = () => {
   const [state, dispatch] = useReducer(reducer, {})
-  const { account, onError, error } = state
+  // const { account, onError, error } = state
+  const { accountContainer, error } = state
+
+  const setAccountContainer = useCallback((accountContainer: AccountContainer): void => {
+    dispatch({ type: ActionType.UPDATE, payload: { accountContainer } })
+  }, [])
 
   const setError = useCallback((error: Error): void => {
     dispatch({ type: ActionType.ERROR, payload: { error } })
   }, [])
 
-  const handleError = useCallback(
-    (error: Error): void => {
-      onError ? onError(error) : dispatch({ type: ActionType.ERROR, payload: { error } })
-    },
-    [onError]
-  )
+  // const handleError = useCallback(
+  //   (error: Error): void => {
+  //     onError ? onError(error) : dispatch({ type: ActionType.ERROR, payload: { error } })
+  //   },
+  //   [onError]
+  // )
 
   // ensure that events emitted from the set connector are handled appropriately
   // useEffect((): (() => void) => {
@@ -72,5 +76,5 @@ export const useWeb3Manager = () => {
   //   }
   // }, [connector, handleUpdate, handleError, handleDeactivate])
 
-  return { account, setError, error }
+  return { setAccountContainer, accountContainer, setError, error }
 }

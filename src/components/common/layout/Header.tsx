@@ -15,7 +15,7 @@ const TitleTypography = styled(Typography)`
 const HeaderContainer: React.FC = (props: any) => {
   const context = useWeb3Context()
 
-  const { account } = context
+  const { accountContainer } = context
 
   return (
     <Root>
@@ -25,7 +25,7 @@ const HeaderContainer: React.FC = (props: any) => {
             Vite Quota Bank
           </TitleTypography>
           <LoginModal></LoginModal>
-          <Typography>{truncateStringInTheMiddle(account?.address, 10, 5)}</Typography>
+          <Typography>{truncateStringInTheMiddle(accountContainer?.active?.address, 10, 5)}</Typography>
           <AccountList></AccountList>
         </Toolbar>
       </AppBar>

@@ -8,6 +8,7 @@ import { useWeb3Context } from '../../hooks';
 import { WalletConstants } from '../../wallet/constants';
 import { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
+import { AccountContainer } from '../../wallet';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -30,7 +31,7 @@ export const LoginModal = () => {
   const context = useWeb3Context()
   const { enqueueSnackbar } = useSnackbar();
 
-  const { vite } = context
+  const { setAccountContainer, vite } = context
 
   useEffect(() => {
     if (open) {
@@ -49,10 +50,10 @@ export const LoginModal = () => {
 
   const handleLogin = () => {
     if (vite.validateMnemonics(mnemonic)) {
-      const account = vite.createAccount(mnemonic, 0)
-      context.account = account
-      console.log(context.account)
-      //context.setAccount(account)
+      const newAccount = vite.createAccount(mnemonic, 1)
+      setAccountContainer(new AccountContainer({
+        active: newAccount
+      }))
     } else {
       enqueueSnackbar('Invalid mnemonic')
     }

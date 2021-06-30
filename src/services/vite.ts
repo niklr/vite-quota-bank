@@ -16,6 +16,14 @@ export class ViteService {
     return this._isReady;
   }
 
+  private async requestAsync(method: string, params?: any): Promise<any> {
+    if (this._isReady) {
+      return this._client.request(method, params);
+    } else {
+      return Promise.reject('Vite client is not ready to make requests.');
+    }
+  }
+
   initAsync = async (url: string) => new Promise<void>((resolve, reject) => {
     this._isReady = false;
     if (this._provider) {
@@ -58,6 +66,6 @@ export class ViteService {
   }
 
   async getSnapshotChainHeightAsync(): Promise<number> {
-    return this._client.request('ledger_getSnapshotChainHeight');
+    return this.requestAsync('ledger_getSnapshotChainHeight');
   }
 }

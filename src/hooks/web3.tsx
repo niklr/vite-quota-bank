@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ViteService } from '../services/vite';
-import { Account } from '../wallet';
+import { AccountContainer } from '../wallet';
+import { useWeb3Manager } from './web3Manager';
 
 export interface IWeb3Context {
-  account: Maybe<Account>,
-  //setAccount: React.Dispatch<React.SetStateAction<Account | undefined>>,
+  setAccountContainer: (account: AccountContainer) => void,
+  accountContainer?: AccountContainer,
+  setError: (error: Error) => void,
+  error?: Error,
   vite: ViteService,
 }
 
@@ -26,37 +29,24 @@ interface Props {
 
 export const Web3Provider: React.FC<Props> = (props: Props) => {
   const vite = new ViteService()
-  // const [account, setAccount] = useState<Account>()
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [context, setContext] = useState<IWeb3Context>({
-    account: undefined,
+  const {
+    setAccountContainer,
+    accountContainer,
+    setError,
+    error
+  } = useWeb3Manager()
+
+  const context: IWeb3Context = {
+    setAccountContainer,
+    accountContainer,
+    setError,
+    error,
     vite
-  })
-
-  const updateContext = () => {
-
-  }
-
-  // const account = vite.createAccount(WalletConstants.DefaultMnemonics, 0)
-  // context.account = account
-
-  useEffect(() => {
-    console.log('web3.context?.account', context?.account)
-  });
-
-  useEffect(() => {
-    if (context) {
-      console.log('web3.context.account', context.account)
-    }
-  }, [context, context.account])
-
-  const value = {
-    ...context
   }
 
   return (
     <>
-      <Web3Context.Provider value={value}>{props.children}</Web3Context.Provider>
+      <Web3Context.Provider value={context}>{props.children}</Web3Context.Provider>
     </>
   )
 }

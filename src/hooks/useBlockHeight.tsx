@@ -5,9 +5,14 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
   const [blockHeight, setBlockHeight] = useState(0)
 
   const fetchBlockHeight = async () => {
-    const newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
-    setBlockHeight(newBlockHeight)
-    context.networkStatus.blockHeight = newBlockHeight
+    try {
+      const newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
+      setBlockHeight(newBlockHeight)
+      context.networkStatus.blockHeight = newBlockHeight
+    } catch (error) {
+      setBlockHeight(0)
+      context.networkStatus.blockHeight = 0
+    }
   }
 
   useEffect(() => {

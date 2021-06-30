@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
 import { ViteService } from '../services/vite';
-import { Account } from '../wallet';
 
 export interface IConnectedWeb3Context {
-  account: Maybe<Account>
+  account?: string
   network: Network
-  networkStatus: NetworkStatus,
+  networkStatus: NetworkStatus
   vite: ViteService
 }
 
@@ -41,15 +40,15 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const context = useWeb3Context()
 
-  const { account, vite } = context
+  const { accountContainer, vite } = context
 
   useEffect(() => {
     console.log('connectedWeb3.context', context)
   }, [context])
 
   useEffect(() => {
-    console.log('connectedWeb3.account', account)
-  }, [account])
+    console.log('connectedWeb3.account', accountContainer?.active?.address)
+  }, [accountContainer])
 
   useEffect(() => {
     if (props.networkId) {
@@ -58,7 +57,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
 
       const value = {
-        account: account || null,
+        account: accountContainer?.active?.address,
         network,
         networkStatus: {
           blockHeight: 0
@@ -66,11 +65,11 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         vite
       }
 
-      console.log('ConnectedWeb3.account', account)
+      console.log('ConnectedWeb3.account', accountContainer?.active?.address)
 
       setConnection(value)
     }
-  }, [props.networkId, account, vite])
+  }, [props.networkId, accountContainer, vite])
 
   useEffect(() => {
     if (connection) {
