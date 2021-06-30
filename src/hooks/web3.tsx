@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ViteService } from '../services/vite';
-import { Account } from '../wallet/account';
-import { WalletConstants } from '../wallet/constants';
+import { Account } from '../wallet';
 
 export interface IWeb3Context {
   account: Maybe<Account>,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
 import { ViteService } from '../services/vite';
-import { Account } from '../wallet/account';
+import { Account } from '../wallet';
 
 export interface IConnectedWeb3Context {
   account: Maybe<Account>

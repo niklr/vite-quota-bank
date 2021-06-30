@@ -1,5 +1,4 @@
-import { Account } from './account';
-import { WalletConstants } from './constants';
+import { Account, WalletConstants } from '.';
 
 export class WalletStore {
   getKey(name: string): string {

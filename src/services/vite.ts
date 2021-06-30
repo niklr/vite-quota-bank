@@ -1,5 +1,5 @@
 import { ViteAPI, wallet } from '@vite/vitejs';
-import { Account } from '../wallet/account';
+import { Account } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
