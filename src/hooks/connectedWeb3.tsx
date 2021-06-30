@@ -48,6 +48,10 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   }, [context])
 
   useEffect(() => {
+    console.log('connectedWeb3.account', account)
+  }, [account])
+
+  useEffect(() => {
     if (props.networkId) {
       console.log('networkId', props.networkId)
       const network = networks.find(e => e.id === props.networkId)

@@ -4,6 +4,10 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import { Button, TextField } from '@material-ui/core';
+import { useWeb3Context } from '../../hooks';
+import { WalletConstants } from '../../wallet/constants';
+import { useEffect } from 'react';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -22,6 +26,18 @@ const useStyles = makeStyles((theme) => ({
 export const LoginModal = () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [mnemonic, setMnemonic] = React.useState<string>('');
+  const context = useWeb3Context()
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { vite } = context
+
+  useEffect(() => {
+    if (open) {
+      console.log('login modal opened')
+      setMnemonic(WalletConstants.DefaultMnemonics)
+    }
+  }, [open])
 
   const handleOpen = () => {
     setOpen(true);
@@ -30,6 +46,23 @@ export const LoginModal = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const handleLogin = () => {
+    if (vite.validateMnemonics(mnemonic)) {
+      const account = vite.createAccount(mnemonic, 0)
+      context.account = account
+      console.log(context.account)
+      //context.setAccount(account)
+    } else {
+      enqueueSnackbar('Invalid mnemonic')
+    }
+  }
+
+  const handleInput = (e: any) => {
+    const newMnemonic = e.target.value
+    console.log(newMnemonic)
+    setMnemonic(newMnemonic)
+  }
 
   return (
     <div>
@@ -53,8 +86,10 @@ export const LoginModal = () => {
               fullWidth
               margin="normal"
               variant="outlined"
+              value={mnemonic}
+              onChange={handleInput}
             />
-            <Button>Login</Button>
+            <Button onClick={handleLogin}>Login</Button>
           </div>
         </Fade>
       </Modal>

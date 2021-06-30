@@ -50,7 +50,14 @@ export class ViteService {
     return account;
   }
 
+  validateMnemonics(mnemonics: Maybe<string>): Boolean {
+    if (mnemonics) {
+      return wallet.validateMnemonics(mnemonics);
+    }
+    return false;
+  }
+
   async getSnapshotChainHeightAsync(): Promise<number> {
-    return this._client.request('ledger_getSnapshotChainHeight')
+    return this._client.request('ledger_getSnapshotChainHeight');
   }
 }

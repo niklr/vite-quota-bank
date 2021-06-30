@@ -1,3 +1,4 @@
+import { SnackbarProvider } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { Main } from './components';
 import { Header } from './components/common';
@@ -15,19 +16,21 @@ const App: React.FC = () => {
   }, [network])
 
   return (
-    <Web3Provider>
-      {!status ? (
-        <>
-          <Header />
-        </>
-      ) : (
-        <>
-          <ConnectedWeb3 networkId={network?.id} setStatus={setStatus}>
-            <Main />
-          </ConnectedWeb3>
-        </>
-      )}
-    </Web3Provider>
+    <SnackbarProvider maxSnack={3}>
+      <Web3Provider>
+        {!status ? (
+          <>
+            <Header />
+          </>
+        ) : (
+          <>
+            <ConnectedWeb3 networkId={network?.id} setStatus={setStatus}>
+              <Main />
+            </ConnectedWeb3>
+          </>
+        )}
+      </Web3Provider>
+    </SnackbarProvider>
   );
 }
 
