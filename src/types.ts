@@ -9,6 +9,7 @@ export class Quota {
   maxQuota: string = Quota._defaultValue
   maxQuotaFormatted: string = Quota._defaultValue
   stakeAmount: string = Quota._defaultValue
+  stakeAmountFormatted: string = Quota._defaultValue
 
   constructor(init?: Partial<Quota>) {
     this.init(init)
@@ -21,12 +22,21 @@ export class Quota {
       this.maxQuota = data.maxQuota
       this.maxQuotaFormatted = this.formatQuota(data.maxQuota)
       this.stakeAmount = data.stakeAmount
+      this.stakeAmountFormatted = this.formatStakeAmount(data.stakeAmount)
     }
   }
 
   formatQuota(quota: string): string {
     try {
       return bigNumber.toBasic(Number.parseInt(quota) / AppConstants.QuotaPerUT, 0, 3);
+    } catch (error) {
+      return "-1"
+    }
+  }
+
+  formatStakeAmount(amount: string): string {
+    try {
+      return bigNumber.toBasic(Number.parseInt(amount), AppConstants.DefaultDecimals);
     } catch (error) {
       return "-1"
     }
