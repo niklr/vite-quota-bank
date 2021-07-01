@@ -9,6 +9,7 @@ export interface IWeb3Context {
   setError: (error: Error) => void,
   error?: Error,
   vite: ViteService,
+  walletManager: WalletManager
 }
 
 const Web3Context = React.createContext<Maybe<IWeb3Context>>(undefined)
@@ -42,7 +43,8 @@ export const Web3Provider: React.FC<Props> = (props: Props) => {
     wallet,
     setError,
     error,
-    vite
+    vite,
+    walletManager
   }
 
   return (

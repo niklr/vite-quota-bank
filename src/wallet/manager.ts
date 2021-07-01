@@ -47,6 +47,10 @@ export class WalletManager {
     this._store.clear();
   }
 
+  getAccountByAddress(address: string): Maybe<Account> {
+    return this._wallet?.accounts?.find(e => e.address === address)
+  }
+
   addAccount(): Maybe<Account> {
     if (this._wallet?.mnemonic) {
       const account = this.createAccount(this._wallet.mnemonic);

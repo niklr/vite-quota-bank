@@ -1,69 +1,78 @@
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { createStyles, FormControl, Icon, IconButton, InputLabel, makeStyles, Select, Theme } from '@material-ui/core';
+import { useWeb3Context } from '../../hooks';
+import { truncateStringInTheMiddle } from '../../util/tools';
 
-const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel',
-];
-
-const ITEM_HEIGHT = 48;
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 200,
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'white',
+        },
+        '&:hover fieldset': {
+          borderColor: 'white',
+        },
+      },
+      '& .MuiSelect-root': {
+        color: 'white'
+      },
+      '& .MuiSvgIcon-root': {
+        color: 'white'
+      }
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },
+  }),
+);
 
 export const AccountList = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const classes = useStyles()
+  const context = useWeb3Context()
 
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const { wallet } = context
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const addAddress = () => {
+    context.walletManager.addAccount()
+    context.setWallet(context.walletManager.getWallet())
+  }
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    console.log(event.target.value)
+    const account = context.walletManager.getAccountByAddress(event.target.value as string)
+    if (account && context.walletManager.setActiveAccount(account)) {
+      context.setWallet(context.walletManager.getWallet())
+    }
+  }
+
+  const truncateAddress = (address?: string) => {
+    return truncateStringInTheMiddle(address, 10, 5)
+  }
 
   return (
-    <div>
-      <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
-        <MoreVertIcon />
+    <>
+      <IconButton aria-label="add" onClick={addAddress}>
+        <Icon style={{ color: 'white' }}>add_circle_outline</Icon>
       </IconButton>
-      <Menu
-        id="long-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: '20ch',
-          },
-        }}
-      >
-        {options.map((option) => (
-          <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
-            {option}
-          </MenuItem>
-        ))}
-      </Menu>
-    </div>
+      <FormControl variant="outlined" className={classes.formControl} size="small">
+        <InputLabel id="select-address-label"></InputLabel>
+        <Select
+          labelId="select-address-label"
+          id="select-address-label"
+          value={wallet?.active?.address}
+          onChange={handleChange}
+        >
+          {wallet?.accounts?.map(account => {
+            return (
+              <MenuItem key={account.address} value={account.address}>{truncateAddress(account.address)}</MenuItem>
+            )
+          })}
+        </Select>
+      </FormControl>
+    </>
   );
 }

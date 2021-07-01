@@ -8,7 +8,6 @@ import { useWeb3Context } from '../../hooks';
 import { WalletConstants } from '../../wallet/constants';
 import { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
-import { WalletManager } from '../../wallet';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -33,8 +32,6 @@ export const LoginModal = () => {
 
   const { setWallet } = context
 
-  const walletManager = new WalletManager();
-
   useEffect(() => {
     if (open) {
       console.log('login modal opened')
@@ -51,7 +48,7 @@ export const LoginModal = () => {
   };
 
   const handleLogin = () => {
-    const wallet = walletManager.createWallet(mnemonic);
+    const wallet = context.walletManager.createWallet(mnemonic);
     if (wallet) {
       setWallet(wallet)
     } else {

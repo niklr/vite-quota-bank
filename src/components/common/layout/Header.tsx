@@ -1,7 +1,6 @@
-import { AppBar, Toolbar, Typography } from '@material-ui/core'
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core'
 import styled from 'styled-components'
 import { useWeb3Context } from '../../../hooks'
-import { truncateStringInTheMiddle } from '../../../util/tools'
 import { AccountList, LoginModal } from '../../account'
 
 const Root = styled.div`
@@ -17,6 +16,11 @@ const HeaderContainer: React.FC = (props: any) => {
 
   const { wallet } = context
 
+  const handleLogout = () => {
+    context.walletManager.removeWallet()
+    context.setWallet(context.walletManager.getWallet())
+  }
+
   return (
     <Root>
       <AppBar position="static">
@@ -24,9 +28,15 @@ const HeaderContainer: React.FC = (props: any) => {
           <TitleTypography variant="h6">
             Vite Quota Bank
           </TitleTypography>
-          <LoginModal></LoginModal>
-          <Typography>{truncateStringInTheMiddle(wallet?.active?.address, 10, 5)}</Typography>
-          <AccountList></AccountList>
+          {wallet?.active && (
+            <>
+              <AccountList></AccountList>
+              <Button color="inherit" onClick={handleLogout}>Logout</Button>
+            </>
+          )}
+          {!wallet?.active && (
+            <LoginModal></LoginModal>
+          )}
         </Toolbar>
       </AppBar>
     </Root>

@@ -20,10 +20,10 @@ interface Action {
 function reducer(state: Web3ManagerState, { type, payload }: Action): Web3ManagerState {
   switch (type) {
     case ActionType.UPDATE: {
-      const { accountContainer } = payload
+      const { wallet } = payload
       return {
         ...state,
-        ...(accountContainer === undefined ? {} : { accountContainer })
+        ...({ wallet })
       }
     }
     case ActionType.ERROR: {
