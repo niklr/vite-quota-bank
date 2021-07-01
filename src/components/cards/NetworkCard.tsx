@@ -7,11 +7,19 @@ import { networks } from '../../common/networks';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
-    minHeight: 170,
+    minHeight: 211,
+    textAlign: 'center'
   },
   title: {
     fontSize: 14,
+    marginBottom: 10
   },
+  blockHeight: {
+    marginTop: 15
+  },
+  chip: {
+    marginTop: 15
+  }
 });
 
 export const NetworkCard = () => {
@@ -36,17 +44,17 @@ export const NetworkCard = () => {
     <>
       <Card className={classes.root}>
         <CardContent>
-          <Typography className={classes.title} color="textSecondary" gutterBottom component="div">
-            Network <Chip size="small" label={network?.name} /> / <Chip size="small" label={network?.id} />
+          <Typography className={classes.title} color="textSecondary">
+            Network
           </Typography>
-          <Typography variant="h5" component="h2">
+          <Chip size="small" label={network?.name} /> / <Chip size="small" label={network?.id} />
+          <Typography className={classes.blockHeight} variant="h5" component="h2">
             {blockHeight}
           </Typography>
           <Typography color="textSecondary">
             Block height
           </Typography>
-          <br />
-          <Chip size="small" label={network?.url} />
+          <Chip className={classes.chip} size="small" label={network?.url} />
         </CardContent>
       </Card>
     </>

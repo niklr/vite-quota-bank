@@ -8,7 +8,6 @@ import { useAccountBalance } from '../../hooks/useAccountBalance';
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
-    minHeight: 170,
   },
   quota: {
     color: theme.palette.grey[500]
@@ -90,8 +89,8 @@ export const AddressSummaryTable: React.FC<Props> = (props: Props) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Tooltip title={context.account ?? ""} placement="top" arrow interactive>
-        <Chip className={classes.chip} size="small" label={truncateAddress(context.account)} />
+      <Tooltip title={props.address ?? ""} placement="top" arrow interactive>
+        <Chip className={classes.chip} size="small" label={truncateAddress(props.address)} />
       </Tooltip>
     </Paper>
   );
