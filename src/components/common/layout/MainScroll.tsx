@@ -1,3 +1,4 @@
+import { Container } from '@material-ui/core'
 import * as React from 'react'
 import styled from 'styled-components'
 import { theme } from '../../../common/theme'
@@ -37,7 +38,9 @@ export const MainScroll: React.FC = props => {
 
   return (
     <MainScrollStyled {...restProps}>
-      <MainScrollInner>{children}</MainScrollInner>
+      <Container maxWidth="lg">
+        <MainScrollInner>{children}</MainScrollInner>
+      </Container>
     </MainScrollStyled>
   )
 }

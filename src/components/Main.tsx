@@ -1,30 +1,21 @@
-import { Button, Typography } from '@material-ui/core'
-import { useEffect, useState } from 'react'
-import { useConnectedWeb3Context } from '../hooks'
+import { Grid } from '@material-ui/core'
 import { Footer, Header, MainScroll, MainWrapper } from './common'
+import { NetworkCard } from './network'
 
 export const Main: React.FC = (props: any) => {
-  const context = useConnectedWeb3Context()
-
-  const [blockHeight, setBlockHeight] = useState(context.networkStatus.blockHeight);
-
-  useEffect(() => {
-    console.log('context.networkStatus.blockHeight', context.networkStatus.blockHeight)
-  }, [context.networkStatus.blockHeight])
-
-  const onClickHandler = () => {
-    setBlockHeight(context.networkStatus.blockHeight)
-    console.log('setBlockHeight', context.networkStatus.blockHeight)
-  }
-
   return (
     <>
       <MainWrapper>
         <Header />
         <MainScroll>
-          <Button onClick={onClickHandler}>Press me</Button>
-          <Typography>NetworkId: {context.network.id} / {blockHeight}</Typography>
-          <Typography>IS_DEV: {String(process.env.REACT_APP_IS_DEV)}</Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <NetworkCard></NetworkCard>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <NetworkCard></NetworkCard>
+            </Grid>
+          </Grid>
         </MainScroll>
         <Footer />
       </MainWrapper>

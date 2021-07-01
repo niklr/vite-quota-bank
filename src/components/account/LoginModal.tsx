@@ -58,7 +58,6 @@ export const LoginModal = () => {
 
   const handleInput = (e: any) => {
     const newMnemonic = e.target.value
-    console.log(newMnemonic)
     setMnemonic(newMnemonic)
   }
 
