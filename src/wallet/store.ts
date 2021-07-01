@@ -15,18 +15,18 @@ export class WalletStore {
       data = localStorage.getItem(this._key);
     } catch (err) {
       console.error(err);
-      return null;
+      return undefined;
     }
 
     if (!data) {
-      return null;
+      return undefined;
     }
 
     try {
       return new Wallet(JSON.parse(data));
     } catch (err) {
       console.log(err);
-      return null;
+      return undefined;
     }
   }
 

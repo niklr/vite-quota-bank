@@ -10,7 +10,7 @@ export interface IConnectedWeb3Context {
   vite: ViteService
 }
 
-const ConnectedWeb3Context = React.createContext<Maybe<IConnectedWeb3Context>>(null)
+const ConnectedWeb3Context = React.createContext<Maybe<IConnectedWeb3Context>>(undefined)
 
 /**
  * This hook can only be used by components under the `ConnectedWeb3` component. Otherwise it will throw.

@@ -1,17 +1,17 @@
 import React from 'react';
 import { ViteService } from '../services/vite';
-import { Wallet } from '../wallet';
+import { Wallet, WalletManager } from '../wallet';
 import { useWeb3Manager } from './web3Manager';
 
 export interface IWeb3Context {
-  setWallet: (wallet: Wallet) => void,
+  setWallet: (wallet?: Wallet) => void,
   wallet?: Wallet,
   setError: (error: Error) => void,
   error?: Error,
   vite: ViteService,
 }
 
-const Web3Context = React.createContext<Maybe<IWeb3Context>>(null)
+const Web3Context = React.createContext<Maybe<IWeb3Context>>(undefined)
 
 export const useWeb3Context = () => {
   const context = React.useContext(Web3Context)
@@ -29,12 +29,13 @@ interface Props {
 
 export const Web3Provider: React.FC<Props> = (props: Props) => {
   const vite = new ViteService()
+  const walletManager = new WalletManager()
   const {
     setWallet,
     wallet,
     setError,
     error
-  } = useWeb3Manager()
+  } = useWeb3Manager(walletManager.getWallet())
 
   const context: IWeb3Context = {
     setWallet,

@@ -5,35 +5,75 @@ import { WalletStore } from './store';
 export class WalletManager {
 
   private readonly _store: WalletStore;
+  private _wallet?: Wallet;
   private _mnemonicDeriveIndex = 0;
 
   constructor() {
     this._store = new WalletStore();
+    this.initWallet();
+  }
+
+  private initWallet(): void {
+    const wallet = this._store.getItem();
+    if (wallet) {
+      this._wallet = wallet;
+      this._mnemonicDeriveIndex = wallet.accounts.length;
+    }
   }
 
   getWallet(): Maybe<Wallet> {
-    return this._store.getItem();
+    return this._wallet;
   }
 
-  createWallet(mnemonic: string): Wallet {
-    const account = this.createAccount(mnemonic, 0);
-    const wallet = new Wallet({
-      active: account,
-      mnemonic,
-      accounts: [
-        account
-      ]
-    });
-    this._store.setItem(wallet);
-    return wallet;
+  createWallet(mnemonic: string): Maybe<Wallet> {
+    this.removeWallet();
+    if (this.validateMnemonic(mnemonic)) {
+      const account = this.createAccount(mnemonic, 0);
+      this._wallet = new Wallet({
+        active: account,
+        mnemonic,
+        accounts: [
+          account
+        ]
+      });
+      this._store.setItem(this._wallet);
+    }
+    return this._wallet;
   }
 
   removeWallet(): void {
+    this._wallet = undefined;
     this._mnemonicDeriveIndex = 0;
     this._store.clear();
   }
 
-  createAccount(mnemonic: string, index = this._mnemonicDeriveIndex): Account {
+  addAccount(): Maybe<Account> {
+    if (this._wallet?.mnemonic) {
+      const account = this.createAccount(this._wallet.mnemonic);
+      this._wallet.accounts.push(account);
+      this.setActiveAccount(account);
+      return account;
+    }
+    return undefined
+  }
+
+  setActiveAccount(account: Account): boolean {
+    if (this._wallet) {
+      this._wallet.active = account;
+      this._store.setItem(this._wallet);
+      return true;
+    }
+    return false;
+  }
+
+  getAccounts(): Account[] {
+    if (this._wallet) {
+      return this._wallet.accounts;
+    }
+    return [];
+  }
+
+  private createAccount(mnemonic: string, index = this._mnemonicDeriveIndex): Account {
     const { privateKey } = wallet.deriveAddress({
       mnemonics: mnemonic,
       index
@@ -47,7 +87,7 @@ export class WalletManager {
     return account;
   }
 
-  validateMnemonic(mnemonic: Maybe<string>): Boolean {
+  private validateMnemonic(mnemonic: Maybe<string>): Boolean {
     if (mnemonic) {
       return wallet.validateMnemonics(mnemonic);
     }

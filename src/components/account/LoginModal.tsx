@@ -51,8 +51,8 @@ export const LoginModal = () => {
   };
 
   const handleLogin = () => {
-    if (walletManager.validateMnemonic(mnemonic)) {
-      const wallet = walletManager.createWallet(mnemonic)
+    const wallet = walletManager.createWallet(mnemonic);
+    if (wallet) {
       setWallet(wallet)
     } else {
       enqueueSnackbar('Invalid mnemonic')

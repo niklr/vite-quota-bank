@@ -37,12 +37,14 @@ function reducer(state: Web3ManagerState, { type, payload }: Action): Web3Manage
   }
 }
 
-export const useWeb3Manager = () => {
-  const [state, dispatch] = useReducer(reducer, {})
+export const useWeb3Manager = (initWallet?: Wallet) => {
+  const [state, dispatch] = useReducer(reducer, {
+    wallet: initWallet
+  })
   // const { account, onError, error } = state
   const { wallet, error } = state
 
-  const setWallet = useCallback((wallet: Wallet): void => {
+  const setWallet = useCallback((wallet?: Wallet): void => {
     dispatch({ type: ActionType.UPDATE, payload: { wallet } })
   }, [])
 
