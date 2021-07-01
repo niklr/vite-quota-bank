@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core'
 import { Footer, Header, MainScroll, MainWrapper } from './common'
-import { NetworkCard } from './cards'
+import { AccountCard, NetworkCard } from './cards'
 
 export const Main: React.FC = (props: any) => {
   return (
@@ -9,10 +9,10 @@ export const Main: React.FC = (props: any) => {
         <Header />
         <MainScroll>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <NetworkCard></NetworkCard>
+            <Grid item xs={12} md={4}>
+              <AccountCard></AccountCard>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <NetworkCard></NetworkCard>
             </Grid>
           </Grid>

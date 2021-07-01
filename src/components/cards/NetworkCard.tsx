@@ -7,6 +7,7 @@ import { networks } from '../../common/networks';
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
+    minHeight: 170,
   },
   title: {
     fontSize: 14,

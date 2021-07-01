@@ -11,17 +11,17 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 200,
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
-          borderColor: 'white',
+          borderColor: theme.palette.common.white,
         },
         '&:hover fieldset': {
-          borderColor: 'white',
+          borderColor: theme.palette.common.white,
         },
       },
       '& .MuiSelect-root': {
-        color: 'white'
+        color: theme.palette.common.white
       },
       '& .MuiSvgIcon-root': {
-        color: 'white'
+        color: theme.palette.common.white
       }
     },
     selectEmpty: {
