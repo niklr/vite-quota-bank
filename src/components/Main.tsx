@@ -1,6 +1,6 @@
 import { Grid } from '@material-ui/core'
 import { Footer, Header, MainScroll, MainWrapper } from './common'
-import { NetworkCard } from './network'
+import { NetworkCard } from './cards'
 
 export const Main: React.FC = (props: any) => {
   return (
