@@ -1,8 +1,7 @@
 import React from 'react';
-import { Card, CardContent, Chip, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core'
+import { Card, CardContent, Grid, makeStyles, Typography } from '@material-ui/core'
 import { useEffect } from 'react'
 import { useAccountQuota, useConnectedWeb3Context } from '../../hooks'
-import { truncateStringInTheMiddle } from '../../util/tools';
 
 const useStyles = makeStyles({
   root: {

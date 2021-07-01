@@ -1,7 +1,8 @@
 import { Grid } from '@material-ui/core'
 import { Footer, Header, MainScroll, MainWrapper } from './common'
-import { AccountCard, NetworkCard, QuotaCard } from './cards'
+import { NetworkCard, QuotaCard } from './cards'
 import { useConnectedWeb3Context } from '../hooks'
+import { AddressSummaryTable } from './tables'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
@@ -12,7 +13,7 @@ export const Main: React.FC = (props: any) => {
         <MainScroll>
           <Grid container spacing={3}>
             <Grid item xs={12} md={4}>
-              <AccountCard></AccountCard>
+              <AddressSummaryTable title="Account" address={context.account}></AddressSummaryTable>
             </Grid>
             <Grid item xs={12} md={4}>
               <QuotaCard title="Account Quota" address={context.account}></QuotaCard>

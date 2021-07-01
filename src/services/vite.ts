@@ -1,5 +1,5 @@
 import { ViteAPI } from '@vite/vitejs';
-import { Quota } from '../types';
+import { Balance, Quota } from '../types';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -51,6 +51,11 @@ export class ViteService {
 
   async getSnapshotChainHeightAsync(): Promise<number> {
     return this.requestAsync('ledger_getSnapshotChainHeight');
+  }
+
+  async getBalanceByAccount(address: string): Promise<Balance> {
+    const result = await this.requestAsync("ledger_getAccountInfoByAddress", address);
+    return new Balance(result);
   }
 
   async getQuotaByAccount(address: string): Promise<Quota> {

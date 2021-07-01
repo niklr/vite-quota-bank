@@ -1,6 +1,33 @@
 import { AppConstants } from './constants'
 import { bigNumber } from './util/bigNumber'
 
+export class Balance {
+  private static readonly _defaultValue = "0"
+
+  amount: string = Balance._defaultValue
+  amountFormatted: string = Balance._defaultValue
+
+  constructor(init?: Partial<Balance>) {
+    this.init(init)
+  }
+
+  init(data?: any): void {
+    if (data?.balanceInfoMap) {
+      const vite = data.balanceInfoMap[AppConstants.ViteTokenId]
+      this.amount = vite.balance
+      this.amountFormatted = this.formatAmount(vite.balance)
+    }
+  }
+
+  formatAmount(amount: string): string {
+    try {
+      return bigNumber.toBasic(Number.parseInt(amount), AppConstants.DefaultDecimals);
+    } catch (error) {
+      return "-1"
+    }
+  }
+}
+
 export class Quota {
   private static readonly _defaultValue = "0"
 
