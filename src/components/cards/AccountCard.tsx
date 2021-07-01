@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Chip, Grid, makeStyles, Tooltip, Typography } from '@material-ui/core'
 import { useEffect } from 'react'
-import { useBlockHeight, useConnectedWeb3Context } from '../../hooks'
+import { useAccountQuota, useConnectedWeb3Context } from '../../hooks'
 import { truncateStringInTheMiddle } from '../../util/tools';
 
 const useStyles = makeStyles({
@@ -21,11 +21,11 @@ export const AccountCard = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
 
-  const { blockHeight, fetchBlockHeight } = useBlockHeight(context)
+  const { quota, fetchQuota } = useAccountQuota(context, context.account)
 
   useEffect(() => {
     let interval = setInterval(async () => {
-      await fetchBlockHeight()
+      await fetchQuota()
     }, 1000)
     return () => {
       // console.log('NetworkCard interval cleared')
@@ -47,7 +47,7 @@ export const AccountCard = () => {
           <Grid container spacing={3}>
             <Grid item xs={6}>
               <Typography variant="h5" component="h2">
-                {blockHeight}
+                12342234
                 <Typography className={classes.unit} color="textSecondary" component="span">
                   VITE
                 </Typography>
@@ -58,7 +58,7 @@ export const AccountCard = () => {
             </Grid>
             <Grid item xs={6}>
               <Typography variant="h5" component="h2">
-                0
+                {quota.currentQuotaFormatted}
                 <Typography className={classes.unit} color="textSecondary" component="span">
                   UT
                 </Typography>

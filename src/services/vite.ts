@@ -1,4 +1,5 @@
 import { ViteAPI } from '@vite/vitejs';
+import { Quota } from '../types';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -43,7 +44,17 @@ export class ViteService {
     });
   });
 
+  disconnect(): void {
+    this._provider.disconnect();
+    this._isConnected = false;
+  }
+
   async getSnapshotChainHeightAsync(): Promise<number> {
     return this.requestAsync('ledger_getSnapshotChainHeight');
+  }
+
+  async getQuotaByAccount(address: string): Promise<Quota> {
+    const result = await this.requestAsync("contract_getQuotaByAccount", address);
+    return new Quota(result);
   }
 }
