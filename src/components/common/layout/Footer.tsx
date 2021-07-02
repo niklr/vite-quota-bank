@@ -6,13 +6,14 @@ const Root = styled.div<{ paddingBottomSmall?: boolean }>`
   padding-top: 10px;
   padding-left: 24px;
   padding-right: 24px;
+  text-align: right;
 `
 
 export const Footer = () => {
   return (
     <>
       <Root paddingBottomSmall={true}>
-        <Typography>IS_DEV: {String(process.env.REACT_APP_IS_DEV)} / v{process.env.REACT_APP_VERSION}</Typography>
+        <Typography>v{process.env.REACT_APP_VERSION}</Typography>
       </Root>
     </>
   )
