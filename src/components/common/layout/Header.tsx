@@ -9,6 +9,7 @@ const Root = styled.div`
 
 const TitleTypography = styled(Typography)`
   flex-grow: 1;
+  margin-left: 10px !important;
 `
 
 const HeaderContainer: React.FC = (props: any) => {
@@ -25,6 +26,7 @@ const HeaderContainer: React.FC = (props: any) => {
     <Root>
       <AppBar position="static">
         <Toolbar>
+          <img src={"./icon_white.png"} alt="logo" width="30" />
           <TitleTypography variant="h6">
             Vite Quota Bank
           </TitleTypography>

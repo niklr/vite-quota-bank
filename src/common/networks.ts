@@ -25,3 +25,7 @@ export const networks = [
     url: 'ws://localhost:23457'
   }
 ] as Network[]
+
+export const getNetworkFromChain = (chain: string) => {
+  return networks.find(e => e.id === Number(chain))
+}

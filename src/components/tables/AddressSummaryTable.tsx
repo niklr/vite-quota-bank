@@ -1,9 +1,8 @@
 import React from 'react';
 import { Chip, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@material-ui/core'
 import { useEffect } from 'react'
-import { useAccountQuota, useConnectedWeb3Context } from '../../hooks'
-import { truncateStringInTheMiddle } from '../../util/tools';
-import { useAccountBalance } from '../../hooks/useAccountBalance';
+import { useAccountBalance, useAccountQuota, useConnectedWeb3Context } from '../../hooks'
+import { commonUtil } from '../../util/commonUtil';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +47,7 @@ export const AddressSummaryTable: React.FC<Props> = (props: Props) => {
   })
 
   const truncateAddress = (address?: string) => {
-    return truncateStringInTheMiddle(address, 15, 10)
+    return commonUtil.truncateStringInTheMiddle(address, 15, 10)
   }
 
   return (

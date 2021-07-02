@@ -2,7 +2,7 @@ import React from 'react';
 import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, FormControl, Icon, IconButton, InputLabel, makeStyles, Select, Theme } from '@material-ui/core';
 import { useWeb3Context } from '../../hooks';
-import { truncateStringInTheMiddle } from '../../util/tools';
+import { commonUtil } from '../../util/commonUtil';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +50,7 @@ export const AccountList = () => {
   }
 
   const truncateAddress = (address?: string) => {
-    return truncateStringInTheMiddle(address, 10, 5)
+    return commonUtil.truncateStringInTheMiddle(address, 10, 5)
   }
 
   return (

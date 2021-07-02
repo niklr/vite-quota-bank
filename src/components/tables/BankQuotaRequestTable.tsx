@@ -2,9 +2,10 @@ import React from 'react';
 import { Button, Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { truncateStringInTheMiddle } from '../../util/tools';
 import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog } from '../dialogs';
 import { useBlockHeight, useConnectedWeb3Context, useQuotaRequests } from '../../hooks';
+import { QuotaRequest } from '../../types';
+import { commonUtil } from '../../util/commonUtil';
 import { bigNumber } from '../../util/bigNumber';
 
 enum DialogType {
@@ -69,7 +70,7 @@ export const BankQuotaRequestTable = () => {
   };
 
   const truncateAddress = (address?: string) => {
-    return truncateStringInTheMiddle(address, 10, 5)
+    return commonUtil.truncateStringInTheMiddle(address, 10, 5)
   }
 
   const isExpired = (expirationHeight?: string): boolean => {
@@ -77,6 +78,40 @@ export const BankQuotaRequestTable = () => {
       return bigNumber.compared(blockHeight, expirationHeight) === 1
     }
     return false
+  }
+
+  const renderDueDate = (item: QuotaRequest) => {
+    if (isExpired(item.expirationHeight)) {
+      if (item.amount) {
+        return (
+          <span>Staking expired!</span>
+        )
+      } else {
+        return (
+          <span>Request has expired!</span>
+        )
+      }
+    } else {
+      return (
+        <span>Jul-05-2021 09:01:50 AM</span>
+      )
+    }
+  }
+
+  const canStake = (item: QuotaRequest) => {
+    return !item.amount
+  }
+
+  const renderAction = (item: QuotaRequest) => {
+    const buffer: JSX.Element[] = []
+    const stakeButton = (
+      <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
+        Stake
+      </Button>
+    )
+    return (
+      { buffer }
+    )
   }
 
   const address = 'vite_740f288042edc22df23f8511f83f58be4cf05597b17e800bf7'
@@ -134,16 +169,14 @@ export const BankQuotaRequestTable = () => {
                       {item.expirationHeight ?? "-"}
                     </TableCell>
                     <TableCell>
-                      {isExpired(item.expirationHeight) ? (
-                        <span>Expired</span>
-                      ) : (
-                        <span>Jul-05-2021 09:01:50 AM</span>
-                      )}
+                      {renderDueDate(item)}
                     </TableCell>
                     <TableCell align="right">
-                      <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
-                        Stake
-                      </Button>
+                      {canStake(item) && (
+                        <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
+                          Stake
+                        </Button>
+                      )}
                       <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
