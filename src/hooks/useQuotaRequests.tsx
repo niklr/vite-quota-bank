@@ -2,27 +2,25 @@ import { useEffect, useState } from 'react'
 import { IConnectedWeb3Context } from '.'
 
 export const useQuotaRequests = (context: IConnectedWeb3Context) => {
-  const [blockHeight, setBlockHeight] = useState(0)
+  const initialValue: string[] = []
+  const [quotaRequests, setQuotaRequests] = useState(initialValue)
 
-  const fetchBlockHeight = async () => {
+  const fetchQuotaRequests = async () => {
     try {
-      const newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
-      setBlockHeight(newBlockHeight)
-      context.networkStatus.blockHeight = newBlockHeight
+      const result = await context.vite.getQuotaRequests()
+      setQuotaRequests(result)
     } catch (error) {
-      setBlockHeight(0)
-      context.networkStatus.blockHeight = 0
+      setQuotaRequests(initialValue)
     }
   }
 
   useEffect(() => {
-    // console.log('useBlockHeightEffect')
-    fetchBlockHeight()
+    fetchQuotaRequests()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context])
 
   return {
-    blockHeight,
-    fetchBlockHeight
+    quotaRequests,
+    fetchQuotaRequests
   }
 }

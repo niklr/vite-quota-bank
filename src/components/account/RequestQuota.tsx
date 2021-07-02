@@ -13,12 +13,19 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const RequestQuota = () => {
+interface Props {
+  testFn?: () => void
+}
+
+export const RequestQuota: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    //setOpen(true);
+    if (props.testFn) {
+      props.testFn();
+    }
   };
 
   const handleClose = () => {

@@ -8,6 +8,11 @@ import { RequestQuota } from './account'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
+
+  const testFn = () => {
+    console.log('testFn called.')
+  }
+
   return (
     <>
       <MainWrapper>
@@ -24,7 +29,7 @@ export const Main: React.FC = (props: any) => {
               <AddressSummaryTable title="Bank" address={AppConstants.QuotaContractAddress}></AddressSummaryTable>
             </Grid>
             <Grid item xs={12}>
-              <RequestQuota></RequestQuota>
+              <RequestQuota testFn={testFn}></RequestQuota>
             </Grid>
             <Grid item xs={12}>
               <AccountQuotaRequestTable></AccountQuotaRequestTable>

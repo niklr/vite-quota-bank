@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import { truncateStringInTheMiddle } from '../../util/tools';
+import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog } from '../dialogs';
 
 enum DialogType {
   Stake = 'STAKE',
@@ -46,8 +47,8 @@ export const BankQuotaRequestTable = () => {
 
   const handleClose = () => {
     setStakeDialogOpen(false);
-    setWithdrawDialogOpen(true);
-    setDeleteDialogOpen(true);
+    setWithdrawDialogOpen(false);
+    setDeleteDialogOpen(false);
   };
 
   const truncateAddress = (address?: string) => {
@@ -104,10 +105,10 @@ export const BankQuotaRequestTable = () => {
                   Jul-05-2021 09:01:50 AM
                 </TableCell>
                 <TableCell align="right">
-                  <Button size="small" variant="contained" color="primary" className={classes.stakeButton}>
+                  <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
                     Stake
                   </Button>
-                  <IconButton aria-label="delete">
+                  <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
@@ -131,7 +132,7 @@ export const BankQuotaRequestTable = () => {
                   Request has expired!
                 </TableCell>
                 <TableCell align="right">
-                  <IconButton aria-label="delete">
+                  <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
@@ -177,13 +178,16 @@ export const BankQuotaRequestTable = () => {
                   Staking expired!
                 </TableCell>
                 <TableCell align="right">
-                  <Button size="small" variant="outlined">Withdraw</Button>
+                  <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
                 </TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
       </Paper>
+      <BankDeleteDialog open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
+      <BankStakeDialog open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
+      <BankWithdrawDialog open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>
     </div>
   );
 }
