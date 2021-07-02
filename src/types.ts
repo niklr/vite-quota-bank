@@ -1,5 +1,5 @@
 import { AppConstants } from './constants'
-import { bigNumber } from './util/bigNumber'
+import { formatUtil } from './util/formatUtil'
 
 export class Balance {
   private static readonly _defaultValue = "0"
@@ -15,15 +15,7 @@ export class Balance {
     if (data?.balanceInfoMap) {
       const vite = data.balanceInfoMap[AppConstants.ViteTokenId]
       this.amount = vite.balance
-      this.amountFormatted = this.formatAmount(vite.balance)
-    }
-  }
-
-  formatAmount(amount: string): string {
-    try {
-      return bigNumber.toBasic(Number.parseInt(amount), AppConstants.DefaultDecimals);
-    } catch (error) {
-      return "-1"
+      this.amountFormatted = formatUtil.formatAmount(vite.balance)
     }
   }
 }
@@ -45,27 +37,11 @@ export class Quota {
   init(data?: any): void {
     if (data) {
       this.currentQuota = data.currentQuota
-      this.currentQuotaFormatted = this.formatQuota(data.currentQuota)
+      this.currentQuotaFormatted = formatUtil.formatQuota(data.currentQuota)
       this.maxQuota = data.maxQuota
-      this.maxQuotaFormatted = this.formatQuota(data.maxQuota)
+      this.maxQuotaFormatted = formatUtil.formatQuota(data.maxQuota)
       this.stakeAmount = data.stakeAmount
-      this.stakeAmountFormatted = this.formatStakeAmount(data.stakeAmount)
-    }
-  }
-
-  formatQuota(quota: string): string {
-    try {
-      return bigNumber.toBasic(Number.parseInt(quota) / AppConstants.QuotaPerUT, 0, 3);
-    } catch (error) {
-      return "-1"
-    }
-  }
-
-  formatStakeAmount(amount: string): string {
-    try {
-      return bigNumber.toBasic(Number.parseInt(amount), AppConstants.DefaultDecimals);
-    } catch (error) {
-      return "-1"
+      this.stakeAmountFormatted = formatUtil.formatAmount(data.stakeAmount)
     }
   }
 }
@@ -74,6 +50,7 @@ export class QuotaRequest {
   address?: string
   message?: string
   amount?: string
+  amountFormatted?: string
   expirationHeight?: string
 
   constructor(init?: Partial<QuotaRequest>) {
@@ -85,6 +62,7 @@ export class QuotaRequest {
       this.address = data.address
       this.message = data.message
       this.amount = data.amount
+      this.amountFormatted = formatUtil.formatAmount(data.amount)
       this.expirationHeight = data.expirationHeight
     }
   }

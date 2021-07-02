@@ -1,5 +1,5 @@
 import { ViteAPI } from '@vite/vitejs';
-import { Balance, Quota } from '../types';
+import { Balance, Quota, QuotaRequest } from '../types';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -13,6 +13,7 @@ export interface IViteService {
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
   getQuotaRequests(): Promise<string[]>
+  getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
 }
 
 export class ViteService implements IViteService {
@@ -75,5 +76,9 @@ export class ViteService implements IViteService {
 
   async getQuotaRequests(): Promise<string[]> {
     return Promise.resolve([])
+  }
+
+  async getQuotaRequestByAddress(address: string): Promise<QuotaRequest> {
+    return Promise.reject(`Quota request for '${address}' not found.`)
   }
 }
