@@ -22,7 +22,7 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
-    //setOpen(true);
+    setOpen(true);
     if (props.testFn) {
       props.testFn();
     }

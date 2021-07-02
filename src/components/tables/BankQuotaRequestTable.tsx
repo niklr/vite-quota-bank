@@ -80,6 +80,10 @@ export const BankQuotaRequestTable = () => {
     return false
   }
 
+  const isStaked = (item: QuotaRequest) => {
+    return item.amount && !isExpired(item.expirationHeight)
+  }
+
   const renderDueDate = (item: QuotaRequest) => {
     if (isExpired(item.expirationHeight)) {
       if (item.amount) {
@@ -102,19 +106,13 @@ export const BankQuotaRequestTable = () => {
     return !item.amount
   }
 
-  const renderAction = (item: QuotaRequest) => {
-    const buffer: JSX.Element[] = []
-    const stakeButton = (
-      <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
-        Stake
-      </Button>
-    )
-    return (
-      { buffer }
-    )
+  const canDelete = (item: QuotaRequest) => {
+    return !item.amount
   }
 
-  const address = 'vite_740f288042edc22df23f8511f83f58be4cf05597b17e800bf7'
+  const canWithdraw = (item: QuotaRequest) => {
+    return item.amount && isExpired(item.expirationHeight)
+  }
 
   return (
     <div className={classes.root}>
@@ -177,81 +175,21 @@ export const BankQuotaRequestTable = () => {
                           Stake
                         </Button>
                       )}
-                      <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      {isStaked(item) && (
+                        <Chip size="small" label="Staked" />
+                      )}
+                      {canWithdraw(item) && (
+                        <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
+                      )}
+                      {canDelete(item) && (
+                        <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      )}
                     </TableCell>
                   </TableRow>
                 })
               }
-              <TableRow>
-                <TableCell>
-                  <Tooltip title={address ?? ""} placement="top" arrow interactive>
-                    <Chip size="small" label={truncateAddress(address)} />
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  Twitter: 0xRomanNiklaus
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-                <TableCell>
-                  1350996
-                </TableCell>
-                <TableCell>
-                  Request has expired!
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Tooltip title={address ?? ""} placement="top" arrow interactive>
-                    <Chip size="small" label={truncateAddress(address)} />
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  GitHub: niklr
-                </TableCell>
-                <TableCell>
-                  1000
-                </TableCell>
-                <TableCell>
-                  1350996
-                </TableCell>
-                <TableCell>
-                  Jul-05-2021 09:01:50 AM
-                </TableCell>
-                <TableCell align="right">
-                  <Chip size="small" label="Active" />
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <Tooltip title={address ?? ""} placement="top" arrow interactive>
-                    <Chip size="small" label={truncateAddress(address)} />
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  -
-                </TableCell>
-                <TableCell>
-                  1000
-                </TableCell>
-                <TableCell>
-                  1350996
-                </TableCell>
-                <TableCell>
-                  Staking expired!
-                </TableCell>
-                <TableCell align="right">
-                  <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
-                </TableCell>
-              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>

@@ -13,7 +13,7 @@ const quotaRequests = [
   }),
   new QuotaRequest({
     address: 'vite_ce9499905e2dacab4972574cc4319f9b9d44020af89a239463',
-    expirationHeight: '1350997',
+    expirationHeight: '1477687',
     message: 'GitHub: niklr',
     amount: '1500000000000000000000'
   }),
