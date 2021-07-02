@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViteService } from '../services/vite';
+import { IViteService, ViteMockService, ViteService } from '../services';
 import { Wallet, WalletManager } from '../wallet';
 import { useWeb3Manager } from './web3Manager';
 
@@ -8,7 +8,7 @@ export interface IWeb3Context {
   wallet?: Wallet,
   setError: (error: Error) => void,
   error?: Error,
-  vite: ViteService,
+  vite: IViteService,
   walletManager: WalletManager
 }
 
@@ -29,7 +29,12 @@ interface Props {
 }
 
 export const Web3Provider: React.FC<Props> = (props: Props) => {
-  const vite = new ViteService()
+  let vite: IViteService
+  if (process.env.REACT_APP_USE_MOCK) {
+    vite = new ViteMockService()
+  } else {
+    vite = new ViteService()
+  }
   const walletManager = new WalletManager()
   const {
     setWallet,

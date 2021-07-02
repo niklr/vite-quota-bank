@@ -3,6 +3,12 @@ import { Button, Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCel
 import DeleteIcon from '@material-ui/icons/Delete';
 import { truncateStringInTheMiddle } from '../../util/tools';
 
+enum DialogType {
+  Stake = 'STAKE',
+  Withdraw = 'WITHDRAW',
+  Delete = 'DELETE',
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%'
@@ -18,6 +24,31 @@ const useStyles = makeStyles((theme) => ({
 
 export const BankQuotaRequestTable = () => {
   const classes = useStyles();
+  const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
+  const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+
+  const handleClickOpen = (type: DialogType) => {
+    switch (type) {
+      case DialogType.Stake:
+        setStakeDialogOpen(true);
+        break;
+      case DialogType.Withdraw:
+        setWithdrawDialogOpen(true);
+        break;
+      case DialogType.Delete:
+        setDeleteDialogOpen(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleClose = () => {
+    setStakeDialogOpen(false);
+    setWithdrawDialogOpen(true);
+    setDeleteDialogOpen(true);
+  };
 
   const truncateAddress = (address?: string) => {
     return truncateStringInTheMiddle(address, 10, 5)

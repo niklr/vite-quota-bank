@@ -45,7 +45,7 @@ export const AccountQuotaRequestTable = () => {
                   Twitter: 0xRomanNiklaus
                 </TableCell>
                 <TableCell>
-                  0
+                  -
                 </TableCell>
                 <TableCell>
                   1350996

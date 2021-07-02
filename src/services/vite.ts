@@ -5,7 +5,17 @@ const { WS_RPC } = require('@vite/vitejs-ws');
 const providerTimeout = 60000;
 const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 
-export class ViteService {
+export interface IViteService {
+  readonly isConnected: boolean
+  initAsync(url: string): Promise<void>
+  disconnect(): void
+  getSnapshotChainHeightAsync(): Promise<number>
+  getBalanceByAccount(address: string): Promise<Balance>
+  getQuotaByAccount(address: string): Promise<Quota>
+  getQuotaRequests(): Promise<string[]>
+}
+
+export class ViteService implements IViteService {
 
   private _provider: any;
   private _client: any;
@@ -61,5 +71,9 @@ export class ViteService {
   async getQuotaByAccount(address: string): Promise<Quota> {
     const result = await this.requestAsync("contract_getQuotaByAccount", address);
     return new Quota(result);
+  }
+
+  async getQuotaRequests(): Promise<string[]> {
+    return Promise.resolve([])
   }
 }

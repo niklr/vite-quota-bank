@@ -69,3 +69,23 @@ export class Quota {
     }
   }
 }
+
+export class QuotaRequest {
+  address?: string
+  message?: string
+  amount?: string
+  expirationHeight?: string
+
+  constructor(init?: Partial<QuotaRequest>) {
+    this.init(init)
+  }
+
+  init(data?: any): void {
+    if (data) {
+      this.address = data.address
+      this.message = data.message
+      this.amount = data.amount
+      this.expirationHeight = data.expirationHeight
+    }
+  }
+}
