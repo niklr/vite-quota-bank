@@ -37,10 +37,10 @@ export const MainScroll: React.FC = props => {
   const { children, ...restProps } = props
 
   return (
-    <MainScrollStyled {...restProps}>
-      <Container maxWidth="lg">
+    <Container maxWidth="lg">
+      <MainScrollStyled {...restProps}>
         <MainScrollInner>{children}</MainScrollInner>
-      </Container>
-    </MainScrollStyled>
+      </MainScrollStyled>
+    </Container>
   )
 }

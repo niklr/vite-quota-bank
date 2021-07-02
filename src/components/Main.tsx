@@ -2,7 +2,7 @@ import { Grid } from '@material-ui/core'
 import { Footer, Header, MainScroll, MainWrapper } from './common'
 import { NetworkCard } from './cards'
 import { useConnectedWeb3Context } from '../hooks'
-import { AccountQuotaRequestTable, AddressSummaryTable } from './tables'
+import { AccountQuotaRequestTable, AddressSummaryTable, BankQuotaRequestTable } from './tables'
 import { AppConstants } from '../constants'
 import { RequestQuota } from './account'
 
@@ -28,6 +28,9 @@ export const Main: React.FC = (props: any) => {
             </Grid>
             <Grid item xs={12}>
               <AccountQuotaRequestTable></AccountQuotaRequestTable>
+            </Grid>
+            <Grid item xs={12}>
+              <BankQuotaRequestTable></BankQuotaRequestTable>
             </Grid>
           </Grid>
         </MainScroll>
