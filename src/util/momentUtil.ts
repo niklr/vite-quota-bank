@@ -9,6 +9,10 @@ export class momentUtil {
     moment.locale(language);
   }
 
+  public get(): moment.Moment {
+    return moment()
+  }
+
   public getFromUnix(date: number) {
     return moment.unix(date);
   }

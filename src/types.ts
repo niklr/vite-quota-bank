@@ -52,6 +52,9 @@ export class QuotaRequest {
   amount?: string
   amountFormatted?: string
   expirationHeight?: string
+  expirationDate?: Date
+  expirationDateFormatted?: string
+  isExpired: boolean = false
 
   constructor(init?: Partial<QuotaRequest>) {
     this.init(init)

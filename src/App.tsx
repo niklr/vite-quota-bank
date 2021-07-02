@@ -1,5 +1,5 @@
 import { SnackbarProvider } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { getNetworkFromChain } from './common/networks';
 import { Main } from './components';
 import { Header } from './components/common';
@@ -10,10 +10,6 @@ const App: React.FC = () => {
   const networkId = '2'
   const [status, setStatus] = useState(true)
   const network = getNetworkFromChain(networkId)
-
-  useEffect(() => {
-    // if (network) checkRpcStatus(network.url, setStatus, network)
-  }, [network])
 
   return (
     <SnackbarProvider maxSnack={3}>

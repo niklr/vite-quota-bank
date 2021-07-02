@@ -7,6 +7,7 @@ import { useBlockHeight, useConnectedWeb3Context, useQuotaRequests } from '../..
 import { QuotaRequest } from '../../types';
 import { commonUtil } from '../../util/commonUtil';
 import { bigNumber } from '../../util/bigNumber';
+import { momentUtil } from '../../util/momentUtil';
 
 enum DialogType {
   Stake = 'STAKE',
@@ -33,15 +34,18 @@ const useStyles = makeStyles((theme) => ({
 export const BankQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
+  const moment = new momentUtil()
 
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   const { quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
-  const { blockHeight } = useBlockHeight(context)
 
-  console.log('render BankQuotaRequestTable')
+  // Make sure blockHeight is updated
+  useBlockHeight(context)
+
+  console.log('render BankQuotaRequestTable', context?.networkStatus?.blockHeight)
 
   const refreshQuotaRequests = () => {
     fetchQuotaRequests(true)
@@ -74,30 +78,50 @@ export const BankQuotaRequestTable = () => {
   }
 
   const isExpired = (expirationHeight?: string): boolean => {
-    if (expirationHeight && blockHeight) {
-      return bigNumber.compared(blockHeight, expirationHeight) === 1
+    if (expirationHeight && context?.networkStatus?.blockHeight) {
+      return bigNumber.compared(context.networkStatus.blockHeight, expirationHeight) === 1
     }
     return false
   }
 
   const isStaked = (item: QuotaRequest) => {
-    return item.amount && !isExpired(item.expirationHeight)
+    return item.amount && !item.isExpired
   }
 
+  const updateQuotaRequests = () => {
+    if (quotaRequests && quotaRequests.length > 0) {
+      quotaRequests.forEach(item => {
+        if (item.expirationHeight) {
+          item.isExpired = isExpired(item.expirationHeight)
+          if (!item.expirationDate && context?.networkStatus?.blockHeight) {
+            const secondsDiff = Number.parseInt(bigNumber.minus(item.expirationHeight, context.networkStatus.blockHeight))
+            item.expirationDate = moment.get().add(secondsDiff, 's').toDate()
+            item.expirationDateFormatted = moment.getLocalReverseFormatted(item.expirationDate)
+          }
+        }
+      })
+    }
+  }
+  updateQuotaRequests()
+
   const renderDueDate = (item: QuotaRequest) => {
-    if (isExpired(item.expirationHeight)) {
+    if (item.isExpired) {
       if (item.amount) {
         return (
-          <span>Staking expired!</span>
+          <Tooltip title={item.expirationDateFormatted ?? ""} placement="top" arrow interactive>
+            <span>Staking expired!</span>
+          </Tooltip>
         )
       } else {
         return (
-          <span>Request has expired!</span>
+          <Tooltip title={item.expirationDateFormatted ?? ""} placement="top" arrow interactive>
+            <span>Request has expired!</span>
+          </Tooltip>
         )
       }
     } else {
       return (
-        <span>Jul-05-2021 09:01:50 AM</span>
+        <span>{item.expirationDateFormatted ?? '-'}</span>
       )
     }
   }
@@ -111,7 +135,11 @@ export const BankQuotaRequestTable = () => {
   }
 
   const canWithdraw = (item: QuotaRequest) => {
-    return item.amount && isExpired(item.expirationHeight)
+    return item.amount && item.isExpired
+  }
+
+  const showActions = () => {
+    return context?.networkStatus?.blockHeight > 0
   }
 
   return (
@@ -170,21 +198,25 @@ export const BankQuotaRequestTable = () => {
                       {renderDueDate(item)}
                     </TableCell>
                     <TableCell align="right">
-                      {canStake(item) && (
-                        <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
-                          Stake
-                        </Button>
-                      )}
-                      {isStaked(item) && (
-                        <Chip size="small" label="Staked" />
-                      )}
-                      {canWithdraw(item) && (
-                        <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
-                      )}
-                      {canDelete(item) && (
-                        <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
+                      {showActions() && (
+                        <div>
+                          {canStake(item) && (
+                            <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
+                              Stake
+                            </Button>
+                          )}
+                          {isStaked(item) && (
+                            <Chip size="small" label="Staked" />
+                          )}
+                          {canWithdraw(item) && (
+                            <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
+                          )}
+                          {canDelete(item) && (
+                            <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </div>
                       )}
                     </TableCell>
                   </TableRow>
