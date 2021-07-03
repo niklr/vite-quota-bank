@@ -1,3 +1,4 @@
+import { QuotaRequestExtensions } from '../type-extensions';
 import { QuotaRequest } from '../types';
 import { BankService } from './bank';
 
@@ -36,6 +37,7 @@ export class BankMockService extends BankService {
 
   getQuotaRequestByAddress = async (address: string) => new Promise<QuotaRequest>((resolve, reject) => {
     const result = quotaRequests.find(e => e.address === address);
+    QuotaRequestExtensions.getInstance().update(result, this._networkStore.blockHeight)
     if (result) {
       setTimeout(() => {
         resolve(result)

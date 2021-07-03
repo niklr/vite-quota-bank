@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, makeStyles, TextField } from '@material-ui/core';
+import { QuotaRequest } from '../../../types';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -12,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   open: boolean
+  item: QuotaRequest
   closeFn: () => void
 }
 
@@ -28,10 +30,10 @@ export const BankStakeDialog: React.FC<Props> = (props: Props) => {
         <DialogContent>
           <List>
             <ListItem>
-              <ListItemText primary="Address" secondary="vite_740f288042edc22df23f8511f83f58be4cf05597b17e800bf7" />
+              <ListItemText primary="Address" secondary={props.item.address} />
             </ListItem>
             <ListItem>
-              <ListItemText primary="Message" secondary="GitHub: niklr" />
+              <ListItemText primary="Message" secondary={props.item.message} />
             </ListItem>
           </List>
           <form className={classes.form} autoComplete="off">

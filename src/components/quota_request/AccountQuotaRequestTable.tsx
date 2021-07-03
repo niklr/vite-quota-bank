@@ -3,8 +3,7 @@ import { Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, Table
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { QuotaRequest } from '../../types';
 import { QuotaRequestDueDate } from '../quota_request';
-import { useBlockHeight, useConnectedWeb3Context } from '../../hooks';
-import { QuotaRequestExtensions } from '../../type-extensions';
+import { useConnectedWeb3Context } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,8 +23,6 @@ export const AccountQuotaRequestTable = () => {
   const context = useConnectedWeb3Context()
   const defaultQuotaRequest = new QuotaRequest()
 
-  const { blockHeightSubject } = useBlockHeight(context)
-
   const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(defaultQuotaRequest);
 
   const updateQuotaRequest = async () => {
@@ -33,18 +30,12 @@ export const AccountQuotaRequestTable = () => {
     if (context.account) {
       try {
         const result = await context.provider.bank.getQuotaRequestByAddress(context.account)
-        QuotaRequestExtensions.getInstance().update(result, context.provider.networkStore.blockHeight)
         setQuotaRequest(result)
       } catch (error) {
         // Ignore not found error
       }
     }
   }
-  blockHeightSubject.subscribe(() => {
-    setTimeout(() => {
-      updateQuotaRequest()
-    }, 2000)
-  })
 
   return (
     <div className={classes.root}>
