@@ -20,4 +20,20 @@ export abstract class formatUtil {
       return "-1"
     }
   }
+
+  static formatSnackbarMessage(data: any): string {
+    if (data) {
+      let message: string
+      if (commonUtil.isString(data)) {
+        message = JSON.stringify(data)
+      } else {
+        message = data
+      }
+      if (data.length > 48) {
+        return message.substr(0, 48) + "..."
+      }
+      return message
+    }
+    return "Something went wrong."
+  }
 }

@@ -1,6 +1,10 @@
 import React from 'react';
+import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core';
+import { useConnectedWeb3Context } from '../../hooks';
+import { ClickOnceButton } from '../common';
+import { formatUtil } from '../../util/formatUtil';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,7 +23,9 @@ interface Props {
 
 export const RequestQuota: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
+  const { bank } = useConnectedWeb3Context();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -27,6 +33,16 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
       props.testFn();
     }
   };
+
+  const handleConfirmAsync = async () => {
+    try {
+      const result = await bank.requestQuota()
+      console.log(result)
+    } catch (error) {
+      enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
+    }
+    setOpen(false);
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -53,9 +69,9 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
           <Button color="primary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleClose} autoFocus>
+          <ClickOnceButton color="primary" callbackFn={handleConfirmAsync}>
             Confirm
-          </Button>
+          </ClickOnceButton>
         </DialogActions>
       </Dialog>
     </>

@@ -39,4 +39,14 @@ export class BankMockService extends BankService {
     }
     return Promise.reject(`Quota request for '${address}' not found.`)
   }
+
+  requestQuota = async (message?: string) => new Promise<void>((resolve, reject) => {
+    if (message) {
+      resolve()
+    } else {
+      setTimeout(() => {
+        reject("Request failed. Please try again later.")
+      }, 2000)
+    }
+  })
 }
