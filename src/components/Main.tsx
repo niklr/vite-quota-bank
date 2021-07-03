@@ -1,10 +1,9 @@
 import { Grid } from '@material-ui/core'
-import { Footer, Header, MainScroll, MainWrapper } from './common'
-import { NetworkCard } from './cards'
+import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper, NetworkCard } from './common'
+import { AccountQuotaRequestTable, RequestQuota } from './quota_request'
+import { BankQuotaRequestTable } from './quota_request_list'
 import { useConnectedWeb3Context } from '../hooks'
-import { AccountQuotaRequestTable, AddressSummaryTable, BankQuotaRequestTable } from './tables'
 import { AppConstants } from '../constants'
-import { RequestQuota } from './account'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()

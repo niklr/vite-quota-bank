@@ -1,4 +1,4 @@
 export { AccountList } from './AccountList';
 export { LoginModal } from './LoginModal';
-export { RequestQuota } from './RequestQuota';
+export { QuotaCard } from './QuotaCard';
 

@@ -2,11 +2,11 @@ import React from 'react';
 import { Button, Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog } from '../dialogs';
+import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog } from './dialogs';
 import { useBlockHeight, useConnectedWeb3Context, useQuotaRequests } from '../../hooks';
 import { QuotaRequest } from '../../types';
 import { commonUtil } from '../../util/commonUtil';
-import { QuotaRequestDueDate } from '../common';
+import { QuotaRequestDueDate } from '../quota_request';
 import { QuotaRequestExtensions } from '../../type-extensions';
 
 enum DialogType {

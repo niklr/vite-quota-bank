@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
-import { IViteClient } from '../clients';
-import { IBankService } from '../services';
+import { IViteClient, ViteMockClient, ViteClient } from '../clients';
+import { BankMockService, BankService, IBankService } from '../services';
 
 export interface IConnectedWeb3Context {
   account?: string
@@ -42,13 +42,23 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const context = useWeb3Context()
 
-  const { wallet, vite, bank } = context
+  const { wallet, walletManager } = context
 
   useEffect(() => {
     if (props.networkId) {
       console.log('networkId', props.networkId)
       const network = networks.find(e => e.id === props.networkId)
       if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
+
+      let vite: IViteClient
+      let bank: IBankService
+      if (process.env.REACT_APP_USE_MOCK) {
+        vite = new ViteMockClient()
+        bank = new BankMockService(vite, walletManager)
+      } else {
+        vite = new ViteClient()
+        bank = new BankService(vite, walletManager)
+      }
 
       const value = {
         account: wallet?.active?.address,
@@ -64,7 +74,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
       setConnection(value)
     }
-  }, [props.networkId, wallet, vite, bank])
+  }, [props.networkId, wallet, walletManager])
 
   useEffect(() => {
     if (connection) {

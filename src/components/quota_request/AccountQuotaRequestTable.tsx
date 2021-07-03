@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { QuotaRequest } from '../../types';
-import { QuotaRequestDueDate } from '../common';
+import { QuotaRequestDueDate } from '../quota_request';
 import { useBlockHeight, useConnectedWeb3Context } from '../../hooks';
 import { QuotaRequestExtensions } from '../../type-extensions';
 
