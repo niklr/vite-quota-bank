@@ -54,7 +54,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         account: wallet?.active?.address,
         network,
         networkStatus: {
-          blockHeight: 0
+          blockHeight: '0'
         },
         vite,
         bank

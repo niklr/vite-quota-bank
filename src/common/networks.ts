@@ -5,7 +5,7 @@ export interface Network {
 }
 
 export interface NetworkStatus {
-  blockHeight: number
+  blockHeight: string
 }
 
 export const networks = [

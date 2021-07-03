@@ -6,8 +6,8 @@ import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog } from '../dialog
 import { useBlockHeight, useConnectedWeb3Context, useQuotaRequests } from '../../hooks';
 import { QuotaRequest } from '../../types';
 import { commonUtil } from '../../util/commonUtil';
-import { bigNumber } from '../../util/bigNumber';
-import { momentUtil } from '../../util/momentUtil';
+import { QuotaRequestDueDate } from '../common';
+import { QuotaRequestExtensions } from '../../type-extensions';
 
 enum DialogType {
   Stake = 'STAKE',
@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
 export const BankQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
-  const moment = new momentUtil()
 
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
@@ -77,13 +76,6 @@ export const BankQuotaRequestTable = () => {
     return commonUtil.truncateStringInTheMiddle(address, 10, 5)
   }
 
-  const isExpired = (expirationHeight?: string): boolean => {
-    if (expirationHeight && context?.networkStatus?.blockHeight) {
-      return bigNumber.compared(context.networkStatus.blockHeight, expirationHeight) === 1
-    }
-    return false
-  }
-
   const isStaked = (item: QuotaRequest) => {
     return item.amount && !item.isExpired
   }
@@ -91,40 +83,11 @@ export const BankQuotaRequestTable = () => {
   const updateQuotaRequests = () => {
     if (quotaRequests && quotaRequests.length > 0) {
       quotaRequests.forEach(item => {
-        if (item.expirationHeight) {
-          item.isExpired = isExpired(item.expirationHeight)
-          if (!item.expirationDate && context?.networkStatus?.blockHeight) {
-            const secondsDiff = Number.parseInt(bigNumber.minus(item.expirationHeight, context.networkStatus.blockHeight))
-            item.expirationDate = moment.get().add(secondsDiff, 's').toDate()
-            item.expirationDateFormatted = moment.getLocalReverseFormatted(item.expirationDate)
-          }
-        }
+        QuotaRequestExtensions.getInstance().update(item, context?.networkStatus?.blockHeight)
       })
     }
   }
   updateQuotaRequests()
-
-  const renderDueDate = (item: QuotaRequest) => {
-    if (item.isExpired) {
-      if (item.amount) {
-        return (
-          <Tooltip title={item.expirationDateFormatted ?? ""} placement="top" arrow interactive>
-            <span>Staking expired!</span>
-          </Tooltip>
-        )
-      } else {
-        return (
-          <Tooltip title={item.expirationDateFormatted ?? ""} placement="top" arrow interactive>
-            <span>Request has expired!</span>
-          </Tooltip>
-        )
-      }
-    } else {
-      return (
-        <span>{item.expirationDateFormatted ?? '-'}</span>
-      )
-    }
-  }
 
   const canStake = (item: QuotaRequest) => {
     return !item.amount
@@ -139,7 +102,7 @@ export const BankQuotaRequestTable = () => {
   }
 
   const showActions = () => {
-    return context?.networkStatus?.blockHeight > 0
+    return context?.networkStatus?.blockHeight !== '0'
   }
 
   return (
@@ -195,7 +158,8 @@ export const BankQuotaRequestTable = () => {
                       {item.expirationHeight ?? "-"}
                     </TableCell>
                     <TableCell>
-                      {renderDueDate(item)}
+                      <QuotaRequestDueDate quotaRequest={item}>
+                      </QuotaRequestDueDate>
                     </TableCell>
                     <TableCell align="right">
                       {showActions() && (

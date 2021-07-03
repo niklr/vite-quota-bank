@@ -9,7 +9,7 @@ export interface IViteClient {
   readonly isConnected: boolean
   initAsync(url: string): Promise<void>
   disconnect(): void
-  getSnapshotChainHeightAsync(): Promise<number>
+  getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
 }
@@ -58,7 +58,7 @@ export class ViteClient implements IViteClient {
     }
   }
 
-  async getSnapshotChainHeightAsync(): Promise<number> {
+  async getSnapshotChainHeightAsync(): Promise<string> {
     return this.requestAsync('ledger_getSnapshotChainHeight');
   }
 

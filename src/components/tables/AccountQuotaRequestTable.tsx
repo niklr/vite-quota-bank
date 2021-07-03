@@ -1,5 +1,9 @@
-import React from 'react';
+import { useState } from 'react';
 import { Chip, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
+import { QuotaRequest } from '../../types';
+import { QuotaRequestDueDate } from '../common';
+import { useConnectedWeb3Context } from '../../hooks';
+import { QuotaRequestExtensions } from '../../type-extensions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,6 +17,21 @@ const useStyles = makeStyles((theme) => ({
 
 export const AccountQuotaRequestTable = () => {
   const classes = useStyles();
+  const context = useConnectedWeb3Context()
+
+  const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(new QuotaRequest());
+
+  const updateQuotaRequest = async () => {
+    if (context.account) {
+      try {
+        const result = await context.bank.getQuotaRequestByAddress(context.account)
+        QuotaRequestExtensions.getInstance().update(result, context?.networkStatus?.blockHeight)
+        setQuotaRequest(result)
+      } catch (error) {
+      }
+    }
+  }
+  updateQuotaRequest()
 
   return (
     <div className={classes.root}>
@@ -42,16 +61,17 @@ export const AccountQuotaRequestTable = () => {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  Twitter: 0xRomanNiklaus
+                  {quotaRequest?.message ?? '-'}
                 </TableCell>
                 <TableCell>
-                  -
+                  {quotaRequest?.amountFormatted ?? '-'}
                 </TableCell>
                 <TableCell>
-                  1350996
+                  {quotaRequest?.expirationHeight ?? '-'}
                 </TableCell>
                 <TableCell>
-                  Request has expired!
+                  <QuotaRequestDueDate quotaRequest={quotaRequest}>
+                  </QuotaRequestDueDate>
                 </TableCell>
                 <TableCell>
                   <Chip size="small" label="Expired" />

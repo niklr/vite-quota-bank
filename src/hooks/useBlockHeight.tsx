@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { IConnectedWeb3Context } from '.'
 
 export const useBlockHeight = (context: IConnectedWeb3Context) => {
-  const [blockHeight, setBlockHeight] = useState(0)
+  const defaultValue = '0'
+  const [blockHeight, setBlockHeight] = useState(defaultValue)
 
   const fetchBlockHeight = async () => {
     try {
@@ -10,8 +11,8 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
       setBlockHeight(newBlockHeight)
       context.networkStatus.blockHeight = newBlockHeight
     } catch (error) {
-      setBlockHeight(0)
-      context.networkStatus.blockHeight = 0
+      setBlockHeight(defaultValue)
+      context.networkStatus.blockHeight = defaultValue
     }
   }
 

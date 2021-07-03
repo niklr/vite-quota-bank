@@ -23,7 +23,7 @@ interface Props {
 
 export const RequestQuota: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [requestMessage, setRequestMessage] = useState<string>('');
   const { bank } = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
