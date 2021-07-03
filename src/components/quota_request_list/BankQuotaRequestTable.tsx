@@ -41,7 +41,6 @@ export const BankQuotaRequestTable = () => {
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  // const [quotaRequests, setQuotaRequests] = React.useState<QuotaRequest[]>([]);
 
   console.log('render BankQuotaRequestTable', context.provider.networkStore.blockHeight)
 

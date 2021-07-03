@@ -4,18 +4,18 @@ import { INetworkStore, NetworkStore } from '../stores';
 import { WalletManager } from '../wallet';
 
 export class ServiceProvider {
+  networkStore: INetworkStore
   vite: IViteClient
   bank: IBankService
-  networkStore: INetworkStore
 
   constructor(walletManager: WalletManager) {
+    this.networkStore = new NetworkStore()
     if (process.env.REACT_APP_USE_MOCK) {
       this.vite = new ViteMockClient()
-      this.bank = new BankMockService(this.vite, walletManager)
+      this.bank = new BankMockService(this.vite, this.networkStore, walletManager)
     } else {
       this.vite = new ViteClient()
-      this.bank = new BankService(this.vite, walletManager)
+      this.bank = new BankService(this.vite, this.networkStore, walletManager)
     }
-    this.networkStore = new NetworkStore()
   }
 }

@@ -1,4 +1,5 @@
 import { IViteClient } from '../clients';
+import { INetworkStore } from '../stores';
 import { QuotaRequest } from '../types';
 import { Account, WalletManager } from '../wallet';
 
@@ -11,10 +12,12 @@ export interface IBankService {
 export class BankService implements IBankService {
 
   protected readonly _vite: IViteClient
+  protected readonly _networkStore: INetworkStore
   private readonly _walletManager: WalletManager
 
-  constructor(vite: IViteClient, walletManager: WalletManager) {
+  constructor(vite: IViteClient, networkStore: INetworkStore, walletManager: WalletManager) {
     this._vite = vite
+    this._networkStore = networkStore
     this._walletManager = walletManager
   }
 

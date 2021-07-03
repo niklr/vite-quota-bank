@@ -54,7 +54,7 @@ export class BankMockService extends BankService {
         const newItem = new QuotaRequest({
           address: this.account?.address,
           message,
-          expirationHeight: '1350996'
+          expirationHeight: this._networkStore.blockHeight + 30
         })
         quotaRequests.push(newItem)
         resolve()
