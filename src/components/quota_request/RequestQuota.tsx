@@ -25,7 +25,7 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [requestMessage, setRequestMessage] = useState<string>('');
-  const { bank } = useConnectedWeb3Context();
+  const { provider } = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClickOpen = () => {
@@ -37,7 +37,7 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
 
   const handleConfirmAsync = async () => {
     try {
-      await bank.requestQuota(requestMessage)
+      await provider.bank.requestQuota(requestMessage)
     } catch (error) {
       enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
     }

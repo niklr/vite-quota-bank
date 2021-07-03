@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
-import { IViteClient, ViteMockClient, ViteClient } from '../clients';
-import { BankMockService, BankService, IBankService } from '../services';
+import { ServiceProvider } from '../providers/serviceProvider';
 
 export interface IConnectedWeb3Context {
   account?: string
   network: Network
   networkStatus: NetworkStatus
-  vite: IViteClient
-  bank: IBankService
+  provider: ServiceProvider
 }
 
 const ConnectedWeb3Context = React.createContext<Maybe<IConnectedWeb3Context>>(undefined)
@@ -50,15 +48,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       const network = networks.find(e => e.id === props.networkId)
       if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
 
-      let vite: IViteClient
-      let bank: IBankService
-      if (process.env.REACT_APP_USE_MOCK) {
-        vite = new ViteMockClient()
-        bank = new BankMockService(vite, walletManager)
-      } else {
-        vite = new ViteClient()
-        bank = new BankService(vite, walletManager)
-      }
+      const provider = new ServiceProvider(walletManager)
 
       const value = {
         account: wallet?.active?.address,
@@ -66,8 +56,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         networkStatus: {
           blockHeight: '0'
         },
-        vite,
-        bank
+        provider
       }
 
       console.log('ConnectedWeb3.account', wallet?.active?.address)
@@ -80,10 +69,10 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
     if (connection) {
       const initAsync = async () => {
         console.log('initAsync')
-        await connection.vite.initAsync(connection.network.url)
+        await connection.provider.vite.initAsync(connection.network.url)
         setIsReady(true)
       }
-      if (!connection.vite.isConnected) {
+      if (!connection.provider.vite.isConnected) {
         initAsync()
       }
     }

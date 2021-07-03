@@ -10,7 +10,7 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
   const fetchBlockHeight = async () => {
     let newBlockHeight: string
     try {
-      newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
+      newBlockHeight = await context.provider.vite.getSnapshotChainHeightAsync()
 
     } catch (error) {
       newBlockHeight = defaultValue

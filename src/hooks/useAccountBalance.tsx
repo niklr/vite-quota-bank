@@ -8,7 +8,7 @@ export const useAccountBalance = (context: IConnectedWeb3Context, address?: stri
   const fetchBalance = async () => {
     try {
       if (address) {
-        const newQuota = await context.vite.getBalanceByAccount(address)
+        const newQuota = await context.provider.vite.getBalanceByAccount(address)
         setBalance(newQuota)
       }
     } catch (error) {

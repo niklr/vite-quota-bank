@@ -8,7 +8,7 @@ export const useAccountQuota = (context: IConnectedWeb3Context, address?: string
   const fetchQuota = async () => {
     try {
       if (address) {
-        const newQuota = await context.vite.getQuotaByAccount(address)
+        const newQuota = await context.provider.vite.getQuotaByAccount(address)
         setQuota(newQuota)
       }
     } catch (error) {
