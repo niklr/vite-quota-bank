@@ -55,6 +55,7 @@ export class QuotaRequest {
   expirationDate?: Date
   expirationDateFormatted?: string
   isExpired: boolean = false
+  status?: string
 
   constructor(init?: Partial<QuotaRequest>) {
     this.init(init)

@@ -27,6 +27,16 @@ export class QuotaRequestExtensions {
         quotaRequet.expirationDate = this.moment.get().add(secondsDiff, 's').toDate()
         quotaRequet.expirationDateFormatted = this.moment.getLocalReverseFormatted(quotaRequet.expirationDate)
       }
+      quotaRequet.status = "Unknown"
+      if (quotaRequet.isExpired) {
+        quotaRequet.status = "Expired"
+      } else {
+        if (quotaRequet.amount) {
+          quotaRequet.status = "Active"
+        } else {
+          quotaRequet.status = "Pending"
+        }
+      }
     }
   }
 }
