@@ -1,3 +1,4 @@
+import { IViteClient } from '../clients';
 import { QuotaRequest } from '../types';
 
 export interface IBankService {
@@ -6,6 +7,13 @@ export interface IBankService {
 }
 
 export class BankService implements IBankService {
+
+  protected readonly _vite: IViteClient
+
+  constructor(vite: IViteClient) {
+    this._vite = vite
+  }
+
   async getQuotaRequests(): Promise<string[]> {
     return Promise.resolve([])
   }

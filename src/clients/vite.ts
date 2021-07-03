@@ -1,5 +1,5 @@
 import { ViteAPI } from '@vite/vitejs';
-import { Balance, Quota, QuotaRequest } from '../types';
+import { Balance, Quota } from '../types';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -12,8 +12,6 @@ export interface IViteClient {
   getSnapshotChainHeightAsync(): Promise<number>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
-  getQuotaRequests(): Promise<string[]>
-  getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
 }
 
 export class ViteClient implements IViteClient {
@@ -24,14 +22,6 @@ export class ViteClient implements IViteClient {
 
   get isConnected(): boolean {
     return this._isConnected;
-  }
-
-  private async requestAsync(method: string, params?: any): Promise<any> {
-    if (this._isConnected) {
-      return this._client.request(method, params);
-    } else {
-      return Promise.reject('Vite client is not ready to make requests.');
-    }
   }
 
   initAsync = async (url: string) => new Promise<void>((resolve, reject) => {
@@ -60,6 +50,14 @@ export class ViteClient implements IViteClient {
     this._isConnected = false;
   }
 
+  async requestAsync(method: string, params?: any): Promise<any> {
+    if (this._isConnected) {
+      return this._client.request(method, params);
+    } else {
+      return Promise.reject('Vite client is not ready to make requests.');
+    }
+  }
+
   async getSnapshotChainHeightAsync(): Promise<number> {
     return this.requestAsync('ledger_getSnapshotChainHeight');
   }
@@ -72,13 +70,5 @@ export class ViteClient implements IViteClient {
   async getQuotaByAccount(address: string): Promise<Quota> {
     const result = await this.requestAsync("contract_getQuotaByAccount", address);
     return new Quota(result);
-  }
-
-  async getQuotaRequests(): Promise<string[]> {
-    return Promise.resolve([])
-  }
-
-  async getQuotaRequestByAddress(address: string): Promise<QuotaRequest> {
-    return Promise.reject(`Quota request for '${address}' not found.`)
   }
 }

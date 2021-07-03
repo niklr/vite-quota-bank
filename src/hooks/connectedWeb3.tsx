@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
 import { IViteClient } from '../clients';
+import { IBankService } from '../services';
 
 export interface IConnectedWeb3Context {
   account?: string
   network: Network
   networkStatus: NetworkStatus
   vite: IViteClient
+  bank: IBankService
 }
 
 const ConnectedWeb3Context = React.createContext<Maybe<IConnectedWeb3Context>>(undefined)
@@ -40,7 +42,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const context = useWeb3Context()
 
-  const { wallet, vite } = context
+  const { wallet, vite, bank } = context
 
   useEffect(() => {
     if (props.networkId) {
@@ -54,14 +56,15 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         networkStatus: {
           blockHeight: 0
         },
-        vite
+        vite,
+        bank
       }
 
       console.log('ConnectedWeb3.account', wallet?.active?.address)
 
       setConnection(value)
     }
-  }, [props.networkId, wallet, vite])
+  }, [props.networkId, wallet, vite, bank])
 
   useEffect(() => {
     if (connection) {

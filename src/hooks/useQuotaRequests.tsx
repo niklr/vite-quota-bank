@@ -10,13 +10,13 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
     try {
       console.log('fetchQuotaRequests')
       // TODO: apply pagination
-      const addresses = await context.vite.getQuotaRequests()
+      const addresses = await context.bank.getQuotaRequests()
       const tempQuotaRequests: QuotaRequest[] = []
       // TODO: replace loop once supported by smart contracts
       // For now the getter function can only return primitive types. Structs and arrays are not allowed.
       for (let index = 0; index < addresses.length; index++) {
         const address = addresses[index];
-        const quotaRequestResult = await context.vite.getQuotaRequestByAddress(address)
+        const quotaRequestResult = await context.bank.getQuotaRequestByAddress(address)
         tempQuotaRequests.push(quotaRequestResult)
       }
       setQuotaRequests(tempQuotaRequests)
