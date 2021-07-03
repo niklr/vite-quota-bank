@@ -1,4 +1,4 @@
-export { ViteService } from './vite'
-export type { IViteService } from './vite'
-export { ViteMockService } from './viteMock'
+export { BankService } from './bank'
+export type { IBankService } from './bank'
+export { BankMockService } from './bankMock'
 

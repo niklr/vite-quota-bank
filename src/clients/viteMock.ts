@@ -1,5 +1,5 @@
-import { ViteService } from '.';
 import { QuotaRequest } from '../types';
+import { ViteClient } from './vite';
 
 const quotaRequests = [
   new QuotaRequest({
@@ -27,7 +27,7 @@ const quotaRequests = [
   })
 ]
 
-export class ViteMockService extends ViteService {
+export class ViteMockClient extends ViteClient {
   async getQuotaRequests(): Promise<string[]> {
     return Promise.resolve(quotaRequests.flatMap(e => e.address ? e.address : []))
   }

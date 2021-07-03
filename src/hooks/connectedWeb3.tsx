@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { Network, networks, NetworkStatus } from '../common/networks';
-import { IViteService } from '../services';
+import { IViteClient } from '../clients';
 
 export interface IConnectedWeb3Context {
   account?: string
   network: Network
   networkStatus: NetworkStatus
-  vite: IViteService
+  vite: IViteClient
 }
 
 const ConnectedWeb3Context = React.createContext<Maybe<IConnectedWeb3Context>>(undefined)

@@ -5,7 +5,7 @@ const { WS_RPC } = require('@vite/vitejs-ws');
 const providerTimeout = 60000;
 const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 
-export interface IViteService {
+export interface IViteClient {
   readonly isConnected: boolean
   initAsync(url: string): Promise<void>
   disconnect(): void
@@ -16,7 +16,7 @@ export interface IViteService {
   getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
 }
 
-export class ViteService implements IViteService {
+export class ViteClient implements IViteClient {
 
   private _provider: any;
   private _client: any;
