@@ -35,12 +35,13 @@ export const BankQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
 
-  const { quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
-  const { blockHeightSubject } = useBlockHeight(context)
+  const { isLoading: isQuotaRequestsLoading, quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
+  const { blockHeight, blockHeightSubject } = useBlockHeight(context)
 
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  // const [quotaRequests, setQuotaRequests] = React.useState<QuotaRequest[]>([]);
 
   console.log('render BankQuotaRequestTable', context?.networkStatus?.blockHeight)
 
@@ -85,9 +86,13 @@ export const BankQuotaRequestTable = () => {
       })
     }
   }
+  updateQuotaRequests()
 
-  blockHeightSubject.subscribe(() => {
-    updateQuotaRequests()
+  blockHeightSubject.subscribe(result => {
+    console.log(blockHeight, result)
+    if (blockHeight !== result) {
+      updateQuotaRequests()
+    }
   })
 
   const canStake = (item: QuotaRequest) => {
@@ -114,83 +119,87 @@ export const BankQuotaRequestTable = () => {
           <RefreshIcon fontSize="small" />
         </IconButton>
       </Typography>
-      <Paper>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  Address
-                </TableCell>
-                <TableCell>
-                  Message
-                </TableCell>
-                <TableCell>
-                  Amount
-                </TableCell>
-                <TableCell>
-                  Expected Snapshot Height
-                </TableCell>
-                <TableCell>
-                  Expected Due Date
-                </TableCell>
-                <TableCell align="center">
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {quotaRequests
-                && quotaRequests.length > 0
-                && quotaRequests.map(item => {
-                  return <TableRow key={item.address}>
-                    <TableCell>
-                      <Tooltip title={item.address ?? ""} placement="top" arrow interactive>
-                        <Chip size="small" label={truncateAddress(item.address)} />
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell>
-                      {item.message ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      {item.amountFormatted ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      {item.expirationHeight ?? "-"}
-                    </TableCell>
-                    <TableCell>
-                      <QuotaRequestDueDate quotaRequest={item}>
-                      </QuotaRequestDueDate>
-                    </TableCell>
-                    <TableCell align="right">
-                      {showActions() && (
-                        <div>
-                          {canStake(item) && (
-                            <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
-                              Stake
-                            </Button>
-                          )}
-                          {isStaked(item) && (
-                            <Chip size="small" label="Staked" />
-                          )}
-                          {canWithdraw(item) && (
-                            <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
-                          )}
-                          {canDelete(item) && (
-                            <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          )}
-                        </div>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                })
-              }
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+      {isQuotaRequestsLoading ? (
+        <Typography variant="caption">Loading...</Typography>
+      ) : (
+        <Paper>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    Address
+                  </TableCell>
+                  <TableCell>
+                    Message
+                  </TableCell>
+                  <TableCell>
+                    Amount
+                  </TableCell>
+                  <TableCell>
+                    Expected Snapshot Height
+                  </TableCell>
+                  <TableCell>
+                    Expected Due Date
+                  </TableCell>
+                  <TableCell align="center">
+                    Action
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {quotaRequests
+                  && quotaRequests.length > 0
+                  && quotaRequests.map(item => {
+                    return <TableRow key={item.address}>
+                      <TableCell>
+                        <Tooltip title={item.address ?? ""} placement="top" arrow interactive>
+                          <Chip size="small" label={truncateAddress(item.address)} />
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        {item.message ?? "-"}
+                      </TableCell>
+                      <TableCell>
+                        {item.amountFormatted ?? "-"}
+                      </TableCell>
+                      <TableCell>
+                        {item.expirationHeight ?? "-"}
+                      </TableCell>
+                      <TableCell>
+                        <QuotaRequestDueDate quotaRequest={item}>
+                        </QuotaRequestDueDate>
+                      </TableCell>
+                      <TableCell align="right">
+                        {showActions() && (
+                          <div>
+                            {canStake(item) && (
+                              <Button size="small" variant="contained" color="primary" className={classes.stakeButton} onClick={() => { handleClickOpen(DialogType.Stake) }}>
+                                Stake
+                              </Button>
+                            )}
+                            {isStaked(item) && (
+                              <Chip size="small" label="Staked" />
+                            )}
+                            {canWithdraw(item) && (
+                              <Button size="small" variant="outlined" onClick={() => { handleClickOpen(DialogType.Withdraw) }}>Withdraw</Button>
+                            )}
+                            {canDelete(item) && (
+                              <IconButton aria-label="delete" onClick={() => { handleClickOpen(DialogType.Delete) }}>
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  })
+                }
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      )}
       <BankDeleteDialog open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
       <BankStakeDialog open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
       <BankWithdrawDialog open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>

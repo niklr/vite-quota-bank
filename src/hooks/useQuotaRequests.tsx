@@ -4,11 +4,14 @@ import { QuotaRequest } from '../types'
 
 export const useQuotaRequests = (context: IConnectedWeb3Context) => {
   const initialValue: QuotaRequest[] = []
+  const [isLoading, setIsLoading] = useState(false)
   const [quotaRequests, setQuotaRequests] = useState(initialValue)
 
   const fetchQuotaRequests = async (force: boolean = false) => {
+    setIsLoading(true)
+    console.log('fetchQuotaRequests')
+    setQuotaRequests([])
     try {
-      console.log('fetchQuotaRequests')
       // TODO: apply pagination
       const addresses = await context.bank.getQuotaRequests()
       const tempQuotaRequests: QuotaRequest[] = []
@@ -16,13 +19,19 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
       // For now the getter function can only return primitive types. Structs and arrays are not allowed.
       for (let index = 0; index < addresses.length; index++) {
         const address = addresses[index];
-        const quotaRequestResult = await context.bank.getQuotaRequestByAddress(address)
-        tempQuotaRequests.push(quotaRequestResult)
+        try {
+          const quotaRequestResult = await context.bank.getQuotaRequestByAddress(address)
+          tempQuotaRequests.push(quotaRequestResult)
+        } catch (error) {
+          console.log(error)
+        }
       }
       setQuotaRequests(tempQuotaRequests)
     } catch (error) {
+      console.log(error)
       setQuotaRequests(initialValue)
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -32,6 +41,7 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
   }, [context])
 
   return {
+    isLoading,
     quotaRequests,
     fetchQuotaRequests
   }

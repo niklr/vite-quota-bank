@@ -22,23 +22,28 @@ const useStyles = makeStyles((theme) => ({
 export const AccountQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
+  const defaultQuotaRequest = new QuotaRequest()
 
   const { blockHeightSubject } = useBlockHeight(context)
 
-  const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(new QuotaRequest());
+  const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(defaultQuotaRequest);
 
   const updateQuotaRequest = async () => {
+    setQuotaRequest(defaultQuotaRequest)
     if (context.account) {
       try {
         const result = await context.bank.getQuotaRequestByAddress(context.account)
         QuotaRequestExtensions.getInstance().update(result, context?.networkStatus?.blockHeight)
         setQuotaRequest(result)
       } catch (error) {
+        // Ignore not found error
       }
     }
   }
   blockHeightSubject.subscribe(() => {
-    updateQuotaRequest()
+    setTimeout(() => {
+      updateQuotaRequest()
+    }, 2000)
   })
 
   return (
