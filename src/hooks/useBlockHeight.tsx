@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
+import { Subject } from 'rxjs';
 import { IConnectedWeb3Context } from '.'
 
 export const useBlockHeight = (context: IConnectedWeb3Context) => {
   const defaultValue = '0'
   const [blockHeight, setBlockHeight] = useState(defaultValue)
+  const blockHeightSubject = new Subject<string>()
 
   const fetchBlockHeight = async () => {
+    let newBlockHeight: string
     try {
-      const newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
-      setBlockHeight(newBlockHeight)
-      context.networkStatus.blockHeight = newBlockHeight
+      newBlockHeight = await context.vite.getSnapshotChainHeightAsync()
+
     } catch (error) {
-      setBlockHeight(defaultValue)
-      context.networkStatus.blockHeight = defaultValue
+      newBlockHeight = defaultValue
     }
+    setBlockHeight(newBlockHeight)
+    context.networkStatus.blockHeight = newBlockHeight
+    blockHeightSubject.next(newBlockHeight)
   }
 
   useEffect(() => {
@@ -24,6 +28,7 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
 
   return {
     blockHeight,
+    blockHeightSubject,
     fetchBlockHeight
   }
 }

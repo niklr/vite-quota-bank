@@ -35,14 +35,12 @@ export const BankQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
 
+  const { quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
+  const { blockHeightSubject } = useBlockHeight(context)
+
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-
-  const { quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
-
-  // Make sure blockHeight is updated
-  useBlockHeight(context)
 
   console.log('render BankQuotaRequestTable', context?.networkStatus?.blockHeight)
 
@@ -87,7 +85,10 @@ export const BankQuotaRequestTable = () => {
       })
     }
   }
-  updateQuotaRequests()
+
+  blockHeightSubject.subscribe(() => {
+    updateQuotaRequests()
+  })
 
   const canStake = (item: QuotaRequest) => {
     return !item.amount

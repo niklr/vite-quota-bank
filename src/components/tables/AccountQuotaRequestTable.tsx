@@ -3,7 +3,7 @@ import { Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, Table
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { QuotaRequest } from '../../types';
 import { QuotaRequestDueDate } from '../common';
-import { useConnectedWeb3Context } from '../../hooks';
+import { useBlockHeight, useConnectedWeb3Context } from '../../hooks';
 import { QuotaRequestExtensions } from '../../type-extensions';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +23,8 @@ export const AccountQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
 
+  const { blockHeightSubject } = useBlockHeight(context)
+
   const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(new QuotaRequest());
 
   const updateQuotaRequest = async () => {
@@ -35,7 +37,9 @@ export const AccountQuotaRequestTable = () => {
       }
     }
   }
-  updateQuotaRequest()
+  blockHeightSubject.subscribe(() => {
+    updateQuotaRequest()
+  })
 
   return (
     <div className={classes.root}>
