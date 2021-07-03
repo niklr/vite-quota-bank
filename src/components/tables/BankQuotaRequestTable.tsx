@@ -89,7 +89,6 @@ export const BankQuotaRequestTable = () => {
   updateQuotaRequests()
 
   blockHeightSubject.subscribe(result => {
-    console.log(blockHeight, result)
     if (blockHeight !== result) {
       updateQuotaRequests()
     }

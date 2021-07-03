@@ -31,16 +31,17 @@ interface Props {
 }
 
 export const Web3Provider: React.FC<Props> = (props: Props) => {
+  const walletManager = new WalletManager()
   let vite: IViteClient
   let bank: IBankService
   if (process.env.REACT_APP_USE_MOCK) {
     vite = new ViteMockClient()
-    bank = new BankMockService(vite)
+    bank = new BankMockService(vite, walletManager)
   } else {
     vite = new ViteClient()
-    bank = new BankService(vite)
+    bank = new BankService(vite, walletManager)
   }
-  const walletManager = new WalletManager()
+
   const {
     setWallet,
     wallet,

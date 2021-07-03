@@ -28,21 +28,37 @@ const quotaRequests = [
 ]
 
 export class BankMockService extends BankService {
-  async getQuotaRequests(): Promise<string[]> {
-    return Promise.resolve(quotaRequests.flatMap(e => e.address ? e.address : []))
-  }
+  getQuotaRequests = async () => new Promise<string[]>((resolve, reject) => {
+    setTimeout(() => {
+      resolve(quotaRequests.flatMap(e => e.address ? e.address : []))
+    }, 1000)
+  })
 
-  async getQuotaRequestByAddress(address: string): Promise<QuotaRequest> {
+  getQuotaRequestByAddress = async (address: string) => new Promise<QuotaRequest>((resolve, reject) => {
     const result = quotaRequests.find(e => e.address === address);
     if (result) {
-      return Promise.resolve(result)
+      setTimeout(() => {
+        resolve(result)
+      }, 500)
+    } else {
+      reject(`Quota request for '${address}' not found.`)
     }
-    return Promise.reject(`Quota request for '${address}' not found.`)
-  }
+  })
 
   requestQuota = async (message?: string) => new Promise<void>((resolve, reject) => {
+    this.ensureAccountExists(reject)
     if (message) {
-      resolve()
+      if (this.account?.address && quotaRequests.find(e => e.address === this.account?.address)) {
+        reject("Request already exists.")
+      } else {
+        const newItem = new QuotaRequest({
+          address: this.account?.address,
+          message,
+          expirationHeight: '1350996'
+        })
+        quotaRequests.push(newItem)
+        resolve()
+      }
     } else {
       setTimeout(() => {
         reject("Request failed. Please try again later.")

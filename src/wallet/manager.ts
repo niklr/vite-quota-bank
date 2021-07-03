@@ -61,6 +61,10 @@ export class WalletManager {
     return undefined
   }
 
+  getActiveAccount(): Maybe<Account> {
+    return this._wallet?.active
+  }
+
   setActiveAccount(account: Account): boolean {
     if (this._wallet) {
       this._wallet.active = account;
