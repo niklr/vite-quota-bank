@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core';
@@ -24,6 +24,7 @@ interface Props {
 export const RequestQuota: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const [requestMessage, setRequestMessage] = useState<string>('');
   const { bank } = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -36,8 +37,7 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
 
   const handleConfirmAsync = async () => {
     try {
-      const result = await bank.requestQuota()
-      console.log(result)
+      await bank.requestQuota(requestMessage)
     } catch (error) {
       enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
     }
@@ -51,7 +51,13 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
   return (
     <>
       <form className={classes.root} noValidate autoComplete="off">
-        <TextField className={classes.messageInput} size="small" label="Request message" variant="outlined" />
+        <TextField
+          className={classes.messageInput}
+          size="small"
+          label="Request message"
+          variant="outlined"
+          value={requestMessage}
+          onChange={e => setRequestMessage(e.target.value)} />
         <Button variant="contained" color="primary" onClick={handleClickOpen}>Request Quota</Button>
       </form>
       <Dialog
