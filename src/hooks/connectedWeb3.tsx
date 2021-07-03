@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
-import { Network, networks, NetworkStatus } from '../common/networks';
+import { networks } from '../common/networks';
 import { ServiceProvider } from '../providers/serviceProvider';
 
 export interface IConnectedWeb3Context {
   account?: string
-  network: Network
-  networkStatus: NetworkStatus
   provider: ServiceProvider
 }
 
@@ -50,12 +48,10 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
       const provider = new ServiceProvider(walletManager)
 
+      provider.networkStore.network = network
+
       const value = {
         account: wallet?.active?.address,
-        network,
-        networkStatus: {
-          blockHeight: '0'
-        },
         provider
       }
 
@@ -69,8 +65,12 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
     if (connection) {
       const initAsync = async () => {
         console.log('initAsync')
-        await connection.provider.vite.initAsync(connection.network.url)
-        setIsReady(true)
+        if (!connection.provider.networkStore.network?.url) {
+          throw new Error('Network is not defined')
+        } else {
+          await connection.provider.vite.initAsync(connection.provider.networkStore.network?.url)
+          setIsReady(true)
+        }
       }
       if (!connection.provider.vite.isConnected) {
         initAsync()

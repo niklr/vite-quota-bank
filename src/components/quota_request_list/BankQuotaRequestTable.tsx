@@ -43,7 +43,7 @@ export const BankQuotaRequestTable = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   // const [quotaRequests, setQuotaRequests] = React.useState<QuotaRequest[]>([]);
 
-  console.log('render BankQuotaRequestTable', context?.networkStatus?.blockHeight)
+  console.log('render BankQuotaRequestTable', context.provider.networkStore.blockHeight)
 
   const refreshQuotaRequests = () => {
     fetchQuotaRequests(true)
@@ -82,7 +82,7 @@ export const BankQuotaRequestTable = () => {
   const updateQuotaRequests = () => {
     if (quotaRequests && quotaRequests.length > 0) {
       quotaRequests.forEach(item => {
-        QuotaRequestExtensions.getInstance().update(item, context?.networkStatus?.blockHeight)
+        QuotaRequestExtensions.getInstance().update(item, context.provider.networkStore.blockHeight)
       })
     }
   }
@@ -107,7 +107,7 @@ export const BankQuotaRequestTable = () => {
   }
 
   const showActions = () => {
-    return context?.networkStatus?.blockHeight !== '0'
+    return context.provider.networkStore.blockHeight !== '0'
   }
 
   return (

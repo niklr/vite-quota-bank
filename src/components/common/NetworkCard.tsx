@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, Chip, makeStyles, Typography } from '@material-ui/core'
 import { useEffect } from 'react'
 import { useBlockHeight, useConnectedWeb3Context } from '../../hooks'
-import { networks } from '../../common/networks';
 
 const useStyles = makeStyles({
   root: {
@@ -38,7 +37,7 @@ export const NetworkCard = () => {
     }
   })
 
-  const network = networks.find(e => e.id === context.network.id)
+  const network = context.provider.networkStore.network
 
   return (
     <>

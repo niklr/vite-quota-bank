@@ -16,7 +16,7 @@ export const useBlockHeight = (context: IConnectedWeb3Context) => {
       newBlockHeight = defaultValue
     }
     setBlockHeight(newBlockHeight)
-    context.networkStatus.blockHeight = newBlockHeight
+    context.provider.networkStore.blockHeight = newBlockHeight
     blockHeightSubject.next(newBlockHeight)
   }
 

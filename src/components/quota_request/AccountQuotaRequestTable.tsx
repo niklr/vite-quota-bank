@@ -33,7 +33,7 @@ export const AccountQuotaRequestTable = () => {
     if (context.account) {
       try {
         const result = await context.provider.bank.getQuotaRequestByAddress(context.account)
-        QuotaRequestExtensions.getInstance().update(result, context?.networkStatus?.blockHeight)
+        QuotaRequestExtensions.getInstance().update(result, context.provider.networkStore.blockHeight)
         setQuotaRequest(result)
       } catch (error) {
         // Ignore not found error
