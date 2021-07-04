@@ -1,4 +1,5 @@
 import { AppConstants } from './constants'
+import { QuotaRequestExtensions } from './type-extensions'
 import { formatUtil } from './util/formatUtil'
 
 export class Balance {
@@ -57,6 +58,8 @@ export class QuotaRequest {
   isExpired: boolean = false
   status?: string
 
+  static readonly updater: QuotaRequestExtensions = QuotaRequestExtensions.getInstance()
+
   constructor(init?: Partial<QuotaRequest>) {
     this.init(init)
   }
@@ -73,6 +76,10 @@ export class QuotaRequest {
       this.isExpired = data.isExpired
       this.status = data.status
     }
+  }
+
+  update(height: string): void {
+    QuotaRequest.updater.update(this, height)
   }
 
   equals(other: QuotaRequest): boolean {

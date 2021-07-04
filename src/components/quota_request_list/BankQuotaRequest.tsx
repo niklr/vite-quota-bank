@@ -7,7 +7,6 @@ import { QuotaRequest } from '../../types';
 import { commonUtil } from '../../util/commonUtil';
 import { QuotaRequestDueDate } from '../quota_request';
 import { GlobalEvent } from '../../emitters';
-import { QuotaRequestExtensions } from '../../type-extensions';
 import { AppConstants } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +36,7 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
     const handleNetworkBlockHeight = (height: string) => {
       // Create new instance, otherwise setQuotaRequest has no effect
       const newQuotaRequest = new QuotaRequest(quotaRequest)
-      QuotaRequestExtensions.getInstance().update(newQuotaRequest, height)
+      newQuotaRequest.update(height)
       if (!quotaRequest.equals(newQuotaRequest)) {
         console.log('BankQuotaRequest changed', quotaRequest.address, height)
         setQuotaRequest(newQuotaRequest)
