@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 export const AccountQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
+  const account = context.account
   const emitter = context.provider.emitter
 
   const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(new QuotaRequest());
@@ -43,8 +44,10 @@ export const AccountQuotaRequestTable = () => {
 
   useEffect(() => {
     const handleUpdate = (update: QuotaRequest) => {
-      console.log('Handle QuotaRequestUpdate', update.address)
-      setQuotaRequest(update)
+      if (account === update.address) {
+        console.log('Handle QuotaRequestUpdate', update.address)
+        setQuotaRequest(update)
+      }
     }
     emitter.on(GlobalEvent.QuotaRequestUpdate, handleUpdate)
     updateQuotaRequest()
@@ -52,7 +55,7 @@ export const AccountQuotaRequestTable = () => {
       console.log('AccountQuotaRequestTable disposed')
       emitter.off(GlobalEvent.QuotaRequestUpdate, handleUpdate)
     };
-  }, [emitter, updateQuotaRequest, setQuotaRequest])
+  }, [account, emitter, updateQuotaRequest, setQuotaRequest])
 
   useEffect(() => {
     const handleNetworkBlockHeight = (height: string) => {

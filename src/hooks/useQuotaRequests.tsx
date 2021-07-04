@@ -21,7 +21,7 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
         const address = addresses[index];
         try {
           const quotaRequestResult = await context.provider.bank.getQuotaRequestByAddress(address)
-          tempQuotaRequests.push(quotaRequestResult)
+          tempQuotaRequests.unshift(quotaRequestResult)
         } catch (error) {
           console.log(error)
         }
@@ -43,6 +43,7 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
   return {
     isLoading,
     quotaRequests,
-    fetchQuotaRequests
+    fetchQuotaRequests,
+    setQuotaRequests
   }
 }

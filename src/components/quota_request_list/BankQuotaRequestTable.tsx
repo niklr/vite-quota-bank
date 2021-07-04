@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh';
+import { BankQuotaRequest } from '.';
 import { BankDeleteDialog, BankStakeDialog, BankWithdrawDialog, DialogType } from './dialogs';
+import { GlobalEvent } from '../../emitters';
 import { useConnectedWeb3Context, useQuotaRequests } from '../../hooks';
 import { QuotaRequest } from '../../types';
-import { BankQuotaRequest } from '.';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,8 +26,9 @@ const useStyles = makeStyles((theme) => ({
 export const BankQuotaRequestTable = () => {
   const classes = useStyles();
   const context = useConnectedWeb3Context()
+  const emitter = context.provider.emitter
 
-  const { isLoading: isQuotaRequestsLoading, quotaRequests, fetchQuotaRequests } = useQuotaRequests(context)
+  const { isLoading: isQuotaRequestsLoading, quotaRequests, fetchQuotaRequests, setQuotaRequests } = useQuotaRequests(context)
 
   const [selectedItem, setSelectedItem] = React.useState(new QuotaRequest())
   const [stakeDialogOpen, setStakeDialogOpen] = React.useState(false);
@@ -34,6 +36,21 @@ export const BankQuotaRequestTable = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   console.log('render BankQuotaRequestTable', context.provider.networkStore.blockHeight)
+
+  useEffect(() => {
+    const handleUpdate = (update: QuotaRequest) => {
+      console.log('Handle QuotaRequestUpdate', update.address)
+      if (!quotaRequests.find(e => e.address === update.address)) {
+        const newQuotaRequests = [update, ...quotaRequests]
+        setQuotaRequests(newQuotaRequests)
+      }
+    }
+    emitter.on(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+    return () => {
+      console.log('AccountQuotaRequestTable disposed')
+      emitter.off(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+    };
+  }, [emitter, quotaRequests, setQuotaRequests])
 
   const refreshQuotaRequests = () => {
     fetchQuotaRequests(true)
