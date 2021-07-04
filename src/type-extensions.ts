@@ -1,3 +1,4 @@
+import { AppConstants } from './constants';
 import { QuotaRequest } from './types';
 import { bigNumber } from './util/bigNumber';
 import { commonUtil } from './util/commonUtil';
@@ -22,7 +23,7 @@ export class QuotaRequestExtensions {
   update(quotaRequet?: QuotaRequest, blockHeight?: string): void {
     if (quotaRequet?.expirationHeight) {
       quotaRequet.isExpired = commonUtil.isExpired(quotaRequet.expirationHeight, blockHeight)
-      if (!quotaRequet.expirationDate && blockHeight) {
+      if (!quotaRequet.expirationDate && blockHeight && blockHeight !== AppConstants.InitialNetworkBlockHeight) {
         const secondsDiff = Number.parseInt(bigNumber.minus(quotaRequet.expirationHeight, blockHeight))
         quotaRequet.expirationDate = this.moment.get().add(secondsDiff, 's').toDate()
         quotaRequet.expirationDateFormatted = this.moment.getLocalReverseFormatted(quotaRequet.expirationDate)

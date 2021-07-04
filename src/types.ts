@@ -68,6 +68,22 @@ export class QuotaRequest {
       this.amount = data.amount
       this.amountFormatted = formatUtil.formatAmount(data.amount)
       this.expirationHeight = data.expirationHeight
+      this.expirationDate = data.expirationDate
+      this.expirationDateFormatted = data.expirationDateFormatted
+      this.isExpired = data.isExpired
+      this.status = data.status
     }
+  }
+
+  equals(other: QuotaRequest): boolean {
+    return this.address === other.address
+      && this.message === other.message
+      && this.amount === other.amount
+      && this.amountFormatted === other.amountFormatted
+      && this.expirationHeight === other.expirationHeight
+      // && this.expirationDate === other.expirationDate
+      && this.expirationDateFormatted === other.expirationDateFormatted
+      && this.isExpired === other.isExpired
+      && this.status === other.status;
   }
 }

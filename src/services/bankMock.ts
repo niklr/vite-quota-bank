@@ -41,7 +41,7 @@ export class BankMockService extends BankService {
     if (result) {
       setTimeout(() => {
         resolve(result)
-      }, 500)
+      }, 100)
     } else {
       reject(`Quota request for '${address}' not found.`)
     }
@@ -56,7 +56,7 @@ export class BankMockService extends BankService {
         const newItem = new QuotaRequest({
           address: this.account?.address,
           message,
-          expirationHeight: this._networkStore.blockHeight + 30
+          expirationHeight: this._networkStore.blockHeight + 10
         })
         quotaRequests.push(newItem)
         resolve()

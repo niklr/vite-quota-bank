@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
 import { networks } from '../common/networks';
-import { ServiceProvider } from '../providers/serviceProvider';
+import { ServiceProvider } from '../providers';
 
 export interface IConnectedWeb3Context {
   account?: string

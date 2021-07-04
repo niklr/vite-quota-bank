@@ -102,7 +102,7 @@ export const BankQuotaRequestTable = () => {
                 {quotaRequests
                   && quotaRequests.length > 0
                   && quotaRequests.map(item => {
-                    return <BankQuotaRequest key={item.address} item={item} handleClickOpenFn={handleClickOpen}></BankQuotaRequest>
+                    return <BankQuotaRequest key={item.address} context={context} item={item} handleClickOpenFn={handleClickOpen}></BankQuotaRequest>
                   })
                 }
               </TableBody>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { IConnectedWeb3Context } from '.'
-import { QuotaRequestExtensions } from '../type-extensions'
 import { QuotaRequest } from '../types'
 
 export const useQuotaRequests = (context: IConnectedWeb3Context) => {
@@ -33,15 +32,6 @@ export const useQuotaRequests = (context: IConnectedWeb3Context) => {
       setQuotaRequests(initialValue)
     }
     setIsLoading(false)
-  }
-
-  const updateQuotaRequests = () => {
-    if (quotaRequests && quotaRequests.length > 0) {
-      quotaRequests.forEach(item => {
-        QuotaRequestExtensions.getInstance().update(item, context.provider.networkStore.blockHeight)
-      })
-      setQuotaRequests(quotaRequests)
-    }
   }
 
   useEffect(() => {

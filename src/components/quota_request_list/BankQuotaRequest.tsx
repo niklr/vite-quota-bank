@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Chip, IconButton, makeStyles, TableCell, TableRow, Tooltip } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete';
 import { DialogType } from './dialogs';
-import { useConnectedWeb3Context } from '../../hooks';
+import { IConnectedWeb3Context } from '../../hooks';
 import { QuotaRequest } from '../../types';
 import { commonUtil } from '../../util/commonUtil';
 import { QuotaRequestDueDate } from '../quota_request';
+import { GlobalEvent } from '../../emitters';
+import { QuotaRequestExtensions } from '../../type-extensions';
+import { AppConstants } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   refreshButton: {
@@ -17,17 +20,36 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
+  context: IConnectedWeb3Context,
   item: QuotaRequest,
   handleClickOpenFn: (type: DialogType, item: QuotaRequest) => void
 }
 
 export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
-  const context = useConnectedWeb3Context()
+  const emitter = props.context.provider.emitter
 
   const [quotaRequest, setQuotaRequest] = useState<QuotaRequest>(props.item)
 
-  console.log('render BankQuotaRequest', context.provider.networkStore.blockHeight)
+  // console.log('render BankQuotaRequest', props.item.address)
+
+  useEffect(() => {
+    const handleNetworkBlockHeight = (height: string) => {
+      // Create new instance, otherwise setQuotaRequest has no effect
+      const newQuotaRequest = new QuotaRequest(quotaRequest)
+      QuotaRequestExtensions.getInstance().update(newQuotaRequest, height)
+      if (!quotaRequest.equals(newQuotaRequest)) {
+        console.log('BankQuotaRequest changed', quotaRequest.address, height)
+        setQuotaRequest(newQuotaRequest)
+      }
+    }
+    // console.log('BankQuotaRequest created', quotaRequest.address)
+    emitter.on(GlobalEvent.NetworkBlockHeight, handleNetworkBlockHeight)
+    return () => {
+      // console.log('BankQuotaRequest disposed', quotaRequest.address)
+      emitter.off(GlobalEvent.NetworkBlockHeight, handleNetworkBlockHeight)
+    };
+  }, [emitter, quotaRequest, setQuotaRequest]);
 
   const truncateAddress = (address?: string) => {
     return commonUtil.truncateStringInTheMiddle(address, 10, 5)
@@ -50,7 +72,7 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
   }
 
   const showActions = () => {
-    return context.provider.networkStore.blockHeight !== '0'
+    return props.context.provider.networkStore.blockHeight !== AppConstants.InitialNetworkBlockHeight
   }
 
   return (
