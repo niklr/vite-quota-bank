@@ -37,7 +37,7 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
 
   const handleConfirmAsync = async () => {
     try {
-      await provider.bank.requestQuota(requestMessage)
+      await provider.bank.createRequest(requestMessage)
     } catch (error) {
       enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
     }

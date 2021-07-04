@@ -39,16 +39,32 @@ export const BankQuotaRequestTable = () => {
 
   useEffect(() => {
     const handleUpdate = (update: QuotaRequest) => {
-      console.log('Handle QuotaRequestUpdate', update.address)
-      if (!quotaRequests.find(e => e.address === update.address)) {
+      console.log('Handle QuotaRequestUpdated', update.address)
+      const index = quotaRequests.findIndex(e => e.address === update.address)
+      if (index >= 0) {
+        // Replace existing request with update
+        const updatedQuotaRequests = [...quotaRequests]
+        updatedQuotaRequests[index] = update
+        setQuotaRequests(updatedQuotaRequests)
+      } else {
+        // Prepend update to existing requests
         const newQuotaRequests = [update, ...quotaRequests]
         setQuotaRequests(newQuotaRequests)
       }
     }
+    const handleDelete = (address: string) => {
+      console.log('Handle QuotaRequestDeleted', address)
+      const newQuotaRequests = quotaRequests.filter(e => e.address !== address)
+      if (newQuotaRequests.length < quotaRequests.length) {
+        setQuotaRequests(newQuotaRequests)
+      }
+    }
     emitter.on(GlobalEvent.QuotaRequestUpdated, handleUpdate)
+    emitter.on(GlobalEvent.QuotaRequestDeleted, handleDelete)
     return () => {
       console.log('AccountQuotaRequestTable disposed')
       emitter.off(GlobalEvent.QuotaRequestUpdated, handleUpdate)
+      emitter.off(GlobalEvent.QuotaRequestDeleted, handleDelete)
     };
   }, [emitter, quotaRequests, setQuotaRequests])
 
@@ -128,7 +144,7 @@ export const BankQuotaRequestTable = () => {
         </Paper>
       )}
       <BankDeleteDialog item={selectedItem} bank={context.provider.bank} open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
-      <BankStakeDialog item={selectedItem} open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
+      <BankStakeDialog item={selectedItem} bank={context.provider.bank} open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
       <BankWithdrawDialog item={selectedItem} open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>
     </div>
   );

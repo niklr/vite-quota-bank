@@ -9,7 +9,8 @@ export interface IBankService {
   dispose(): void
   getQuotaRequests(): Promise<string[]>
   getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
-  requestQuota(message?: string): Promise<void>
+  createRequest(message?: string): Promise<void>
+  stakeRequest(address: string, amount: number, duration: number): Promise<void>
   deleteRequest(address: string): Promise<void>
 }
 
@@ -59,7 +60,11 @@ export class BankService implements IBankService {
     return Promise.reject(`Quota request for '${address}' not found.`)
   }
 
-  async requestQuota(message?: string): Promise<void> {
+  async createRequest(message?: string): Promise<void> {
+    return Promise.resolve()
+  }
+
+  async stakeRequest(address: string, amount: number, duration: number): Promise<void> {
     return Promise.resolve()
   }
 

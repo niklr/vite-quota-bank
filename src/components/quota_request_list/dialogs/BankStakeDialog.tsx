@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, makeStyles, TextField } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
 import { QuotaRequest } from '../../../types';
+import { IBankService } from '../../../services';
+import { formatUtil } from '../../../util/formatUtil';
+import { ClickOnceButton } from '../../common';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -14,11 +18,35 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   open: boolean
   item: QuotaRequest
+  bank: IBankService
   closeFn: () => void
 }
 
 export const BankStakeDialog: React.FC<Props> = (props: Props) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [amount, setAmount] = useState<string>('');
+  const [duration, setDuration] = useState<string>('');
+
+  const handleStakeAsync = async () => {
+    try {
+      if (props.item.address) {
+        await props.bank.stakeRequest(props.item.address, Number.parseInt(amount), Number.parseInt(duration))
+        props.closeFn()
+      } else {
+        throw new Error('No address provided.')
+      }
+    } catch (error) {
+      enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
+    }
+  }
+
+  // const handleInput = (value: string, callbackFn: React.Dispatch<React.SetStateAction<number>>) => {
+  //   if (Number.isInteger(value)) {
+  //     callbackFn(Number.parseInt(value))
+  //   }
+  // }
 
   return (
     <>
@@ -42,12 +70,18 @@ export const BankStakeDialog: React.FC<Props> = (props: Props) => {
               margin="dense"
               label="Amount"
               type="number"
+              value={amount}
+              inputProps={{ min: 1 }}
+              onChange={e => setAmount(e.target.value)}
             />
             <TextField
               margin="dense"
               label="Duration (blocks)"
               type="number"
               className={classes.durationInput}
+              value={duration}
+              inputProps={{ min: 1 }}
+              onChange={e => setDuration(e.target.value)}
             />
           </form>
         </DialogContent>
@@ -55,9 +89,9 @@ export const BankStakeDialog: React.FC<Props> = (props: Props) => {
           <Button color="primary" onClick={props.closeFn}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={props.closeFn} autoFocus>
+          <ClickOnceButton color="primary" callbackFn={handleStakeAsync} autoFocus={true}>
             Confirm
-          </Button>
+          </ClickOnceButton>
         </DialogActions>
       </Dialog>
     </>

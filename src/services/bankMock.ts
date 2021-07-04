@@ -1,4 +1,6 @@
+import { AppConstants } from '../constants';
 import { QuotaRequest } from '../types';
+import { bigNumber } from '../util/bigNumber';
 import { BankService } from './bank';
 
 const quotaRequests = [
@@ -46,7 +48,7 @@ export class BankMockService extends BankService {
     }
   })
 
-  requestQuota = async (message?: string) => new Promise<void>((resolve, reject) => {
+  createRequest = async (message?: string) => new Promise<void>((resolve, reject) => {
     this.ensureAccountExists(reject)
     if (message) {
       if (this.account?.address && quotaRequests.find(e => e.address === this.account?.address)) {
@@ -68,6 +70,29 @@ export class BankMockService extends BankService {
       setTimeout(() => {
         reject("Request failed. Please try again later.")
       }, 2000)
+    }
+  })
+
+  stakeRequest = async (address: string, amount: number, duration: number) => new Promise<void>((resolve, reject) => {
+    this.ensureAccountExists(reject)
+    if (!amount || amount <= 0) {
+      reject("Please provide a valid amount.")
+    }
+    if (!duration || duration <= 0) {
+      reject("Please provide a valid duration.")
+    }
+    const existing = quotaRequests.find(e => e.address === address)
+    if (!existing) {
+      reject("Request does not exist.")
+    } else {
+      existing.amount = bigNumber.toMin(amount, AppConstants.DefaultDecimals)
+      existing.expirationHeight = this._networkStore.blockHeight + duration
+      const updatedItem = new QuotaRequest(existing)
+      updatedItem.update(this._networkStore.blockHeight)
+      resolve()
+      setTimeout(() => {
+        this._emitter.emitQuotaRequestUpdated(updatedItem)
+      }, 500)
     }
   })
 
