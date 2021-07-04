@@ -7,10 +7,11 @@ import { Account, WalletManager } from '../wallet';
 export interface IBankService {
   init(contractAddress: string): void
   dispose(): void
-  getQuotaRequests(): Promise<string[]>
-  getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
+  getRequests(): Promise<string[]>
+  getRequestByAddress(address: string): Promise<QuotaRequest>
   createRequest(message?: string): Promise<void>
   stakeRequest(address: string, amount: number, duration: number): Promise<void>
+  withdrawRequest(address: string): Promise<void>
   deleteRequest(address: string): Promise<void>
 }
 
@@ -52,11 +53,11 @@ export class BankService implements IBankService {
     this.removeAddressListener()
   }
 
-  async getQuotaRequests(): Promise<string[]> {
+  async getRequests(): Promise<string[]> {
     return Promise.resolve([])
   }
 
-  async getQuotaRequestByAddress(address: string): Promise<QuotaRequest> {
+  async getRequestByAddress(address: string): Promise<QuotaRequest> {
     return Promise.reject(`Quota request for '${address}' not found.`)
   }
 
@@ -65,6 +66,10 @@ export class BankService implements IBankService {
   }
 
   async stakeRequest(address: string, amount: number, duration: number): Promise<void> {
+    return Promise.resolve()
+  }
+
+  async withdrawRequest(address: string): Promise<void> {
     return Promise.resolve()
   }
 

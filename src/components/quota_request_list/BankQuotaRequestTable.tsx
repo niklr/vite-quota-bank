@@ -145,7 +145,7 @@ export const BankQuotaRequestTable = () => {
       )}
       <BankDeleteDialog item={selectedItem} bank={context.provider.bank} open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
       <BankStakeDialog item={selectedItem} bank={context.provider.bank} open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
-      <BankWithdrawDialog item={selectedItem} open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>
+      <BankWithdrawDialog item={selectedItem} bank={context.provider.bank} open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>
     </div>
   );
 }

@@ -55,7 +55,7 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
   }
 
   const isStaked = (item: QuotaRequest) => {
-    return item.amount && !item.isExpired
+    return item.amount && item.amount !== AppConstants.DefaultZeroString && !item.isExpired
   }
 
   const canStake = (item: QuotaRequest) => {

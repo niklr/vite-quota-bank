@@ -3,10 +3,8 @@ import { QuotaRequestExtensions } from './type-extensions'
 import { formatUtil } from './util/formatUtil'
 
 export class Balance {
-  private static readonly _defaultValue = "0"
-
-  amount: string = Balance._defaultValue
-  amountFormatted: string = Balance._defaultValue
+  amount: string = AppConstants.DefaultZeroString
+  amountFormatted: string = AppConstants.DefaultZeroString
 
   constructor(init?: Partial<Balance>) {
     this.init(init)
@@ -22,14 +20,12 @@ export class Balance {
 }
 
 export class Quota {
-  private static readonly _defaultValue = "0"
-
-  currentQuota: string = Quota._defaultValue
-  currentQuotaFormatted: string = Quota._defaultValue
-  maxQuota: string = Quota._defaultValue
-  maxQuotaFormatted: string = Quota._defaultValue
-  stakeAmount: string = Quota._defaultValue
-  stakeAmountFormatted: string = Quota._defaultValue
+  currentQuota: string = AppConstants.DefaultZeroString
+  currentQuotaFormatted: string = AppConstants.DefaultZeroString
+  maxQuota: string = AppConstants.DefaultZeroString
+  maxQuotaFormatted: string = AppConstants.DefaultZeroString
+  stakeAmount: string = AppConstants.DefaultZeroString
+  stakeAmountFormatted: string = AppConstants.DefaultZeroString
 
   constructor(init?: Partial<Quota>) {
     this.init(init)

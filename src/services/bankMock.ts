@@ -30,13 +30,13 @@ const quotaRequests = [
 ]
 
 export class BankMockService extends BankService {
-  getQuotaRequests = async () => new Promise<string[]>((resolve, reject) => {
+  getRequests = async () => new Promise<string[]>((resolve, reject) => {
     setTimeout(() => {
       resolve(quotaRequests.flatMap(e => e.address ? e.address : []))
     }, 1000)
   })
 
-  getQuotaRequestByAddress = async (address: string) => new Promise<QuotaRequest>((resolve, reject) => {
+  getRequestByAddress = async (address: string) => new Promise<QuotaRequest>((resolve, reject) => {
     const result = quotaRequests.find(e => e.address === address);
     result?.update(this._networkStore.blockHeight)
     if (result) {
@@ -87,6 +87,22 @@ export class BankMockService extends BankService {
     } else {
       existing.amount = bigNumber.toMin(amount, AppConstants.DefaultDecimals)
       existing.expirationHeight = this._networkStore.blockHeight + duration
+      const updatedItem = new QuotaRequest(existing)
+      updatedItem.update(this._networkStore.blockHeight)
+      resolve()
+      setTimeout(() => {
+        this._emitter.emitQuotaRequestUpdated(updatedItem)
+      }, 500)
+    }
+  })
+
+  withdrawRequest = async (address: string) => new Promise<void>((resolve, reject) => {
+    this.ensureAccountExists(reject)
+    const existing = quotaRequests.find(e => e.address === address)
+    if (!existing) {
+      reject("Request does not exist.")
+    } else {
+      existing.amount = undefined
       const updatedItem = new QuotaRequest(existing)
       updatedItem.update(this._networkStore.blockHeight)
       resolve()
