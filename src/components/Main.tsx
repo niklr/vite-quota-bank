@@ -1,5 +1,6 @@
 import { Grid } from '@material-ui/core'
-import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper, NetworkCard } from './common'
+import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper } from './common'
+import { NetworkCard } from './network'
 import { AccountQuotaRequestTable, CreateQuotaRequest } from './quota_request'
 import { BankQuotaRequestTable } from './quota_request_list'
 import { useConnectedWeb3Context } from '../hooks'

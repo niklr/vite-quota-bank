@@ -1,8 +1,9 @@
-import { Wallet, WalletConstants } from '.';
+import { Wallet } from '.';
+import { AppConstants } from '../constants';
 
 export class WalletStore {
 
-  private readonly _key = WalletConstants.WebWalletSpace;
+  private readonly _key = AppConstants.WebWalletStorageSpace;
 
   clear(): void {
     localStorage.removeItem(this._key);

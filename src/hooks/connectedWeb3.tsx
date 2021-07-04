@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useWeb3Context } from '.';
-import { networks } from '../common/networks';
 import { ServiceProvider } from '../providers';
 
 export interface IConnectedWeb3Context {
@@ -43,10 +42,9 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (props.networkId) {
       console.log('networkId', props.networkId)
-      const network = networks.find(e => e.id === props.networkId)
-      if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
-
       const provider = new ServiceProvider(walletManager)
+      const network = provider.networkStore.getById(props.networkId)
+      if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
 
       provider.networkStore.network = network
 

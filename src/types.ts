@@ -19,6 +19,24 @@ export class Balance {
   }
 }
 
+export class Network {
+  id?: number
+  name?: string
+  url?: string
+
+  constructor(init?: Partial<Network>) {
+    this.init(init)
+  }
+
+  init(data?: any): void {
+    if (data) {
+      this.id = data.id
+      this.name = data.name
+      this.url = data.url
+    }
+  }
+}
+
 export class Quota {
   currentQuota: string = AppConstants.DefaultZeroString
   currentQuotaFormatted: string = AppConstants.DefaultZeroString

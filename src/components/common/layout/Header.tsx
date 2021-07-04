@@ -1,7 +1,9 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core'
 import styled from 'styled-components'
 import { useWeb3Context } from '../../../hooks'
+import { NetworkStore } from '../../../stores'
 import { AccountList, LoginModal } from '../../account'
+import { NetworkList } from '../../network'
 
 const Root = styled.div`
   flex-grow: 1;
@@ -14,6 +16,7 @@ const TitleTypography = styled(Typography)`
 
 const HeaderContainer: React.FC = (props: any) => {
   const context = useWeb3Context()
+  const networkStore = new NetworkStore()
 
   const { wallet } = context
 
@@ -30,6 +33,7 @@ const HeaderContainer: React.FC = (props: any) => {
           <TitleTypography variant="h6">
             Vite Quota Bank
           </TitleTypography>
+          <NetworkList networkStore={networkStore}></NetworkList>
           {wallet?.active && (
             <>
               <AccountList></AccountList>
