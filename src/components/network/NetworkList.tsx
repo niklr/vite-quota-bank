@@ -3,7 +3,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, FormControl, InputLabel, makeStyles, Select, Theme } from '@material-ui/core';
 import { INetworkStore } from '../../stores';
 import { Network } from '../../types';
-import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,23 +28,16 @@ interface Props {
 export const NetworkList: React.FC<Props> = (props: Props) => {
   const classes = useStyles()
   const networks = props.networkStore.networks
-  const [network, setNetwork] = useState<Network>(new Network())
-
-  useEffect(() => {
-    if (props.networkStore.network) {
-      setNetwork(props.networkStore.network)
-    }
-  }, [props.networkStore, setNetwork])
+  const [network, setNetwork] = useState<Network>(props.networkStore.network)
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     console.log(event.target.value)
     const selectedNetwork = networks.find(e => e.id === event.target.value)
-    props.networkStore.network = selectedNetwork
     if (selectedNetwork) {
+      props.networkStore.network = selectedNetwork
       setNetwork(selectedNetwork)
-    } else {
-      setNetwork(new Network())
     }
+    window.location.reload()
   }
 
   return (

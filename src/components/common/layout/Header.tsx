@@ -23,6 +23,8 @@ const HeaderContainer: React.FC = (props: any) => {
   const handleLogout = () => {
     context.walletManager.removeWallet()
     context.setWallet(context.walletManager.getWallet())
+    networkStore.clear()
+    window.location.reload()
   }
 
   return (

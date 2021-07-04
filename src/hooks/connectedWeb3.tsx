@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useWeb3Context } from '.';
 import { ServiceProvider } from '../providers';
 
@@ -24,7 +24,6 @@ export const useConnectedWeb3Context = () => {
 
 interface Props {
   children?: React.ReactNode
-  networkId?: number | null
   setStatus?: any
 }
 
@@ -34,30 +33,27 @@ interface Props {
  */
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<IConnectedWeb3Context | null>(null)
-  const [isReady, setIsReady] = useState<boolean>(false)
   const context = useWeb3Context()
 
   const { wallet, walletManager } = context
 
+  const provider = useMemo(() => {
+    return new ServiceProvider(walletManager)
+  }, [walletManager])
+
   useEffect(() => {
-    if (props.networkId) {
-      console.log('networkId', props.networkId)
-      const provider = new ServiceProvider(walletManager)
-      const network = provider.networkStore.getById(props.networkId)
-      if (!network) throw new Error(`Network with id '${props.networkId}' is not defined`)
+    const network = provider.networkStore.network
+    if (!network) throw new Error('Network is not defined')
 
-      provider.networkStore.network = network
-
-      const value = {
-        account: wallet?.active?.address,
-        provider
-      }
-
-      console.log('ConnectedWeb3.account', wallet?.active?.address)
-
-      setConnection(value)
+    const value = {
+      account: wallet?.active?.address,
+      provider
     }
-  }, [props.networkId, wallet, walletManager])
+
+    console.log('ConnectedWeb3.account', wallet?.active?.address)
+
+    setConnection(value)
+  }, [wallet, walletManager, provider])
 
   useEffect(() => {
     if (connection) {
@@ -66,8 +62,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         if (!connection.provider.networkStore.network?.url) {
           throw new Error('Network is not defined')
         } else {
-          await connection.provider.vite.initAsync(connection.provider.networkStore.network?.url)
-          setIsReady(true)
+          await connection.provider.vite.initAsync(connection.provider.networkStore.network.url)
         }
       }
       if (!connection.provider.vite.isConnected) {
@@ -76,7 +71,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
     }
   }, [connection])
 
-  if (!props.networkId || !connection) {
+  if (!connection) {
     props.setStatus(true)
     return null
   }
@@ -87,15 +82,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
   props.setStatus(true)
   return (
-    <>
-      {isReady ? (
-        <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
-      ) : (
-        <>
-          <div>Connecting...</div>
-        </>
-      )}
-    </>
+    <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
   )
 }
 

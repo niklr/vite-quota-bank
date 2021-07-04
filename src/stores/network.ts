@@ -4,14 +4,16 @@ import { Network } from '../types';
 
 export interface INetworkStore {
   blockHeight: string
-  network?: Network
+  network: Network
+  defaultNetwork: Network
   networks: Network[]
   getById(networkId: number): Maybe<Network>
+  clear(): void
 }
 
 export class NetworkStore implements INetworkStore {
 
-  private readonly _key: string = AppConstants.WebWalletStorageSpace;
+  private readonly _key: string = AppConstants.NetworkStorageSpace;
   private _emitter?: IGlobalEmitter
   private _blockHeight: string
   private _network?: Network
@@ -47,7 +49,7 @@ export class NetworkStore implements INetworkStore {
     this._emitter?.emitNetworkBlockHeight(height)
   }
 
-  get network(): Maybe<Network> {
+  get network(): Network {
     if (this._network) {
       return this._network
     }
@@ -58,23 +60,23 @@ export class NetworkStore implements INetworkStore {
       data = localStorage.getItem(this._key);
     } catch (err) {
       console.error(err);
-      return undefined;
     }
 
     if (!data) {
-      return undefined;
+      return this.defaultNetwork;
     }
 
     try {
-      this._network = new Network(JSON.parse(data))
-      return this._network;
+      const parsedNetwork = new Network(JSON.parse(data))
+      this._network = this._networks.find(e => e.id === parsedNetwork.id)
+      return this._network ?? this.defaultNetwork;
     } catch (err) {
       console.log(err);
-      return undefined;
+      return this.defaultNetwork;
     }
   }
 
-  set network(value: Maybe<Network>) {
+  set network(value: Network) {
     if (value) {
       this._network = value
       localStorage.setItem(this._key, JSON.stringify(value))
@@ -84,11 +86,20 @@ export class NetworkStore implements INetworkStore {
     }
   }
 
+  get defaultNetwork(): Network {
+    return this._networks[1]
+  }
+
   get networks(): Network[] {
     return this._networks ?? []
   }
 
   getById(networkId: number): Maybe<Network> {
     return this._networks.find(e => e.id === networkId)
+  }
+
+  clear(): void {
+    this._network = undefined
+    localStorage.removeItem(this._key)
   }
 }

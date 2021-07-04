@@ -17,7 +17,7 @@ const App: React.FC = () => {
           </>
         ) : (
           <>
-            <ConnectedWeb3 networkId={2} setStatus={setStatus}>
+            <ConnectedWeb3 setStatus={setStatus}>
               <Main />
             </ConnectedWeb3>
           </>
