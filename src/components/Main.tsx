@@ -1,16 +1,12 @@
 import { Grid } from '@material-ui/core'
 import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper, NetworkCard } from './common'
-import { AccountQuotaRequestTable, RequestQuota } from './quota_request'
+import { AccountQuotaRequestTable, CreateQuotaRequest } from './quota_request'
 import { BankQuotaRequestTable } from './quota_request_list'
 import { useConnectedWeb3Context } from '../hooks'
 import { AppConstants } from '../constants'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
-
-  const testFn = () => {
-    console.log('testFn called.')
-  }
 
   return (
     <>
@@ -28,7 +24,7 @@ export const Main: React.FC = (props: any) => {
               <AddressSummaryTable title="Bank" address={AppConstants.QuotaContractAddress}></AddressSummaryTable>
             </Grid>
             <Grid item xs={12}>
-              <RequestQuota testFn={testFn}></RequestQuota>
+              <CreateQuotaRequest></CreateQuotaRequest>
             </Grid>
             <Grid item xs={12}>
               <AccountQuotaRequestTable></AccountQuotaRequestTable>

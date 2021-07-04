@@ -17,11 +17,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-interface Props {
-  testFn?: () => void
-}
-
-export const RequestQuota: React.FC<Props> = (props: Props) => {
+export const CreateQuotaRequest: React.FC = () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [requestMessage, setRequestMessage] = useState<string>('');
@@ -30,9 +26,6 @@ export const RequestQuota: React.FC<Props> = (props: Props) => {
 
   const handleClickOpen = () => {
     setOpen(true);
-    if (props.testFn) {
-      props.testFn();
-    }
   };
 
   const handleConfirmAsync = async () => {
