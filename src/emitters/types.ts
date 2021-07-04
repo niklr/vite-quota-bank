@@ -1,3 +1,4 @@
 export enum GlobalEvent {
-  NetworkBlockHeight = 'NetworkBlockHeight'
+  NetworkBlockHeight = 'NetworkBlockHeight',
+  QuotaRequestUpdate = 'QuotaRequestUpdate'
 }

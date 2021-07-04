@@ -32,7 +32,7 @@ export const AccountQuotaRequestTable = () => {
         const result = await context.provider.bank.getQuotaRequestByAddress(context.account)
         setQuotaRequest(result)
       } catch (error) {
-        // Ignore not found error
+        setQuotaRequest(defaultQuotaRequest)
       }
     }
   }

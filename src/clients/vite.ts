@@ -8,7 +8,7 @@ const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 export interface IViteClient {
   readonly isConnected: boolean
   initAsync(url: string): Promise<void>
-  disconnect(): void
+  dispose(): void
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
@@ -45,7 +45,7 @@ export class ViteClient implements IViteClient {
     });
   });
 
-  disconnect(): void {
+  dispose(): void {
     this._provider.disconnect();
     this._isConnected = false;
   }

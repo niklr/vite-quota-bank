@@ -15,10 +15,10 @@ export class ServiceProvider {
     this.networkStore = new NetworkStore(this.emitter)
     if (process.env.REACT_APP_USE_MOCK) {
       this.vite = new ViteMockClient()
-      this.bank = new BankMockService(this.vite, this.networkStore, walletManager)
+      this.bank = new BankMockService(this.vite, this.emitter, this.networkStore, walletManager)
     } else {
       this.vite = new ViteClient()
-      this.bank = new BankService(this.vite, this.networkStore, walletManager)
+      this.bank = new BankService(this.vite, this.emitter, this.networkStore, walletManager)
     }
   }
 }

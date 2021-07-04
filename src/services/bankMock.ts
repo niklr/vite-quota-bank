@@ -60,6 +60,9 @@ export class BankMockService extends BankService {
         })
         quotaRequests.push(newItem)
         resolve()
+        setTimeout(() => {
+          this._emitter.emitQuotaRequestUpdate(newItem)
+        }, 500)
       }
     } else {
       setTimeout(() => {
