@@ -42,11 +42,19 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
         setQuotaRequest(newQuotaRequest)
       }
     }
+    const handleUpdate = (update: QuotaRequest) => {
+      if (quotaRequest.address === update.address) {
+        console.log('Handle QuotaRequestUpdated', update.address)
+        setQuotaRequest(update)
+      }
+    }
     // console.log('BankQuotaRequest created', quotaRequest.address)
     emitter.on(GlobalEvent.NetworkBlockHeight, handleNetworkBlockHeight)
+    emitter.on(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     return () => {
       // console.log('BankQuotaRequest disposed', quotaRequest.address)
       emitter.off(GlobalEvent.NetworkBlockHeight, handleNetworkBlockHeight)
+      emitter.off(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     };
   }, [emitter, quotaRequest, setQuotaRequest]);
 

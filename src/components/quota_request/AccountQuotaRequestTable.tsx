@@ -45,15 +45,23 @@ export const AccountQuotaRequestTable = () => {
   useEffect(() => {
     const handleUpdate = (update: QuotaRequest) => {
       if (account === update.address) {
-        console.log('Handle QuotaRequestUpdate', update.address)
+        console.log('Handle QuotaRequestUpdated', update.address)
         setQuotaRequest(update)
       }
     }
+    const handleDelete = (address: string) => {
+      if (account === address) {
+        console.log('Handle QuotaRequestDeleted', address)
+        setQuotaRequest(new QuotaRequest())
+      }
+    }
     emitter.on(GlobalEvent.QuotaRequestUpdated, handleUpdate)
+    emitter.on(GlobalEvent.QuotaRequestDeleted, handleDelete)
     updateQuotaRequest()
     return () => {
       console.log('AccountQuotaRequestTable disposed')
       emitter.off(GlobalEvent.QuotaRequestUpdated, handleUpdate)
+      emitter.off(GlobalEvent.QuotaRequestDeleted, handleDelete)
     };
   }, [account, emitter, updateQuotaRequest, setQuotaRequest])
 
