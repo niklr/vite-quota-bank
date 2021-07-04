@@ -10,6 +10,7 @@ export interface IBankService {
   getQuotaRequests(): Promise<string[]>
   getQuotaRequestByAddress(address: string): Promise<QuotaRequest>
   requestQuota(message?: string): Promise<void>
+  deleteRequest(address: string): Promise<void>
 }
 
 export class BankService implements IBankService {
@@ -59,6 +60,10 @@ export class BankService implements IBankService {
   }
 
   async requestQuota(message?: string): Promise<void> {
+    return Promise.resolve()
+  }
+
+  async deleteRequest(address: string): Promise<void> {
     return Promise.resolve()
   }
 }

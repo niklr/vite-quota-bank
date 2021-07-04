@@ -61,13 +61,30 @@ export class BankMockService extends BankService {
         quotaRequests.push(newItem)
         resolve()
         setTimeout(() => {
-          this._emitter.emitQuotaRequestUpdate(newItem)
+          this._emitter.emitQuotaRequestUpdated(newItem)
         }, 500)
       }
     } else {
       setTimeout(() => {
         reject("Request failed. Please try again later.")
       }, 2000)
+    }
+  })
+
+  deleteRequest = async (address: string) => new Promise<void>((resolve, reject) => {
+    this.ensureAccountExists(reject)
+    const existing = quotaRequests.find(e => e.address === address)
+    if (!existing) {
+      reject("Request does not exist.")
+    } else {
+      const index = quotaRequests.indexOf(existing);
+      if (index > -1) {
+        quotaRequests.splice(index, 1);
+      }
+      setTimeout(() => {
+        resolve()
+        this._emitter.emitQuotaRequestDeleted(address)
+      }, 500)
     }
   })
 }

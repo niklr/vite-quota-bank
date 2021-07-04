@@ -49,11 +49,11 @@ export const AccountQuotaRequestTable = () => {
         setQuotaRequest(update)
       }
     }
-    emitter.on(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+    emitter.on(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     updateQuotaRequest()
     return () => {
       console.log('AccountQuotaRequestTable disposed')
-      emitter.off(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+      emitter.off(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     };
   }, [account, emitter, updateQuotaRequest, setQuotaRequest])
 

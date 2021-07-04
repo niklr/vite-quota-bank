@@ -45,10 +45,10 @@ export const BankQuotaRequestTable = () => {
         setQuotaRequests(newQuotaRequests)
       }
     }
-    emitter.on(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+    emitter.on(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     return () => {
       console.log('AccountQuotaRequestTable disposed')
-      emitter.off(GlobalEvent.QuotaRequestUpdate, handleUpdate)
+      emitter.off(GlobalEvent.QuotaRequestUpdated, handleUpdate)
     };
   }, [emitter, quotaRequests, setQuotaRequests])
 
@@ -127,7 +127,7 @@ export const BankQuotaRequestTable = () => {
           </TableContainer>
         </Paper>
       )}
-      <BankDeleteDialog item={selectedItem} open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
+      <BankDeleteDialog item={selectedItem} bank={context.provider.bank} open={deleteDialogOpen} closeFn={handleClose}></BankDeleteDialog>
       <BankStakeDialog item={selectedItem} open={stakeDialogOpen} closeFn={handleClose}></BankStakeDialog>
       <BankWithdrawDialog item={selectedItem} open={withdrawDialogOpen} closeFn={handleClose}></BankWithdrawDialog>
     </div>

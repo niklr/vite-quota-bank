@@ -4,7 +4,8 @@ import { GlobalEvent } from './types';
 
 export interface IGlobalEmitter {
   emitNetworkBlockHeight(height: string): void
-  emitQuotaRequestUpdate(update: QuotaRequest): void
+  emitQuotaRequestUpdated(update: QuotaRequest): void
+  emitQuotaRequestDeleted(address: string): void
   on(event: string | symbol, listener: (...args: any[]) => void): this
   off(event: string | symbol, listener: (...args: any[]) => void): this
 }
@@ -13,7 +14,10 @@ export class GlobalEmitter extends EventEmitter implements IGlobalEmitter {
   emitNetworkBlockHeight(height: string): void {
     this.emit(GlobalEvent.NetworkBlockHeight, height)
   }
-  emitQuotaRequestUpdate(update: QuotaRequest): void {
-    this.emit(GlobalEvent.QuotaRequestUpdate, update)
+  emitQuotaRequestUpdated(update: QuotaRequest): void {
+    this.emit(GlobalEvent.QuotaRequestUpdated, update)
+  }
+  emitQuotaRequestDeleted(address: string): void {
+    this.emit(GlobalEvent.QuotaRequestDeleted, address)
   }
 }
