@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const LoginModal = () => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState<string>('');
   const context = useWeb3Context()
   const { enqueueSnackbar } = useSnackbar();

@@ -23,6 +23,7 @@ export const useAccountQuota = (context: IConnectedWeb3Context, address?: string
 
   return {
     quota,
-    fetchQuota
+    fetchQuota,
+    setQuota
   }
 }

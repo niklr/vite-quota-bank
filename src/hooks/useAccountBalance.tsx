@@ -23,6 +23,7 @@ export const useAccountBalance = (context: IConnectedWeb3Context, address?: stri
 
   return {
     balance,
-    fetchBalance
+    fetchBalance,
+    setBalance
   }
 }

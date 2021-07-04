@@ -49,83 +49,89 @@ export class BankMockService extends BankService {
   })
 
   createRequest = async (message?: string) => new Promise<void>((resolve, reject) => {
-    this.ensureAccountExists(reject)
-    if (message) {
-      if (this.account?.address && quotaRequests.find(e => e.address === this.account?.address)) {
-        reject("Request already exists.")
+    if (this.ensureAccountExists(reject)) {
+      if (message) {
+        if (this.account?.address && quotaRequests.find(e => e.address === this.account?.address)) {
+          reject("Request already exists.")
+        } else {
+          const newItem = new QuotaRequest({
+            address: this.account?.address,
+            message,
+            expirationHeight: this._networkStore.blockHeight + 10
+          })
+          newItem.update(this._networkStore.blockHeight)
+          quotaRequests.push(newItem)
+          resolve()
+          setTimeout(() => {
+            this._emitter.emitQuotaRequestUpdated(newItem)
+          }, 500)
+        }
       } else {
-        const newItem = new QuotaRequest({
-          address: this.account?.address,
-          message,
-          expirationHeight: this._networkStore.blockHeight + 10
-        })
-        newItem.update(this._networkStore.blockHeight)
-        quotaRequests.push(newItem)
-        resolve()
         setTimeout(() => {
-          this._emitter.emitQuotaRequestUpdated(newItem)
-        }, 500)
+          reject("Request failed. Please try again later.")
+        }, 2000)
       }
-    } else {
-      setTimeout(() => {
-        reject("Request failed. Please try again later.")
-      }, 2000)
     }
   })
 
   stakeRequest = async (address: string, amount: number, duration: number) => new Promise<void>((resolve, reject) => {
-    this.ensureAccountExists(reject)
-    if (!amount || amount <= 0) {
-      reject("Please provide a valid amount.")
-    }
-    if (!duration || duration <= 0) {
-      reject("Please provide a valid duration.")
-    }
-    const existing = quotaRequests.find(e => e.address === address)
-    if (!existing) {
-      reject("Request does not exist.")
-    } else {
-      existing.amount = bigNumber.toMin(amount, AppConstants.DefaultDecimals)
-      existing.expirationHeight = this._networkStore.blockHeight + duration
-      const updatedItem = new QuotaRequest(existing)
-      updatedItem.update(this._networkStore.blockHeight)
-      resolve()
-      setTimeout(() => {
-        this._emitter.emitQuotaRequestUpdated(updatedItem)
-      }, 500)
+    if (this.ensureAccountExists(reject)) {
+      if (!amount || amount <= 0) {
+        reject("Please provide a valid amount.")
+        return
+      }
+      if (!duration || duration <= 0) {
+        reject("Please provide a valid duration.")
+        return
+      }
+      const existing = quotaRequests.find(e => e.address === address)
+      if (!existing) {
+        reject("Request does not exist.")
+      } else {
+        existing.amount = bigNumber.toMin(amount, AppConstants.DefaultDecimals)
+        existing.expirationHeight = this._networkStore.blockHeight + duration
+        const updatedItem = new QuotaRequest(existing)
+        updatedItem.update(this._networkStore.blockHeight)
+        resolve()
+        setTimeout(() => {
+          this._emitter.emitQuotaRequestUpdated(updatedItem)
+        }, 500)
+      }
     }
   })
 
   withdrawRequest = async (address: string) => new Promise<void>((resolve, reject) => {
-    this.ensureAccountExists(reject)
-    const existing = quotaRequests.find(e => e.address === address)
-    if (!existing) {
-      reject("Request does not exist.")
-    } else {
-      existing.amount = undefined
-      const updatedItem = new QuotaRequest(existing)
-      updatedItem.update(this._networkStore.blockHeight)
-      resolve()
-      setTimeout(() => {
-        this._emitter.emitQuotaRequestUpdated(updatedItem)
-      }, 500)
+    if (this.ensureAccountExists(reject)) {
+      const existing = quotaRequests.find(e => e.address === address)
+      if (!existing) {
+        reject("Request does not exist.")
+      } else {
+        existing.amount = undefined
+        const updatedItem = new QuotaRequest(existing)
+        updatedItem.update(this._networkStore.blockHeight)
+        resolve()
+        setTimeout(() => {
+          this._emitter.emitQuotaRequestUpdated(updatedItem)
+        }, 500)
+      }
     }
   })
 
   deleteRequest = async (address: string) => new Promise<void>((resolve, reject) => {
-    this.ensureAccountExists(reject)
-    const existing = quotaRequests.find(e => e.address === address)
-    if (!existing) {
-      reject("Request does not exist.")
-    } else {
-      const index = quotaRequests.indexOf(existing);
-      if (index > -1) {
-        quotaRequests.splice(index, 1);
+    if (this.ensureAccountExists(reject)) {
+      const existing = quotaRequests.find(e => e.address === address)
+      if (!existing) {
+        reject("Request does not exist.")
+      } else {
+        const index = quotaRequests.indexOf(existing);
+        if (index > -1) {
+          quotaRequests.splice(index, 1);
+        }
+        setTimeout(() => {
+          resolve()
+          this._emitter.emitQuotaRequestDeleted(address)
+        }, 500)
       }
-      setTimeout(() => {
-        resolve()
-        this._emitter.emitQuotaRequestDeleted(address)
-      }, 500)
     }
   })
 }

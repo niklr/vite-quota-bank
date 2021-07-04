@@ -33,10 +33,12 @@ export class BankService implements IBankService {
     return this._walletManager.getActiveAccount()
   }
 
-  protected ensureAccountExists(reject: (reason?: any) => void): void {
+  protected ensureAccountExists(reject: (reason?: any) => void): boolean {
     if (this.account?.address === undefined) {
       reject("Login and try again.")
+      return false
     }
+    return true
   }
 
   private removeAddressListener(): void {
