@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useWeb3Context } from '.';
+import { MainLoading } from '../components/MainLoading';
 import { ServiceProvider } from '../providers';
 
 export interface IConnectedWeb3Context {
@@ -24,7 +25,6 @@ export const useConnectedWeb3Context = () => {
 
 interface Props {
   children?: React.ReactNode
-  setStatus?: any
 }
 
 /**
@@ -33,6 +33,7 @@ interface Props {
  */
 export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [connection, setConnection] = useState<IConnectedWeb3Context | null>(null)
+  const [isConnected, setIsConnected] = useState(false)
   const context = useWeb3Context()
 
   const { wallet, walletManager } = context
@@ -61,22 +62,28 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       }
       await value.provider.bank.initAsync()
       setConnection(value)
+      setIsConnected(true)
     }
     initAsync()
   }, [wallet, walletManager, provider])
 
   if (!connection) {
-    props.setStatus(true)
-    return null
+    return MainLoading()
   }
 
   const value = {
     ...connection
   }
 
-  props.setStatus(true)
   return (
-    <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
+    <>
+      {isConnected ? (
+        <ConnectedWeb3Context.Provider value={value}>{props.children}</ConnectedWeb3Context.Provider>
+      ) : (
+        <>
+        </>
+      )}
+    </>
   )
 }
 
