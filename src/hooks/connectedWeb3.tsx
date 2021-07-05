@@ -64,6 +64,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
         } else {
           await connection.provider.vite.initAsync(connection.provider.networkStore.network.url)
         }
+        await connection.provider.bank.initAsync()
       }
       if (!connection.provider.vite.isConnected) {
         initAsync()

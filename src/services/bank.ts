@@ -1,11 +1,12 @@
 import { IViteClient } from '../clients';
 import { IGlobalEmitter } from '../emitters/globalEmitter';
 import { INetworkStore } from '../stores';
-import { QuotaRequest } from '../types';
+import { Contract, QuotaRequest } from '../types';
+import { fileUtil } from '../util/fileUtil';
 import { Account, WalletManager } from '../wallet';
 
 export interface IBankService {
-  init(contractAddress: string): void
+  initAsync(contractAddress?: string): Promise<void>
   dispose(): void
   getRequests(): Promise<string[]>
   getRequestByAddress(address: string): Promise<QuotaRequest>
@@ -21,6 +22,7 @@ export class BankService implements IBankService {
   protected readonly _emitter: IGlobalEmitter
   protected readonly _networkStore: INetworkStore
   private readonly _walletManager: WalletManager
+  private _contract?: Contract
 
   constructor(vite: IViteClient, emitter: IGlobalEmitter, networkStore: INetworkStore, walletManager: WalletManager) {
     this._vite = vite
@@ -45,8 +47,11 @@ export class BankService implements IBankService {
 
   }
 
-  init(contractAddress: string): void {
+  async initAsync(contractAddress?: string): Promise<void> {
     this.removeAddressListener()
+    const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/quota_bank.json')
+    this._contract = new Contract(JSON.parse(contract))
+    console.log('Contract name:', this._contract?.contractName)
     // TODO: listen for vmlogs emitted by the specified contract
     // -> emit with GlobalEmitter
   }

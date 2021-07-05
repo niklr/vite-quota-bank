@@ -2,6 +2,26 @@ import { AppConstants } from './constants'
 import { QuotaRequestExtensions } from './type-extensions'
 import { formatUtil } from './util/formatUtil'
 
+export class Contract {
+  contractName?: string
+  binary?: string
+  offChain?: string
+  abi?: any
+
+  constructor(init?: Partial<Contract>) {
+    this.init(init)
+  }
+
+  init(data?: any): void {
+    if (data) {
+      this.contractName = data.contractName
+      this.binary = data.binary
+      this.offChain = data.offChain
+      this.abi = data.abi
+    }
+  }
+}
+
 export class Balance {
   amount: string = AppConstants.DefaultZeroString
   amountFormatted: string = AppConstants.DefaultZeroString
