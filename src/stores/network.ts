@@ -20,16 +20,26 @@ export class NetworkStore implements INetworkStore {
   private _networks: Network[] = [
     new Network({
       id: 1,
+      networkId: 1,
       name: 'MAINNET',
       url: 'wss://node.vite.net/gvite/ws'
     }),
     new Network({
       id: 2,
+      networkId: 2,
       name: 'TESTNET',
       url: 'wss://buidl.vite.net/gvite/ws' // https://buidl.vite.net/gvite
     }),
     new Network({
-      id: 5,
+      id: 3,
+      networkId: 2,
+      name: 'TESTNET+MOCK',
+      url: 'wss://buidl.vite.net/gvite/ws',
+      mock: true
+    }),
+    new Network({
+      id: 4,
+      networkId: 5,
       name: 'DEBUG',
       url: 'ws://localhost:23457'
     })

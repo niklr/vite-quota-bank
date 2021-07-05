@@ -46,7 +46,7 @@ export const NetworkCard = () => {
           <Typography className={classes.title} color="textSecondary">
             Network
           </Typography>
-          <Chip size="small" label={network?.name} /> / <Chip size="small" label={network?.id} />
+          <Chip size="small" label={network?.name} /> / <Chip size="small" label={network?.networkId} />
           <Typography className={classes.blockHeight} variant="h5" component="h2">
             {blockHeight}
           </Typography>

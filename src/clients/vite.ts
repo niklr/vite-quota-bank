@@ -1,4 +1,4 @@
-import { ViteAPI } from '@vite/vitejs';
+import { abi as abiutils, ViteAPI } from '@vite/vitejs';
 import { Balance, Quota } from '../types';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
@@ -70,5 +70,41 @@ export class ViteClient implements IViteClient {
   async getQuotaByAccount(address: string): Promise<Quota> {
     const result = await this.requestAsync("contract_getQuotaByAccount", address);
     return new Quota(result);
+  }
+
+  async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any) {
+    let data = abiutils.encodeFunctionCall(abi, params);
+    let dataBase64 = Buffer.from(data, "hex").toString("base64");
+    let result = await this._provider.request("contract_callOffChainMethod", {
+      selfAddr: contractAddress,
+      offChainCode: offchaincode,
+      data: dataBase64,
+    });
+    if (result) {
+      let resultBytes = Buffer.from(result, "base64").toString("hex");
+      let outputs = [];
+      for (let i = 0; i < abi.outputs.length; i++) {
+        outputs.push(abi.outputs[i].type);
+      }
+      let offchainDecodeResult = abiutils.decodeParameters(outputs, resultBytes);
+      let resultList = [];
+      if (offchainDecodeResult) {
+        for (let i = 0; i < abi.outputs.length; i++) {
+          if (abi.outputs[i].name) {
+            resultList.push({
+              name: abi.outputs[i].name,
+              value: offchainDecodeResult[i],
+            });
+          } else {
+            resultList.push({
+              name: "",
+              value: offchainDecodeResult[i],
+            });
+          }
+        }
+      }
+      return resultList;
+    }
+    return "";
   }
 }

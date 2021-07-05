@@ -13,7 +13,7 @@ export class ServiceProvider {
   constructor(walletManager: WalletManager) {
     this.emitter = new GlobalEmitter()
     this.networkStore = new NetworkStore(this.emitter)
-    if (process.env.REACT_APP_USE_MOCK) {
+    if (this.networkStore.network?.mock) {
       this.vite = new ViteMockClient()
       this.bank = new BankMockService(this.vite, this.emitter, this.networkStore, walletManager)
     } else {

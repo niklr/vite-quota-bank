@@ -6,8 +6,9 @@ import { fileUtil } from '../util/fileUtil';
 import { Account, WalletManager } from '../wallet';
 
 export interface IBankService {
-  initAsync(contractAddress?: string): Promise<void>
+  initAsync(): Promise<void>
   dispose(): void
+  getOwner(): Promise<string>
   getRequests(): Promise<string[]>
   getRequestByAddress(address: string): Promise<QuotaRequest>
   createRequest(message?: string): Promise<void>
@@ -47,7 +48,7 @@ export class BankService implements IBankService {
 
   }
 
-  async initAsync(contractAddress?: string): Promise<void> {
+  async initAsync(): Promise<void> {
     this.removeAddressListener()
     const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/quota_bank.json')
     this._contract = new Contract(JSON.parse(contract))
@@ -58,6 +59,10 @@ export class BankService implements IBankService {
 
   dispose(): void {
     this.removeAddressListener()
+  }
+
+  async getOwner(): Promise<string> {
+    return Promise.resolve('')
   }
 
   async getRequests(): Promise<string[]> {

@@ -41,8 +41,10 @@ export class Balance {
 
 export class Network {
   id?: number
+  networkId?: number
   name?: string
   url?: string
+  mock: boolean = false
 
   constructor(init?: Partial<Network>) {
     this.init(init)
@@ -51,8 +53,10 @@ export class Network {
   init(data?: any): void {
     if (data) {
       this.id = data.id
+      this.networkId = data.networkId
       this.name = data.name
       this.url = data.url
+      this.mock = data.mock ?? false
     }
   }
 }
