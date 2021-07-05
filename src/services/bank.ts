@@ -34,10 +34,6 @@ export class BankService implements IBankService {
     this._walletManager = walletManager
   }
 
-  get account(): Maybe<Account> {
-    return this._walletManager.getActiveAccount()
-  }
-
   private ensureContractExists(): Contract {
     if (this._contract?.address === undefined) {
       throw new Error("Bank contract is not defined.")
@@ -46,12 +42,13 @@ export class BankService implements IBankService {
     }
   }
 
-  protected ensureAccountExists(reject: (reason?: any) => void): boolean {
-    if (this.account?.address === undefined) {
-      reject("Login and try again.")
-      return false
+  protected ensureAccountExists(): Account {
+    const account = this._walletManager.getActiveAccount()
+    if (account?.address === undefined) {
+      throw new Error("Login and try again.")
+    } else {
+      return account
     }
-    return true
   }
 
   private removeAddressListener(): void {
@@ -79,15 +76,25 @@ export class BankService implements IBankService {
   }
 
   async getRequests(): Promise<string[]> {
-    return Promise.resolve([])
+    const contract = this.ensureContractExists()
+    const result = await this._vite.callOffChainMethodAsync(contract.address, this.getOffchainMethodAbi('getRequestors'), contract.offChain, [])
+    return result[0].value;
   }
 
   async getRequestByAddress(address: string): Promise<QuotaRequest> {
-    return Promise.reject(`Quota request for '${address}' not found.`)
+    const contract = this.ensureContractExists()
+    const result = await this._vite.callOffChainMethodAsync(contract.address, this.getOffchainMethodAbi('getRequest'), contract.offChain, [address])
+    const request = new QuotaRequest(this.objectFromEntries(result))
+    request.address = address
+    request.update(this._networkStore.blockHeight)
+    return request;
   }
 
   async createRequest(message?: string): Promise<void> {
-    return Promise.resolve()
+    const contract = this.ensureContractExists()
+    const account = this.ensureAccountExists()
+    const result = await this._vite.callContractAsync(account, 'RequestQuota', contract.abi, [message], AppConstants.DefaultZeroString, contract.address)
+    console.log(result)
   }
 
   async stakeRequest(address: string, amount: number, duration: number): Promise<void> {
@@ -119,4 +126,12 @@ export class BankService implements IBankService {
       throw new Error(`The offchain method '${name}' does not exist.'`)
     }
   }
+
+  private objectFromEntries = (entries: any) => {
+    return Object.fromEntries(
+      entries.map((entry: any) => {
+        return [entry.name, entry.value];
+      })
+    );
+  };
 }

@@ -14,6 +14,10 @@ export abstract class commonUtil {
     }
   }
 
+  static isNullOrDefault(value?: string, defaultValue?: string): boolean {
+    return commonUtil.isNullOrWhitespace(value) || value === defaultValue
+  }
+
   static isExpired(expirationHeight?: string, blockHeight?: string): boolean {
     if (expirationHeight && blockHeight) {
       return bigNumber.compared(blockHeight, expirationHeight) === 1

@@ -1,6 +1,7 @@
-import { abi as abiutils, utils, ViteAPI } from '@vite/vitejs';
+import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
 import { Balance, Quota } from '../types';
 import { Task } from '../util/task';
+import { Account } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -13,6 +14,7 @@ export interface IViteClient {
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
+  callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
   waitForAccountBlockAsync(address: string, height: string): Promise<any>
 }
@@ -73,6 +75,26 @@ export class ViteClient implements IViteClient {
   async getQuotaByAccount(address: string): Promise<Quota> {
     const result = await this.requestAsync("contract_getQuotaByAccount", address);
     return new Quota(result);
+  }
+
+  async callContractAsync(
+    account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string
+  ): Promise<any> {
+    const block = accountBlock
+      .createAccountBlock("callContract", {
+        address: account.address,
+        abi,
+        methodName,
+        amount,
+        toAddress,
+        params,
+      })
+      .setProvider(this._client)
+      .setPrivateKey(account.privateKey);
+
+    await block.autoSetPreviousAccountBlock();
+    const result = await block.sign().send();
+    return result;
   }
 
   async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any> {

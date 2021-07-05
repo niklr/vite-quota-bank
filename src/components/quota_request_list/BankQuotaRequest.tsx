@@ -67,15 +67,15 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
   }
 
   const canStake = (item: QuotaRequest) => {
-    return !item.amount
+    return commonUtil.isNullOrDefault(item.amount, AppConstants.DefaultZeroString)
   }
 
   const canDelete = (item: QuotaRequest) => {
-    return !item.amount
+    return commonUtil.isNullOrDefault(item.amount, AppConstants.DefaultZeroString)
   }
 
   const canWithdraw = (item: QuotaRequest) => {
-    return item.amount && item.isExpired
+    return item.amount && item.amount !== AppConstants.DefaultZeroString && item.isExpired
   }
 
   const showActions = () => {

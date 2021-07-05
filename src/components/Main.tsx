@@ -13,7 +13,7 @@ export const Main: React.FC = (props: any) => {
   useEffect(() => {
     async function getOwnerAsync() {
       const owner = await context.provider.bank.getOwnerAsync()
-      console.log(owner)
+      console.log('Bank owner:', owner)
     }
     getOwnerAsync()
   }, [context])
