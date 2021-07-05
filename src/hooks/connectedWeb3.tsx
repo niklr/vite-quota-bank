@@ -65,6 +65,9 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
       setIsConnected(true)
     }
     initAsync()
+    return () => {
+      provider.dispose()
+    }
   }, [wallet, walletManager, provider])
 
   if (!connection) {

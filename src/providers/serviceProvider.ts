@@ -21,4 +21,10 @@ export class ServiceProvider {
       this.bank = new BankService(this.vite, this.emitter, this.networkStore, walletManager)
     }
   }
+
+  dispose(): void {
+    console.log("Disposing ServiceProvider")
+    this.vite.dispose()
+    this.bank.dispose()
+  }
 }

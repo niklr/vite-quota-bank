@@ -16,6 +16,8 @@ export interface IViteClient {
   getQuotaByAccount(address: string): Promise<Quota>
   callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
+  createAddressListenerAsync(address: string): Promise<any>
+  removeListener(event: any): void
   waitForAccountBlockAsync(address: string, height: string): Promise<any>
 }
 
@@ -51,6 +53,7 @@ export class ViteClient implements IViteClient {
   });
 
   dispose(): void {
+    console.log("Disposing ViteClient");
     this._provider.disconnect();
     this._isConnected = false;
   }
@@ -131,6 +134,26 @@ export class ViteClient implements IViteClient {
       return resultList;
     }
     return "";
+  }
+
+  async createAddressListenerAsync(address: string): Promise<any> {
+    const payload = {
+      addressHeightRange: {
+        placeholder: {
+          fromHeight: "0",
+          toHeight: "0",
+        },
+      },
+    };
+    let tempPayload = JSON.stringify(payload);
+    tempPayload = tempPayload.replace("placeholder", address);
+    const result = await this._client.subscribe("createVmlogSubscription", JSON.parse(tempPayload));
+    console.log(result)
+    return result;
+  }
+
+  removeListener(event: any): void {
+    this._client.unsubscribe(event);
   }
 
   async waitForAccountBlockAsync(address: string, height: string): Promise<any> {

@@ -7,6 +7,7 @@ import { fileUtil } from '../util/fileUtil';
 import { Account, WalletManager } from '../wallet';
 
 export interface IBankService {
+  readonly listener: void
   initAsync(): Promise<void>
   dispose(): void
   getOwnerAsync(): Promise<string>
@@ -26,12 +27,20 @@ export class BankService implements IBankService {
   private readonly _walletManager: WalletManager
   private _contract?: Contract
   private _offchainMethods: Map<string, string> = new Map<string, string>()
+  private _listener: any
 
   constructor(vite: IViteClient, emitter: IGlobalEmitter, networkStore: INetworkStore, walletManager: WalletManager) {
     this._vite = vite
     this._emitter = emitter
     this._networkStore = networkStore
     this._walletManager = walletManager
+  }
+
+  get listener(): any {
+    if (!this._listener) {
+      throw new Error("Listener is not defined.")
+    }
+    return this._listener
   }
 
   private ensureContractExists(): Contract {
@@ -52,7 +61,9 @@ export class BankService implements IBankService {
   }
 
   private removeAddressListener(): void {
-
+    if (this._listener) {
+      this._vite.removeListener(this._listener)
+    }
   }
 
   async initAsync(): Promise<void> {
@@ -63,9 +74,11 @@ export class BankService implements IBankService {
     console.log('Contract name:', this._contract?.contractName)
     // TODO: listen for vmlogs emitted by the specified contract
     // -> emit with GlobalEmitter
+    this._listener = await this._vite.createAddressListenerAsync(this._contract.address)
   }
 
   dispose(): void {
+    console.log("Disposing BankService")
     this.removeAddressListener()
   }
 
