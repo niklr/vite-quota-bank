@@ -1,5 +1,6 @@
-import { abi as abiutils, ViteAPI } from '@vite/vitejs';
+import { abi as abiutils, utils, ViteAPI } from '@vite/vitejs';
 import { Balance, Quota } from '../types';
+import { Task } from '../util/task';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -12,6 +13,8 @@ export interface IViteClient {
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
+  callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
+  waitForAccountBlockAsync(address: string, height: string): Promise<any>
 }
 
 export class ViteClient implements IViteClient {
@@ -72,7 +75,7 @@ export class ViteClient implements IViteClient {
     return new Quota(result);
   }
 
-  async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any) {
+  async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any> {
     let data = abiutils.encodeFunctionCall(abi, params);
     let dataBase64 = Buffer.from(data, "hex").toString("base64");
     let result = await this._provider.request("contract_callOffChainMethod", {
@@ -106,5 +109,87 @@ export class ViteClient implements IViteClient {
       return resultList;
     }
     return "";
+  }
+
+  async waitForAccountBlockAsync(address: string, height: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      let result: any = undefined;
+      let error: any = undefined;
+      const task = new Task(async () => {
+        try {
+          let blockByHeight = await this._provider.request(
+            'ledger_getAccountBlockByHeight',
+            address,
+            height
+          );
+
+          if (!blockByHeight) {
+            return true;
+          }
+
+          let receiveBlockHash = blockByHeight.receiveBlockHash;
+          if (!receiveBlockHash) {
+            return true;
+          }
+
+          let blockByHash = await this._provider.request('ledger_getAccountBlockByHash', receiveBlockHash);
+          if (!blockByHash) {
+            return true;
+          }
+
+          result = {
+            ...this.getAccountBlockStatus(blockByHash),
+            accountBlock: blockByHash
+          }
+
+          return false;
+        } catch (err) {
+          error = err
+          return false;
+        }
+      }, 500);
+      task.start(() => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  private getAccountBlockStatus(accountBlock: any) {
+    let status = this.resolveAccountBlockData(accountBlock);
+    let statusTxt = '';
+    switch (status) {
+      case 0:
+        statusTxt = '0, Execution succeed';
+        break;
+      case 1:
+        statusTxt = '1, Execution reverted';
+        break;
+      case 2:
+        statusTxt = '2, Max call depth exceeded';
+        break;
+    }
+    return {
+      status,
+      statusTxt
+    };
+  }
+
+  private resolveAccountBlockData(accountBlock: any) {
+    if (
+      (accountBlock.blockType !== 4 && accountBlock.blockType !== 5) ||
+      !accountBlock.data
+    ) {
+      return 0;
+    }
+    let bytes = utils._Buffer.from(accountBlock.data, 'base64');
+
+    if (bytes.length !== 33) {
+      return 0;
+    }
+    return bytes[32];
   }
 }

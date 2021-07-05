@@ -1,4 +1,5 @@
 import { IViteClient } from '../clients';
+import { AppConstants } from '../constants';
 import { IGlobalEmitter } from '../emitters/globalEmitter';
 import { INetworkStore } from '../stores';
 import { Contract, QuotaRequest } from '../types';
@@ -8,7 +9,7 @@ import { Account, WalletManager } from '../wallet';
 export interface IBankService {
   initAsync(): Promise<void>
   dispose(): void
-  getOwner(): Promise<string>
+  getOwnerAsync(): Promise<string>
   getRequests(): Promise<string[]>
   getRequestByAddress(address: string): Promise<QuotaRequest>
   createRequest(message?: string): Promise<void>
@@ -36,6 +37,14 @@ export class BankService implements IBankService {
     return this._walletManager.getActiveAccount()
   }
 
+  private ensureContractExists(): Contract {
+    if (this._contract?.address === undefined) {
+      throw new Error("Bank contract is not defined.")
+    } else {
+      return this._contract
+    }
+  }
+
   protected ensureAccountExists(reject: (reason?: any) => void): boolean {
     if (this.account?.address === undefined) {
       reject("Login and try again.")
@@ -52,6 +61,7 @@ export class BankService implements IBankService {
     this.removeAddressListener()
     const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/quota_bank.json')
     this._contract = new Contract(JSON.parse(contract))
+    this._contract.address = AppConstants.QuotaContractAddress
     console.log('Contract name:', this._contract?.contractName)
     // TODO: listen for vmlogs emitted by the specified contract
     // -> emit with GlobalEmitter
@@ -61,8 +71,10 @@ export class BankService implements IBankService {
     this.removeAddressListener()
   }
 
-  async getOwner(): Promise<string> {
-    return Promise.resolve('')
+  async getOwnerAsync(): Promise<string> {
+    const contract = this.ensureContractExists()
+    const result = await this._vite.callOffChainMethodAsync(contract.address, contract.abi, contract.offChain, [])
+    return result[0].value;
   }
 
   async getRequests(): Promise<string[]> {

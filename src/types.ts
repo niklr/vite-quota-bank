@@ -3,10 +3,11 @@ import { QuotaRequestExtensions } from './type-extensions'
 import { formatUtil } from './util/formatUtil'
 
 export class Contract {
-  contractName?: string
-  binary?: string
-  offChain?: string
-  abi?: any
+  address!: string
+  contractName!: string
+  binary!: string
+  offChain!: string
+  abi: any
 
   constructor(init?: Partial<Contract>) {
     this.init(init)
