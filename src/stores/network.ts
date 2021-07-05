@@ -97,7 +97,7 @@ export class NetworkStore implements INetworkStore {
   }
 
   get defaultNetwork(): Network {
-    return this._networks[1]
+    return this._networks[2]
   }
 
   get networks(): Network[] {

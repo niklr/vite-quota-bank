@@ -59,7 +59,7 @@ export class BankService implements IBankService {
     this.removeAddressListener()
     const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/quota_bank.json')
     this._contract = new Contract(JSON.parse(contract))
-    this._contract.address = AppConstants.QuotaContractAddress
+    this._contract.address = AppConstants.BankContractAddress
     console.log('Contract name:', this._contract?.contractName)
     // TODO: listen for vmlogs emitted by the specified contract
     // -> emit with GlobalEmitter
@@ -106,7 +106,10 @@ export class BankService implements IBankService {
   }
 
   async deleteRequest(address: string): Promise<void> {
-    return Promise.resolve()
+    const contract = this.ensureContractExists()
+    const account = this.ensureAccountExists()
+    const result = await this._vite.callContractAsync(account, 'DeleteRequest', contract.abi, [address], AppConstants.DefaultZeroString, contract.address)
+    console.log(result)
   }
 
   private getOffchainMethodAbi(name: string): string {

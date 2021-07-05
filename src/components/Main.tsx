@@ -31,7 +31,7 @@ export const Main: React.FC = (props: any) => {
               <NetworkCard></NetworkCard>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
-              <AddressSummaryTable title="Bank" address={AppConstants.QuotaContractAddress}></AddressSummaryTable>
+              <AddressSummaryTable title="Bank" address={AppConstants.BankContractAddress}></AddressSummaryTable>
             </Grid>
             <Grid item xs={12}>
               <CreateQuotaRequest></CreateQuotaRequest>

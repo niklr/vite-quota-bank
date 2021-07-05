@@ -23,14 +23,19 @@ export abstract class formatUtil {
 
   static formatSnackbarMessage(data: any): string {
     if (data) {
+      console.log(data)
       let message: string
-      if (commonUtil.isString(data)) {
-        message = JSON.stringify(data)
+      if (!commonUtil.isString(data)) {
+        if (data.error?.message) {
+          message = data.error.message
+        } else {
+          message = JSON.stringify(data)
+        }
       } else {
         message = data
       }
-      if (data.length > 48) {
-        return message.substr(0, 48) + "..."
+      if (message.length > 128) {
+        return message.substr(0, 128) + "..."
       }
       return message
     }
