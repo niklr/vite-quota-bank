@@ -25,6 +25,7 @@ export class BankService implements IBankService {
   protected readonly _networkStore: INetworkStore
   private readonly _walletManager: WalletManager
   private _contract?: Contract
+  private _offchainMethods: Map<string, string> = new Map<string, string>()
 
   constructor(vite: IViteClient, emitter: IGlobalEmitter, networkStore: INetworkStore, walletManager: WalletManager) {
     this._vite = vite
@@ -73,7 +74,7 @@ export class BankService implements IBankService {
 
   async getOwnerAsync(): Promise<string> {
     const contract = this.ensureContractExists()
-    const result = await this._vite.callOffChainMethodAsync(contract.address, contract.abi, contract.offChain, [])
+    const result = await this._vite.callOffChainMethodAsync(contract.address, this.getOffchainMethodAbi('getOwner'), contract.offChain, [])
     return result[0].value;
   }
 
@@ -99,5 +100,23 @@ export class BankService implements IBankService {
 
   async deleteRequest(address: string): Promise<void> {
     return Promise.resolve()
+  }
+
+  private getOffchainMethodAbi(name: string): string {
+    const contract = this.ensureContractExists()
+    let result: Maybe<string>
+    if (this._offchainMethods.has(name)) {
+      result = this._offchainMethods.get(name)
+    } else {
+      result = contract.abi.find(e => e.type === "offchain" && e.name === name)
+      if (result) {
+        this._offchainMethods.set(name, result)
+      }
+    }
+    if (result) {
+      return result
+    } else {
+      throw new Error(`The offchain method '${name}' does not exist.'`)
+    }
   }
 }

@@ -52,25 +52,18 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
     console.log('ConnectedWeb3.account', wallet?.active?.address)
 
-    setConnection(value)
-  }, [wallet, walletManager, provider])
-
-  useEffect(() => {
-    if (connection) {
-      const initAsync = async () => {
-        console.log('initAsync')
-        if (!connection.provider.networkStore.network?.url) {
-          throw new Error('Network is not defined')
-        } else {
-          await connection.provider.vite.initAsync(connection.provider.networkStore.network.url)
-        }
-        await connection.provider.bank.initAsync()
+    const initAsync = async () => {
+      console.log('initAsync')
+      if (!value.provider.networkStore.network?.url) {
+        throw new Error('Network is not defined')
+      } else {
+        await value.provider.vite.initAsync(value.provider.networkStore.network.url)
       }
-      if (!connection.provider.vite.isConnected) {
-        initAsync()
-      }
+      await value.provider.bank.initAsync()
+      setConnection(value)
     }
-  }, [connection])
+    initAsync()
+  }, [wallet, walletManager, provider])
 
   if (!connection) {
     props.setStatus(true)

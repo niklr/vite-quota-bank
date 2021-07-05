@@ -5,7 +5,7 @@ export abstract class commonUtil {
     return typeof value === 'string' || value instanceof String;
   }
 
-  static isNullOrWhitespace(value: string): boolean {
+  static isNullOrWhitespace(value?: string): boolean {
     if (!commonUtil.isString(value)) {
       // console.log('Expected a string but got: ', value);
       return true;

@@ -53,9 +53,9 @@ export class ViteClient implements IViteClient {
     this._isConnected = false;
   }
 
-  async requestAsync(method: string, params?: any): Promise<any> {
+  async requestAsync(method: string, ...args: any[]): Promise<any> {
     if (this._isConnected) {
-      return this._client.request(method, params);
+      return this._client.request(method, ...args);
     } else {
       return Promise.reject('Vite client is not ready to make requests.');
     }
@@ -78,7 +78,7 @@ export class ViteClient implements IViteClient {
   async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any> {
     let data = abiutils.encodeFunctionCall(abi, params);
     let dataBase64 = Buffer.from(data, "hex").toString("base64");
-    let result = await this._provider.request("contract_callOffChainMethod", {
+    let result = await this.requestAsync("contract_callOffChainMethod", {
       selfAddr: contractAddress,
       offChainCode: offchaincode,
       data: dataBase64,
@@ -117,7 +117,7 @@ export class ViteClient implements IViteClient {
       let error: any = undefined;
       const task = new Task(async () => {
         try {
-          let blockByHeight = await this._provider.request(
+          let blockByHeight = await this.requestAsync(
             'ledger_getAccountBlockByHeight',
             address,
             height
@@ -132,7 +132,7 @@ export class ViteClient implements IViteClient {
             return true;
           }
 
-          let blockByHash = await this._provider.request('ledger_getAccountBlockByHash', receiveBlockHash);
+          let blockByHash = await this.requestAsync('ledger_getAccountBlockByHash', receiveBlockHash);
           if (!blockByHash) {
             return true;
           }

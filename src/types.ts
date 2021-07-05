@@ -7,7 +7,7 @@ export class Contract {
   contractName!: string
   binary!: string
   offChain!: string
-  abi: any
+  abi!: any[]
 
   constructor(init?: Partial<Contract>) {
     this.init(init)

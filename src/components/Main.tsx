@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Grid } from '@material-ui/core'
 import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper } from './common'
 import { NetworkCard } from './network'
@@ -8,6 +9,14 @@ import { AppConstants } from '../constants'
 
 export const Main: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
+
+  useEffect(() => {
+    async function getOwnerAsync() {
+      const owner = await context.provider.bank.getOwnerAsync()
+      console.log(owner)
+    }
+    getOwnerAsync()
+  }, [context])
 
   return (
     <>
