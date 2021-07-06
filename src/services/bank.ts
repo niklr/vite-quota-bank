@@ -117,8 +117,8 @@ export class BankService implements IBankService {
   async createRequest(note?: string): Promise<void> {
     const contract = this.ensureContractExists()
     const account = this.ensureAccountExists()
-    const result = await this._vite.callContractAsync(account, 'RequestQuota', contract.abi, [note], AppConstants.DefaultZeroString, contract.address)
-    console.log(result)
+    const result = await this._vite.callContractAsync(account, 'CreateRequest', contract.abi, [note], AppConstants.DefaultZeroString, contract.address)
+    await this.handleResponseAsync(account.address, result.height)
   }
 
   async stakeRequest(address: string, amount: number, duration: number): Promise<void> {
@@ -133,7 +133,7 @@ export class BankService implements IBankService {
     const contract = this.ensureContractExists()
     const account = this.ensureAccountExists()
     const result = await this._vite.callContractAsync(account, 'DeleteRequest', contract.abi, [address], AppConstants.DefaultZeroString, contract.address)
-    console.log(result)
+    await this.handleResponseAsync(account.address, result.height)
   }
 
   private getOffchainMethodAbi(name: string): string {
@@ -153,6 +153,16 @@ export class BankService implements IBankService {
       throw new Error(`The offchain method '${name}' does not exist.'`)
     }
   }
+
+  private handleResponseAsync = async (address: string, height: string) => new Promise<void>((resolve, reject) => {
+    this._vite.waitForAccountBlockAsync(address, height).then((result: any) => {
+      if (result?.status === 0) {
+        resolve()
+      } else {
+        reject(result?.statusTxt ?? "Something went wrong.")
+      }
+    })
+  })
 
   private objectFromEntries = (entries: any) => {
     return Object.fromEntries(

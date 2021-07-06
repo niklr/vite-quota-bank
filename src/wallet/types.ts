@@ -1,7 +1,7 @@
 export class Account {
-  id?: string
-  privateKey?: string
-  address?: string
+  id!: string
+  privateKey!: string
+  address!: string
 
   constructor(init?: Partial<Account>) {
     this.init(init)
