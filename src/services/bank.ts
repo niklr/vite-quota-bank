@@ -2,7 +2,9 @@ import { IViteClient } from '../clients';
 import { AppConstants } from '../constants';
 import { IGlobalEmitter } from '../emitters/globalEmitter';
 import { INetworkStore } from '../stores';
-import { Contract, QuotaRequest } from '../types';
+import { Contract, IVmLog, QuotaRequest, VmLogEvent } from '../types';
+import { commonUtil } from '../util/commonUtil';
+import { Ensure } from '../util/ensure';
 import { fileUtil } from '../util/fileUtil';
 import { Account, WalletManager } from '../wallet';
 
@@ -83,6 +85,9 @@ export class BankService implements IBankService {
           const result = results[index];
           const vmLog = this._vite.decodeVmLog(result.vmlog, this._contract.abi);
           console.log(vmLog ?? result)
+          if (vmLog) {
+            this.handleVmLogAsync(vmLog)
+          }
         }
       }
     });
@@ -109,6 +114,9 @@ export class BankService implements IBankService {
     const contract = this.ensureContractExists()
     const result = await this._vite.callOffChainMethodAsync(contract.address, this.getOffchainMethodAbi('getRequest'), contract.offChain, [address])
     const request = new QuotaRequest(this.objectFromEntries(result))
+    if (this.isEmptyRequest(request)) {
+      throw new Error(`No request found for '${address}'.`)
+    }
     request.address = address
     request.update(this._networkStore.blockHeight)
     return request;
@@ -154,6 +162,10 @@ export class BankService implements IBankService {
     }
   }
 
+  private isEmptyRequest(request: QuotaRequest): boolean {
+    return commonUtil.isNullOrDefault(request.expirationHeight, AppConstants.DefaultZeroString)
+  }
+
   private handleResponseAsync = async (address: string, height: string) => new Promise<void>((resolve, reject) => {
     this._vite.waitForAccountBlockAsync(address, height).then((result: any) => {
       if (result?.status === 0) {
@@ -163,6 +175,23 @@ export class BankService implements IBankService {
       }
     })
   })
+
+  private async handleVmLogAsync(vmlog: IVmLog): Promise<void> {
+    try {
+      if (vmlog.event === VmLogEvent.RequestCreated) {
+        Ensure.notNullOrWhiteSpace(vmlog.args?.addr, 'vmlog.args.addr')
+        const request = await this.getRequestByAddress(vmlog.args?.addr)
+        this._emitter.emitQuotaRequestUpdated(request)
+      } else if (vmlog.event === VmLogEvent.RequestDeleted) {
+        Ensure.notNullOrWhiteSpace(vmlog.args?.addr, 'vmlog.args.addr')
+        this._emitter.emitQuotaRequestDeleted(vmlog.args?.addr)
+      } else {
+        console.log('Unknown vmlog event.')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   private objectFromEntries = (entries: any) => {
     return Object.fromEntries(

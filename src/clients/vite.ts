@@ -1,5 +1,5 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
-import { Balance, Quota } from '../types';
+import { Balance, IVmLog, Quota } from '../types';
 import { Task } from '../util/task';
 import { Account } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
@@ -16,7 +16,7 @@ export interface IViteClient {
   getQuotaByAccount(address: string): Promise<Quota>
   callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
-  decodeVmLog(vmLog: any, abi: any): any
+  decodeVmLog(vmLog: any, abi: any): Maybe<IVmLog>
   createAddressListenerAsync(address: string): Promise<any>
   removeListener(event: any): void
   waitForAccountBlockAsync(address: string, height: string): Promise<any>
@@ -137,7 +137,7 @@ export class ViteClient implements IViteClient {
     return "";
   }
 
-  decodeVmLog(vmLog: any, abi: any): any {
+  decodeVmLog(vmLog: any, abi: any): Maybe<IVmLog> {
     let topics = vmLog.topics;
     for (let j = 0; j < abi.length; j++) {
       let abiItem = abi[j];
@@ -156,6 +156,7 @@ export class ViteClient implements IViteClient {
         }
       }
     }
+    return undefined;
   }
 
   async createAddressListenerAsync(address: string): Promise<any> {

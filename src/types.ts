@@ -133,3 +133,14 @@ export class QuotaRequest {
       && this.status === other.status;
   }
 }
+
+export interface IVmLog {
+  event: string
+  topic: string
+  args: any
+}
+
+export enum VmLogEvent {
+  RequestCreated = 'RequestCreated',
+  RequestDeleted = 'RequestDeleted'
+}
