@@ -5,7 +5,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import { Button, TextField } from '@material-ui/core';
 import { useWeb3Context } from '../../hooks';
-import { WalletConstants } from '../../wallet/constants';
 import { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 
@@ -35,7 +34,6 @@ export const LoginModal = () => {
   useEffect(() => {
     if (open) {
       console.log('login modal opened')
-      setMnemonic(WalletConstants.DefaultMnemonic)
     }
   }, [open])
 

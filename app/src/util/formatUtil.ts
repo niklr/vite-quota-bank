@@ -26,7 +26,10 @@ export abstract class formatUtil {
       console.log(data)
       let message: string
       if (!commonUtil.isString(data)) {
-        if (data.error?.message) {
+        if (data.message) {
+          message = data.message
+        }
+        else if (data.error?.message) {
           message = data.error.message
         } else {
           message = JSON.stringify(data)
