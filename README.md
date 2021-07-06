@@ -8,6 +8,14 @@ Users can lock their own VITE to secure Quota, or someone else can lock VITE to 
 	<img src="assets/app.gif" alt="VITE Quota Bank">
 </h1>
 
+## Features/requirements
+
+- A frontend for Quota Bank, where users can apply for Quota (the Quota Bank can set its own standards for who would be eligible)
+- Ability to lock VITE on behalf of said users
+- Display the amount of VITE in reserve, to be used for locking
+- A way to see which addresses received how much Quota
+- The Quota Bank needs to set its own policies for expiration of locking support (e.g., Quota will only be provided to applicants for two weeks)
+
 ## Current limitations
 
 This project was developed as part of the Gitcoin Grants Round 10 Hackathon taking place from Jun 16, 2021 to Jul 7, 2021. 
@@ -18,9 +26,9 @@ At that time the most recent version of `soliditypp` was `0.4.3` which has some 
 
 To overcome the mentioned limitations temporarily, the following measures have been applied/implemented:
 
-- a mock contract to simulate the behaviour of the built-in `Quota` contract
-- reduced the functionality of the `QuotaBank` contract to its bare minimum to showcase the proof-of-concept on `TestNet`
-- a mock service on client-side to simulate the behaviour of functionalities currently missing by the `QuotaBank` contract
+- a mock contract to simulate and test the behaviour of the built-in `Quota` contract
+- reduced the functionality of the `QuotaBank` contract to its bare minimum to showcase the PoC on `TestNet`
+- a mock service on client-side to simulate and test the behaviour of functionalities currently missing by the `QuotaBank` contract
 
 ## Deploy contract
 
