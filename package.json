@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@vite/vitejs": "^2.3.12",
+    "@vite/vitejs-abi": "^2.3.12",
+    "@vite/vitejs-http": "^2.3.12",
+    "@vite/vitejs-ws": "^2.3.12",
+    "bignumber.js": "^9.0.1"
+  }
+}

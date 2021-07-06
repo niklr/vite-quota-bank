@@ -1,0 +1,66 @@
+pragma soliditypp ^0.4.3;
+
+contract QuotaMock {
+    address owner;
+    uint64 lastStakeHeight;
+
+    struct StakeInfo {
+        tokenId token;
+        uint256 amount;
+        address stakeAddress;
+        address beneficiary;
+        uint8 bid;
+        uint64 stakeHeight;
+    }
+
+    // events
+    event StakeDelegated(address indexed stakeAddress, address indexed beneficiary, uint8 bid, uint64 stakeHeight, bool success, string sucessStr);
+    event StakeDelegateCancelled(address indexed stakeAddress, address indexed beneficiary, uint256 amount, uint8 bid);
+
+    // messages
+    message DelegateStakeCallback(address stakeAddress, address beneficiary, uint8 bid, uint64 stakeHeight, bool success);
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    getter getLastStakeHeight() returns(uint64){
+        return lastStakeHeight;
+    }
+
+    function SendDelegateStakeCallback(address sender, StakeInfo memory info, bool success) private {
+        if (success) {
+            send(sender, DelegateStakeCallback(info.stakeAddress, info.beneficiary, info.bid, info.stakeHeight, success));
+        } else {
+            // TODO: send amount back
+            send(sender, DelegateStakeCallback(info.stakeAddress, info.beneficiary, info.bid, info.stakeHeight, success));
+        }
+        // If no event is emitted it seems the message is never sent (received by the QuotaBank respectively)
+        emit StakeDelegated(info.stakeAddress, info.beneficiary, info.bid, info.stakeHeight, success, success ? "true" : "false");
+    }
+
+    // - stakeAddress: string address Address of original staking account
+    // - beneficiary: string address Address of staking beneficiary
+    // - bid: uint8 Business id. Staking records from the same original staking address and for the same beneficiary will be categorized into different groups by business id. 
+    // The locking period of each group will be dependent on the last staking record among the individual business group.
+    // - stakeHeight: string uint64 Locking period in terms of number of snapshot blocks. No less than 259,200.   
+    onMessage DelegateStake(address stakeAddress, address beneficiary, uint8 bid, uint64 stakeHeight) payable {
+        StakeInfo memory info = StakeInfo(msg.tokenid, msg.amount, stakeAddress, beneficiary, bid, stakeHeight);
+        if (stakeHeight < 259200) {
+            SendDelegateStakeCallback(msg.sender, info, false);
+            // require(stakeHeight >= 259200, "Unsupported stake height.");
+        } else {
+            lastStakeHeight = stakeHeight;
+            SendDelegateStakeCallback(msg.sender, info, true);
+        }
+    }
+
+    // - stakeAddress: string address Address of original staking account
+    // - beneficiary: string address Address of staking beneficiary
+    // - amount: string bigint Amount to retrieve. Cannot be less than 134 VITE. The remaining staking amount cannot be less than 134 VITE.
+    // - bid: uint8 Business id. Staking records from the same original staking address and for the same beneficiary will be categorized into different groups by business id. 
+    // The locking period of each group will be dependent on the last staking record among the individual business group.
+    onMessage CancelDelegateStake(address stakeAddress, address beneficiary, uint256 amount, uint8 bid) {
+        emit StakeDelegateCancelled(stakeAddress, beneficiary, amount, bid);
+    }
+}

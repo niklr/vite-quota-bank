@@ -1,0 +1,176 @@
+pragma soliditypp ^0.4.3;
+
+contract QuotaBank {
+    address owner;
+    address quotaContract;
+    uint reserves;
+    mapping(address => RequestInfo) requestMap;
+    address[] requestors;
+
+    tokenId token = tokenId("tti_5649544520544f4b454e6e40");
+
+    struct RequestInfo {
+        bool exists;
+        uint256 expirationHeight;
+        uint256 amount;
+        string note;
+    }
+
+    // events
+    event ReservesFunded(address indexed addr, uint256 amount);
+    event ReservesWithdrawn(address indexed addr, uint256 amount);
+    event RequestCreated(address indexed addr, string note);
+    event RequestDeleted(address indexed addr, uint256 expirationHeight, uint256 amount, string note);
+    event DelegateStakeCallbackReceived(address stakeAddress, address beneficiary, uint8 bid, uint64 stakeHeight, bool success, string successStr);
+
+    // messages
+    message DelegateStake(address stakeAddress, address beneficiary, uint8 bid, uint64 stakeHeight);
+
+    constructor() public {
+        owner = msg.sender;
+        quotaContract = address("vite_0000000000000000000000000000000000000003f6af7459b9");
+    }
+
+    function getHeight() private view returns(uint256) {
+        // TODO: replace with height()
+        return block.number;
+    }
+
+    function isExisting(address addr) private view returns(bool) {
+        return requestMap[addr].exists;
+    }
+
+    function upsertRequestInternal(address addr, uint256 expirationHeight, uint256 amount, string memory note, bool replaceNote) private {
+        if (isExisting(addr)) {
+            requestMap[addr].expirationHeight = expirationHeight;
+            requestMap[addr].amount = amount;
+            if (replaceNote) {
+                requestMap[addr].note = note;
+            }
+        } else {
+            requestors.push(addr);
+            requestMap[addr].exists = true;
+            requestMap[addr].expirationHeight = expirationHeight;
+            requestMap[addr].amount = amount;
+            requestMap[addr].note = note;
+        }
+    }   
+
+    function deleteRequestInternal(address addr) private {
+        if (isExisting(addr)) {
+            (bool found, uint index) = findRequestIndex(addr);
+            if (found) {
+                for (uint i = index; i < requestors.length - 1; i++) {
+                    requestors[i] = requestors[i + 1];
+                }
+                delete requestors[requestors.length - 1];
+                requestors.length--;
+                emit RequestDeleted(addr, requestMap[addr].expirationHeight, requestMap[addr].amount, requestMap[addr].note);
+            }
+            delete requestMap[addr];
+        }
+    }
+
+    function findRequestIndex(address addr) private view returns(bool found, uint index) {
+        for (uint i = 0; i < requestors.length; i++) {
+            if (requestors[i] == addr) {
+                return (true, i);
+            }
+        }
+        return (false, 0);
+    }
+
+    getter getOwner() returns(address) {
+        return owner;
+    }
+
+    getter getQuotaContract() returns(address) {
+        return quotaContract;
+    }
+
+    // TODO: check built-in balance(msg.tokenid)
+    getter getReserves() returns(uint){
+        return reserves;
+    }
+
+    getter getRequestors() returns(address[] memory) {
+        // require(msg.sender == owner, "Must be owner.");
+        return requestors;
+    }
+
+    // getter getTotalAddresses() returns(uint) {
+    //     return addresses.length;
+    // }
+
+    getter getRequest(address addr) returns(uint256 expirationHeight, uint256 amount, string memory note) {
+        return (
+            requestMap[addr].expirationHeight,
+            requestMap[addr].amount,
+            requestMap[addr].note
+        );
+    }
+
+    // function for setting address of quota contract.
+    onMessage SetQuotaContract(address addr) {
+        require(msg.sender == owner, "Must be owner.");
+        quotaContract = addr;
+    }
+
+    // function for funding bank reserves, must send Vite.
+    onMessage FundReserves() payable {
+        require(msg.tokenid == token, "Please send vite only.");
+        require(msg.amount > 0, "Must send tokens to fund reserves.");
+        reserves += msg.amount;
+        emit ReservesFunded(msg.sender, msg.amount);
+    }
+
+    // function for withdrawing bank reserves.
+    // onMessage WithdrawReserves() {
+    //     require(msg.sender == owner, "Must be owner.");
+    //     require(msg.tokenid == token, "Please withdraw vite only.");
+    //     require(reserves > 0, "Reserves are empty.");
+    //     msg.sender.transfer(msg.tokenid, reserves);
+    //     emit ReservesWithdrawn(msg.sender, reserves);
+    //     reserves = 0;
+    // }
+
+    // function for requesting quota.
+    onMessage CreateRequest(string calldata note) {
+        uint256 currentHeight = getHeight();
+        uint256 expirationHeight = currentHeight + 259200;
+        require(requestMap[msg.sender].expirationHeight <= currentHeight, "Request already exists.");
+        require(requestMap[msg.sender].amount == 0, "Quota already staked.");
+        // Allow to update request note if not staked
+        upsertRequestInternal(msg.sender, expirationHeight, 0, note, true);
+        emit RequestCreated(msg.sender, note);
+    }
+
+    onMessage StakeRequest(address addr, uint64 stakeHeight, uint256 amount) {
+        require(amount <= reserves, "Insufficient reserves.");
+        uint256 currentHeight = getHeight();
+        uint256 expirationHeight = currentHeight + stakeHeight;
+        upsertRequestInternal(addr, expirationHeight, amount, "", false);
+        reserves -= amount;
+        // TODO: send amount
+        send(quotaContract, DelegateStake(owner, addr, 0, stakeHeight));
+    }
+
+    onMessage DelegateStakeCallback(address stakeAddress, address beneficiary, uint8 bid, uint64 stakeHeight, bool success) payable {
+        require(msg.sender == quotaContract, "Sender must be quota contract.");
+        if (!success) {
+            // Staking failed -> revert
+            if (isExisting(beneficiary)) {
+                // TODO: use msg.amount
+                reserves += requestMap[beneficiary].amount;
+                upsertRequestInternal(beneficiary, getHeight(), 0, "", false);
+            }
+        }
+        emit DelegateStakeCallbackReceived(stakeAddress, beneficiary, bid, stakeHeight, success, success ? "true" : "false");
+    }
+
+    // function for deleting the stake with the specified address.
+    onMessage DeleteRequest(address addr) {
+        require(msg.sender == owner || msg.sender == addr, "Must be owner or requestor.");
+        deleteRequestInternal(addr);
+    }
+}
