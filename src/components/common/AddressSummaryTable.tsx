@@ -3,7 +3,6 @@ import { Chip, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, T
 import { useEffect } from 'react'
 import { useAccountBalance, useAccountQuota, useConnectedWeb3Context } from '../../hooks'
 import { commonUtil } from '../../util/commonUtil';
-import { Balance, Quota } from '../../types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,8 +34,8 @@ export const AddressSummaryTable: React.FC<Props> = (props: Props) => {
   const context = useConnectedWeb3Context()
   const delay = 1000
 
-  const { quota, fetchQuota, setQuota } = useAccountQuota(context, props.address)
-  const { balance, fetchBalance, setBalance } = useAccountBalance(context, props.address)
+  const { quota, fetchQuota } = useAccountQuota(context, props.address)
+  const { balance, fetchBalance } = useAccountBalance(context, props.address)
 
   useEffect(() => {
     let interval = setInterval(async () => {
@@ -49,13 +48,6 @@ export const AddressSummaryTable: React.FC<Props> = (props: Props) => {
       clearInterval(interval);
     }
   })
-
-  useEffect(() => {
-    setTimeout(() => {
-      setQuota(new Quota())
-      setBalance(new Balance())
-    }, delay)
-  }, [props.address, setQuota, setBalance])
 
   const truncateAddress = (address?: string) => {
     return commonUtil.truncateStringInTheMiddle(address, 15, 10)

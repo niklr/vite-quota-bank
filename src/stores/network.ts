@@ -17,13 +17,14 @@ export class NetworkStore implements INetworkStore {
   private _emitter?: IGlobalEmitter
   private _blockHeight: string
   private _network?: Network
+  private _defaultNetwork: Network
   private _networks: Network[] = [
-    new Network({
-      id: 1,
-      networkId: 1,
-      name: 'MAINNET',
-      url: 'wss://node.vite.net/gvite/ws'
-    }),
+    // new Network({
+    //   id: 1,
+    //   networkId: 1,
+    //   name: 'MAINNET',
+    //   url: 'wss://node.vite.net/gvite/ws'
+    // }),
     new Network({
       id: 2,
       networkId: 2,
@@ -48,6 +49,7 @@ export class NetworkStore implements INetworkStore {
   constructor(emitter?: IGlobalEmitter) {
     this._emitter = emitter
     this._blockHeight = AppConstants.InitialNetworkBlockHeight
+    this._defaultNetwork = this._networks[1]
   }
 
   get blockHeight(): string {
@@ -97,7 +99,7 @@ export class NetworkStore implements INetworkStore {
   }
 
   get defaultNetwork(): Network {
-    return this._networks[2]
+    return this._defaultNetwork
   }
 
   get networks(): Network[] {
