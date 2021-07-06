@@ -5,7 +5,7 @@ export const AppConstants = {
   InitialNetworkBlockHeight: "0",
   ViteTokenId: "tti_5649544520544f4b454e6e40",
   QuotaContractAddress: "vite_0000000000000000000000000000000000000003f6af7459b9",
-  BankContractAddress: "vite_acb1dc395bb869b16344a011a149fd858dbf9a102f5091341c",
+  BankContractAddress: "vite_091e12441cc09f51bb84b7950c7a4a3c44b77442eccb789f7a",
   NetworkStorageSpace: 'VQB_NETWORK',
   WebWalletStorageSpace: 'VQB_WEB_WALLET'
 }
