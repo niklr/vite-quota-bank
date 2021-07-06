@@ -68,13 +68,24 @@ export class BankService implements IBankService {
 
   async initAsync(): Promise<void> {
     this.removeAddressListener()
-    const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/quota_bank.json')
+    const contract = await fileUtil.getInstance().readFileAsync('./assets/contracts/QuotaBank.json')
     this._contract = new Contract(JSON.parse(contract))
     this._contract.address = AppConstants.BankContractAddress
     console.log('Contract name:', this._contract?.contractName)
     // TODO: listen for vmlogs emitted by the specified contract
     // -> emit with GlobalEmitter
     this._listener = await this._vite.createAddressListenerAsync(this._contract.address)
+    this._listener.on((results: any[]) => {
+      if (!this._contract?.abi) {
+        console.log('Could not decode vmlog because contract abi is not defined.')
+      } else {
+        for (let index = 0; index < results.length; index++) {
+          const result = results[index];
+          const vmLog = this._vite.decodeVmLog(result.vmlog, this._contract.abi);
+          console.log(vmLog ?? result)
+        }
+      }
+    });
   }
 
   dispose(): void {

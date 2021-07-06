@@ -16,6 +16,7 @@ export interface IViteClient {
   getQuotaByAccount(address: string): Promise<Quota>
   callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
+  decodeVmLog(vmLog: any, abi: any): any
   createAddressListenerAsync(address: string): Promise<any>
   removeListener(event: any): void
   waitForAccountBlockAsync(address: string, height: string): Promise<any>
@@ -134,6 +135,27 @@ export class ViteClient implements IViteClient {
       return resultList;
     }
     return "";
+  }
+
+  decodeVmLog(vmLog: any, abi: any): any {
+    let topics = vmLog.topics;
+    for (let j = 0; j < abi.length; j++) {
+      let abiItem = abi[j];
+      if (abiutils.encodeLogSignature(abiItem) === topics[0]) {
+        if (vmLog.data) {
+          let log = {
+            topic: topics[0],
+            args: abiutils.decodeLog(
+              abiItem.inputs,
+              utils._Buffer.from(vmLog.data, "base64").toString("hex"),
+              topics.slice(1)
+            ),
+            event: abiItem.name,
+          };
+          return log;
+        }
+      }
+    }
   }
 
   async createAddressListenerAsync(address: string): Promise<any> {
