@@ -13,7 +13,7 @@ export interface IBankService {
   getOwnerAsync(): Promise<string>
   getRequests(): Promise<string[]>
   getRequestByAddress(address: string): Promise<QuotaRequest>
-  createRequest(message?: string): Promise<void>
+  createRequest(note?: string): Promise<void>
   stakeRequest(address: string, amount: number, duration: number): Promise<void>
   withdrawRequest(address: string): Promise<void>
   deleteRequest(address: string): Promise<void>
@@ -114,10 +114,10 @@ export class BankService implements IBankService {
     return request;
   }
 
-  async createRequest(message?: string): Promise<void> {
+  async createRequest(note?: string): Promise<void> {
     const contract = this.ensureContractExists()
     const account = this.ensureAccountExists()
-    const result = await this._vite.callContractAsync(account, 'RequestQuota', contract.abi, [message], AppConstants.DefaultZeroString, contract.address)
+    const result = await this._vite.callContractAsync(account, 'RequestQuota', contract.abi, [note], AppConstants.DefaultZeroString, contract.address)
     console.log(result)
   }
 

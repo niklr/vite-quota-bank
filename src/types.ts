@@ -88,7 +88,7 @@ export class Quota {
 
 export class QuotaRequest {
   address?: string
-  message?: string
+  note?: string
   amount?: string
   amountFormatted?: string
   expirationHeight?: string
@@ -106,7 +106,7 @@ export class QuotaRequest {
   init(data?: any): void {
     if (data) {
       this.address = data.address
-      this.message = data.message
+      this.note = data.note
       this.amount = data.amount
       this.amountFormatted = formatUtil.formatAmount(data.amount)
       this.expirationHeight = data.expirationHeight
@@ -123,7 +123,7 @@ export class QuotaRequest {
 
   equals(other: QuotaRequest): boolean {
     return this.address === other.address
-      && this.message === other.message
+      && this.note === other.note
       && this.amount === other.amount
       && this.amountFormatted === other.amountFormatted
       && this.expirationHeight === other.expirationHeight

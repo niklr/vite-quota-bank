@@ -115,7 +115,7 @@ export const BankQuotaRequestTable = () => {
                     Address
                   </TableCell>
                   <TableCell>
-                    Message
+                    Note
                   </TableCell>
                   <TableCell>
                     Amount

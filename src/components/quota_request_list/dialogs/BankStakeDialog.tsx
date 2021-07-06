@@ -61,7 +61,7 @@ export const BankStakeDialog: React.FC<Props> = (props: Props) => {
               <ListItemText primary="Address" secondary={props.item.address} />
             </ListItem>
             <ListItem>
-              <ListItemText primary="Message" secondary={props.item.message} />
+              <ListItemText primary="Note" secondary={props.item.note} />
             </ListItem>
           </List>
           <form className={classes.form} autoComplete="off">

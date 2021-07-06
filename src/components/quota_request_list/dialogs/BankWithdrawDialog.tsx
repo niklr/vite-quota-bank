@@ -42,7 +42,7 @@ export const BankWithdrawDialog: React.FC<Props> = (props: Props) => {
               <ListItemText primary="Address" secondary={props.item.address} />
             </ListItem>
             <ListItem>
-              <ListItemText primary="Message" secondary={props.item.message} />
+              <ListItemText primary="Note" secondary={props.item.note} />
             </ListItem>
             <ListItem>
               <ListItemText primary="Amount" secondary={props.item.amountFormatted} />

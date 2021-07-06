@@ -90,7 +90,7 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
         </Tooltip>
       </TableCell>
       <TableCell>
-        {quotaRequest.message ?? "-"}
+        {quotaRequest.note ?? "-"}
       </TableCell>
       <TableCell>
         {quotaRequest.amountFormatted ?? "-"}

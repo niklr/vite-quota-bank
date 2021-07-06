@@ -97,7 +97,7 @@ export const AccountQuotaRequestTable = () => {
             <TableHead>
               <TableRow>
                 <TableCell>
-                  Message
+                  Note
                 </TableCell>
                 <TableCell>
                   Amount
@@ -116,7 +116,7 @@ export const AccountQuotaRequestTable = () => {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  {quotaRequest?.message ?? '-'}
+                  {quotaRequest?.note ?? '-'}
                 </TableCell>
                 <TableCell>
                   {quotaRequest?.amountFormatted ?? '-'}

@@ -11,12 +11,12 @@ const quotaRequests = [
   new QuotaRequest({
     address: 'vite_7fb28c2b8c3ee3fd5d271f632b16ef81f1f98d136445a1c1cb',
     expirationHeight: '1350996',
-    message: 'Twitter: 0xRomanNiklaus'
+    note: 'Twitter: 0xRomanNiklaus'
   }),
   new QuotaRequest({
     address: 'vite_ce9499905e2dacab4972574cc4319f9b9d44020af89a239463',
     expirationHeight: '1587687',
-    message: 'GitHub: niklr',
+    note: 'GitHub: niklr',
     amount: '1500000000000000000000'
   }),
   new QuotaRequest({
@@ -25,7 +25,7 @@ const quotaRequests = [
     amount: '1500000000000000000000'
   }),
   new QuotaRequest({
-    message: 'Test 1324'
+    note: 'Test 1324'
   })
 ]
 
@@ -48,15 +48,15 @@ export class BankMockService extends BankService {
     }
   })
 
-  createRequest = async (message?: string) => new Promise<void>((resolve, reject) => {
+  createRequest = async (note?: string) => new Promise<void>((resolve, reject) => {
     const account = this.ensureAccountExists()
-    if (message) {
+    if (note) {
       if (account.address && quotaRequests.find(e => e.address === account.address)) {
         reject("Request already exists.")
       } else {
         const newItem = new QuotaRequest({
           address: account.address,
-          message,
+          note,
           expirationHeight: this._networkStore.blockHeight + 10
         })
         newItem.update(this._networkStore.blockHeight)

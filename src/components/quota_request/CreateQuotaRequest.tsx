@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     width: '100%'
   },
-  messageInput: {
+  noteInput: {
     flexGrow: 1,
     marginRight: 20
   }
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export const CreateQuotaRequest: React.FC = () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const [requestMessage, setRequestMessage] = useState<string>('');
+  const [requestNote, setRequestNote] = useState<string>('');
   const { provider } = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -30,7 +30,7 @@ export const CreateQuotaRequest: React.FC = () => {
 
   const handleConfirmAsync = async () => {
     try {
-      await provider.bank.createRequest(requestMessage)
+      await provider.bank.createRequest(requestNote)
     } catch (error) {
       enqueueSnackbar(formatUtil.formatSnackbarMessage(error))
     }
@@ -45,12 +45,12 @@ export const CreateQuotaRequest: React.FC = () => {
     <>
       <form className={classes.root} noValidate autoComplete="off">
         <TextField
-          className={classes.messageInput}
+          className={classes.noteInput}
           size="small"
-          label="Request message"
+          label="Request note"
           variant="outlined"
-          value={requestMessage}
-          onChange={e => setRequestMessage(e.target.value)} />
+          value={requestNote}
+          onChange={e => setRequestNote(e.target.value)} />
         <Button variant="contained" color="primary" onClick={handleClickOpen}>Request Quota</Button>
       </form>
       <Dialog
