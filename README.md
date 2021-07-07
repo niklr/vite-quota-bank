@@ -6,7 +6,7 @@ Users can lock their own VITE to secure Quota, or someone else can lock VITE to 
 
 Video Walkthrough: [YouTube](https://www.youtube.com/watch?v=fGGS9rACaq4)
 
-Live Demo: [https://niklr.github.io/vite-quota-bank](https://niklr.github.io/vite-quota-bank)
+Live Demo: [https://niklr.github.io/vite-quota-bank/](https://niklr.github.io/vite-quota-bank/)
 
 <h1 align="center">
 	<img src="assets/app.gif" alt="VITE Quota Bank">
