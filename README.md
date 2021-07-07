@@ -5,6 +5,7 @@ Many blockchains solve the spamming problem with gas. Transactions on Vite, howe
 Users can lock their own VITE to secure Quota, or someone else can lock VITE to secure Quota on their behalf. For instance, if Alice doesn’t have enough VITE to lock up for getting sufficient Quota, she can ask Bob to lock his own VITE and set her address as a Quota beneficiary.
 
 Video Walkthrough: [YouTube](https://www.youtube.com/watch?v=fGGS9rACaq4)
+
 Live Demo: [https://niklr.github.io/vite-quota-bank](https://niklr.github.io/vite-quota-bank)
 
 <h1 align="center">
