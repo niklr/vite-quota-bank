@@ -8,6 +8,7 @@ import { commonUtil } from '../../util/commonUtil';
 import { QuotaRequestDueDate } from '../quota_request';
 import { GlobalEvent } from '../../emitters';
 import { AppConstants } from '../../constants';
+import { TruncateTooltip } from '../common';
 
 const useStyles = makeStyles((theme) => ({
   refreshButton: {
@@ -90,7 +91,7 @@ export const BankQuotaRequest: React.FC<Props> = (props: Props) => {
         </Tooltip>
       </TableCell>
       <TableCell>
-        {quotaRequest.note ?? "-"}
+        <TruncateTooltip value={quotaRequest.note} maxLength={24}></TruncateTooltip>
       </TableCell>
       <TableCell>
         {quotaRequest.amountFormatted ?? "-"}

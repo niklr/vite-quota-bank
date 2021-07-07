@@ -25,6 +25,15 @@ export abstract class commonUtil {
     return false
   }
 
+  static truncateString = (str: Maybe<string>, maxLength: number) => {
+    if (str) {
+      if (maxLength < str.length) {
+        return `${str.substr(0, maxLength)}...`
+      }
+    }
+    return str
+  }
+
   static truncateStringInTheMiddle = (str: Maybe<string>, strPositionStart: number, strPositionEnd: number) => {
     if (str) {
       const minTruncatedLength = strPositionStart + strPositionEnd

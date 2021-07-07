@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Chip, IconButton, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { QuotaRequest } from '../../types';
 import { QuotaRequestDueDate } from '../quota_request';
 import { useConnectedWeb3Context } from '../../hooks';
-import { useEffect } from 'react';
 import { GlobalEvent } from '../../emitters';
+import { TruncateTooltip } from '../common';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -116,7 +116,7 @@ export const AccountQuotaRequestTable = () => {
             <TableBody>
               <TableRow>
                 <TableCell>
-                  {quotaRequest?.note ?? '-'}
+                  <TruncateTooltip value={quotaRequest.note} maxLength={24}></TruncateTooltip>
                 </TableCell>
                 <TableCell>
                   {quotaRequest?.amountFormatted ?? '-'}

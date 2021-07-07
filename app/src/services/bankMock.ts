@@ -10,7 +10,7 @@ const quotaRequests = [
   }),
   new QuotaRequest({
     address: 'vite_7fb28c2b8c3ee3fd5d271f632b16ef81f1f98d136445a1c1cb',
-    expirationHeight: '1350996',
+    expirationHeight: '1987866',
     note: 'Twitter: 0xRomanNiklaus'
   }),
   new QuotaRequest({
