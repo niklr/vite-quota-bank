@@ -1,12 +1,9 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import { Button, TextField } from '@material-ui/core';
-import { useWeb3Context } from '../../hooks';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
+import { makeStyles } from '@material-ui/core/styles';
+import { Backdrop, Button, Fade, Modal, Paper, TextField, Typography } from '@material-ui/core';
+import { AppConstants } from '../../constants';
+import { useWeb3Context } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -20,11 +17,18 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  warning: {
+    color: '#611a15',
+    backgroundColor: '#fdecea',
+    padding: '15px',
+    textAlign: 'center'
+  }
 }));
 
 export const LoginModal = () => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [isDisabled, setIsDisabled] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState<string>('');
   const context = useWeb3Context()
   const { enqueueSnackbar } = useSnackbar();
@@ -33,6 +37,10 @@ export const LoginModal = () => {
 
   useEffect(() => {
     if (open) {
+      if (AppConstants.DefaultMnemonic) {
+        setMnemonic(AppConstants.DefaultMnemonic)
+        setIsDisabled(true)
+      }
       console.log('login modal opened')
     }
   }, [open])
@@ -74,15 +82,22 @@ export const LoginModal = () => {
       >
         <Fade in={open}>
           <div className={classes.paper}>
+            <Paper hidden={!isDisabled}>
+              <div className={classes.warning}>
+                <Typography>This login is for showcasing the <strong>proof-of-concept</strong> on TESTNET only.</Typography>
+                <Typography>Entering your own mnemonic is not supported or recommended!</Typography>
+              </div>
+            </Paper>
             <TextField
               id="outlined-full-width"
-              label="Enter your mnemonic"
+              label="Default mnemonic"
               placeholder="..."
               fullWidth
               margin="normal"
               variant="outlined"
               value={mnemonic}
               onChange={handleInput}
+              disabled={isDisabled}
             />
             <Button onClick={handleLogin}>Login</Button>
           </div>
