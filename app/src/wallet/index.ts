@@ -1,4 +1,5 @@
+export { WalletConnector } from './connector';
 export { WalletManager } from './manager';
 export { WalletStore } from './store';
-export { Account, Wallet } from './types';
+export * from './types';
 

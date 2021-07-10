@@ -1,7 +1,7 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
 import { Balance, IVmLog, Quota } from '../types';
 import { Task } from '../util/task';
-import { Account } from '../wallet';
+import { WalletAccount, WebWalletAccount } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -14,7 +14,7 @@ export interface IViteClient {
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
-  callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
+  callContractAsync(account: WalletAccount, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
   decodeVmLog(vmLog: any, abi: any): Maybe<IVmLog>
   createAddressListenerAsync(address: string): Promise<any>
@@ -82,9 +82,9 @@ export class ViteClient implements IViteClient {
   }
 
   async callContractAsync(
-    account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string
+    account: WalletAccount, methodName: string, abi: any, params: any, amount: string, toAddress: string
   ): Promise<any> {
-    const block = accountBlock
+    let block = accountBlock
       .createAccountBlock("callContract", {
         address: account.address,
         abi,
@@ -93,12 +93,15 @@ export class ViteClient implements IViteClient {
         toAddress,
         params,
       })
-      .setProvider(this._client)
-      .setPrivateKey(account.privateKey);
 
-    await block.autoSetPreviousAccountBlock();
-    const result = await block.sign().send();
-    return result;
+    if (account instanceof WebWalletAccount) {
+      block = block.setProvider(this._client).setPrivateKey(account.privateKey);
+      await block.autoSetPreviousAccountBlock();
+      const result = await block.sign().send();
+      return result;
+    } else {
+      throw new Error("Account not supported");
+    }
   }
 
   async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any> {

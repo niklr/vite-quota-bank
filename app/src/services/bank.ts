@@ -6,7 +6,7 @@ import { Contract, IVmLog, QuotaRequest, VmLogEvent } from '../types';
 import { commonUtil } from '../util/commonUtil';
 import { Ensure } from '../util/ensure';
 import { fileUtil } from '../util/fileUtil';
-import { Account, WalletManager } from '../wallet';
+import { WalletAccount, WalletManager } from '../wallet';
 
 export interface IBankService {
   readonly listener: void
@@ -53,7 +53,7 @@ export class BankService implements IBankService {
     }
   }
 
-  protected ensureAccountExists(): Account {
+  protected ensureAccountExists(): WalletAccount {
     const account = this._walletManager.getActiveAccount()
     if (account?.address === undefined) {
       throw new Error("Login and try again.")
@@ -125,6 +125,7 @@ export class BankService implements IBankService {
   async createRequest(note?: string): Promise<void> {
     const contract = this.ensureContractExists()
     const account = this.ensureAccountExists()
+
     const result = await this._vite.callContractAsync(account, 'CreateRequest', contract.abi, [note], AppConstants.DefaultZeroString, contract.address)
     await this.handleResponseAsync(account.address, result.height)
   }

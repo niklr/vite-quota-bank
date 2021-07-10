@@ -1,10 +1,10 @@
 import React from 'react';
-import { Wallet, WalletManager } from '../wallet';
+import { SessionWallet, WalletManager, WebWallet } from '../wallet';
 import { useWeb3Manager } from './web3Manager';
 
 export interface IWeb3Context {
-  setWallet: (wallet?: Wallet) => void,
-  wallet?: Wallet,
+  setWallet: (wallet?: WebWallet | SessionWallet) => void,
+  wallet?: WebWallet | SessionWallet,
   setError: (error: Error) => void,
   error?: Error,
   walletManager: WalletManager

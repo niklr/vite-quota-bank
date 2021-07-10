@@ -54,7 +54,7 @@ export const LoginModal = () => {
   };
 
   const handleLogin = () => {
-    const wallet = context.walletManager.createWallet(mnemonic);
+    const wallet = context.walletManager.createWebWallet(mnemonic);
     if (wallet) {
       setWallet(wallet)
     } else {
