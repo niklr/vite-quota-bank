@@ -36,7 +36,9 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isConnected, setIsConnected] = useState(false)
   const context = useWeb3Context()
 
-  const { wallet, walletManager } = context
+  const { walletManager } = context
+
+  const wallet = walletManager.getWallet()
 
   const provider = useMemo(() => {
     return new ServiceProvider(walletManager)

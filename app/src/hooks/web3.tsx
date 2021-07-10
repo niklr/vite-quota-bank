@@ -1,10 +1,8 @@
 import React from 'react';
-import { SessionWallet, WalletManager, WebWallet } from '../wallet';
+import { WalletManager } from '../wallet';
 import { useWeb3Manager } from './web3Manager';
 
 export interface IWeb3Context {
-  setWallet: (wallet?: WebWallet | SessionWallet) => void,
-  wallet?: WebWallet | SessionWallet,
   setError: (error: Error) => void,
   error?: Error,
   walletManager: WalletManager
@@ -31,14 +29,13 @@ export const Web3Provider: React.FC<Props> = (props: Props) => {
 
   const {
     setWallet,
-    wallet,
     setError,
     error
   } = useWeb3Manager(walletManager.getWallet())
 
+  walletManager.onSetWalletCallback = setWallet
+
   const context: IWeb3Context = {
-    setWallet,
-    wallet,
     setError,
     error,
     walletManager

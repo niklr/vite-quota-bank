@@ -33,7 +33,7 @@ export const LoginModal = () => {
   const context = useWeb3Context()
   const { enqueueSnackbar } = useSnackbar();
 
-  const { setWallet } = context
+  const { walletManager } = context
 
   useEffect(() => {
     if (open) {
@@ -54,10 +54,8 @@ export const LoginModal = () => {
   };
 
   const handleLogin = () => {
-    const wallet = context.walletManager.createWebWallet(mnemonic);
-    if (wallet) {
-      setWallet(wallet)
-    } else {
+    const wallet = walletManager.createWebWallet(mnemonic);
+    if (!wallet) {
       enqueueSnackbar('Invalid mnemonic')
     }
   }

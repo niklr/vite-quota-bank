@@ -7,6 +7,7 @@ export class WalletManager {
   private readonly _store: WalletStore;
   private _wallet?: WebWallet | SessionWallet;
   private _mnemonicDeriveIndex = 0;
+  private _setWalletCallback?: (wallet?: WebWallet | SessionWallet | undefined) => void;
 
   constructor() {
     this._store = new WalletStore();
@@ -21,15 +22,30 @@ export class WalletManager {
     }
   }
 
+  set onSetWalletCallback(cb: (wallet?: WebWallet | SessionWallet | undefined) => void) {
+    this._setWalletCallback = cb;
+  }
+
   getWallet(): Maybe<WebWallet | SessionWallet> {
     return this._wallet;
+  }
+
+  setWallet(wallet?: WebWallet | SessionWallet): void {
+    this._wallet = wallet;
+    this.updateWallet()
+  }
+
+  updateWallet(): void {
+    if (this._setWalletCallback) {
+      this._setWalletCallback(this._wallet);
+    }
   }
 
   createWebWallet(mnemonic: string): Maybe<WebWallet> {
     if (!this.validateMnemonic(mnemonic)) {
       return undefined;
     }
-    this.removeWallet();
+    this.resetWallet();
     const account = this.createWebWalletAccount(mnemonic, 0);
     const wallet = new WebWallet({
       active: account,
@@ -39,14 +55,13 @@ export class WalletManager {
       ]
     });
     this._store.setItem(wallet);
-    this._wallet = wallet;
+    this.setWallet(wallet);
     return wallet;
   }
 
   removeWallet(): void {
-    this._wallet = undefined;
-    this._mnemonicDeriveIndex = 0;
-    this._store.clear();
+    this.resetWallet();
+    this.updateWallet();
   }
 
   getAccountByAddress(address: string): Maybe<WalletAccount> {
@@ -71,6 +86,7 @@ export class WalletManager {
     if (this._wallet) {
       this._wallet.active = account;
       this._store.setItem(this._wallet);
+      this.updateWallet();
       return true;
     }
     return false;
@@ -81,6 +97,12 @@ export class WalletManager {
       return this._wallet.accounts;
     }
     return [];
+  }
+
+  private resetWallet(): void {
+    this._wallet = undefined;
+    this._mnemonicDeriveIndex = 0;
+    this._store.clear();
   }
 
   private createWebWalletAccount(mnemonic: string, index = this._mnemonicDeriveIndex): WebWalletAccount {

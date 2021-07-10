@@ -18,11 +18,12 @@ const HeaderContainer: React.FC = (props: any) => {
   const context = useWeb3Context()
   const networkStore = new NetworkStore()
 
-  const { wallet } = context
+  const { walletManager } = context
+
+  const wallet = walletManager.getWallet()
 
   const handleLogout = () => {
-    context.walletManager.removeWallet()
-    context.setWallet(context.walletManager.getWallet())
+    walletManager.removeWallet()
     networkStore.clear()
     window.location.reload()
   }

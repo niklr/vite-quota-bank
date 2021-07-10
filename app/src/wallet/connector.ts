@@ -4,10 +4,11 @@ import { SessionWallet } from './types';
 
 export class WalletConnector extends Connector {
   private readonly _store: WalletStore;
+
   constructor(opts: any, meta: any) {
     super(opts, meta);
     this._store = new WalletStore();
-    this.on("connect", (err: any, payload: any) => {
+    this.on('connect', (err: any, payload: any) => {
       console.log('WalletConnector.connect', payload)
       const { accounts } = payload.params[0];
       this.setAccState(accounts);
@@ -53,7 +54,7 @@ export class WalletConnector extends Connector {
   async sendVbTx(...args: any) {
     return new Promise((res, rej) => {
       this.on('disconnect', () => {
-        rej({ code: 11020, message: '链接断开' });
+        rej("Request aborted due to disconnect.");
       });
 
       this.sendCustomRequest({ method: 'vite_signAndSendTx', params: args }).then((r: any) => {
@@ -68,7 +69,7 @@ export class WalletConnector extends Connector {
   async signVbText(...args: any) {
     return new Promise((res, rej) => {
       this.on('disconnect', () => {
-        rej({ code: 11020, message: '链接断开' });
+        rej("Request aborted due to disconnect.");
       });
 
       this.sendCustomRequest({ method: 'vite_signMessage', params: args }).then((r: any) => {

@@ -10,7 +10,7 @@ export abstract class Wallet<T> {
 
   constructor(type: WalletType, init?: Partial<Wallet<T>>) {
     this.type = type
-    this.init(init)
+    this.baseInitinit(init)
   }
 
   static fromJS(data: any): Maybe<WebWallet | SessionWallet> {
@@ -26,14 +26,16 @@ export abstract class Wallet<T> {
     return undefined
   }
 
-  abstract createAccount(data: any): T
+  protected abstract createAccount(data: any): T
 
-  protected init(data: any): void {
-    this.active = data.active ? this.createAccount(data.active) : undefined
-    if (data.accounts && Array.isArray(data.accounts)) {
-      data.accounts.forEach((account: any) => {
-        this.accounts.push(this.createAccount(account))
-      })
+  private baseInitinit(data?: any): void {
+    if (data) {
+      this.active = data.active ? this.createAccount(data.active) : undefined
+      if (data.accounts && Array.isArray(data.accounts)) {
+        data.accounts.forEach((account: any) => {
+          this.accounts.push(this.createAccount(account))
+        })
+      }
     }
     if (!this.accounts) {
       this.accounts = []
@@ -46,16 +48,16 @@ export class WebWallet extends Wallet<WebWalletAccount> {
 
   constructor(init?: Partial<WebWallet>) {
     super(WalletType.Web, init)
+    this.init(init)
   }
 
   init(data?: any): void {
-    super.init(data)
     if (data) {
       this.mnemonic = data.mnemonic
     }
   }
 
-  createAccount(data: any): WebWalletAccount {
+  protected createAccount(data: any): WebWalletAccount {
     return new WebWalletAccount(data)
   }
 }
@@ -66,17 +68,17 @@ export class SessionWallet extends Wallet<SessionWalletAccount> {
 
   constructor(init?: Partial<SessionWallet>) {
     super(WalletType.Session, init)
+    this.init(init)
   }
 
   init(data?: any): void {
-    super.init(data)
     if (data) {
       this.session = data.session
       this.timestamp = data.timestamp
     }
   }
 
-  createAccount(data: any): SessionWalletAccount {
+  protected createAccount(data: any): SessionWalletAccount {
     return new SessionWalletAccount(data)
   }
 }
@@ -93,7 +95,7 @@ export abstract class WalletAccount {
 
   constructor(type: WalletAccountType, init?: Partial<WalletAccount>) {
     this.type = type
-    this.init(init)
+    this.baseInit(init)
   }
 
   static fromJS(data: any): Maybe<WalletAccount> {
@@ -109,7 +111,7 @@ export abstract class WalletAccount {
     return undefined
   }
 
-  protected init(data?: any): void {
+  private baseInit(data?: any): void {
     if (data) {
       this.id = data.id
       this.address = data.address
@@ -126,7 +128,6 @@ export class WebWalletAccount extends WalletAccount {
   }
 
   init(data?: any): void {
-    super.init(data)
     if (data) {
       this.privateKey = data.privateKey
     }

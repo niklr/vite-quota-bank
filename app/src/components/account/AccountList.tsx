@@ -34,18 +34,22 @@ export const AccountList = () => {
   const classes = useStyles()
   const context = useWeb3Context()
 
-  const { wallet } = context
+  const { walletManager } = context
+
+  const wallet = walletManager.getWallet()
 
   const addAddress = () => {
-    context.walletManager.addAccount()
-    context.setWallet(context.walletManager.getWallet())
+    const account = walletManager.addAccount()
+    if (account) {
+      walletManager.setActiveAccount(account)
+    }
   }
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     console.log(event.target.value)
-    const account = context.walletManager.getAccountByAddress(event.target.value as string)
-    if (account && context.walletManager.setActiveAccount(account)) {
-      context.setWallet(context.walletManager.getWallet())
+    const account = walletManager.getAccountByAddress(event.target.value as string)
+    if (account) {
+      walletManager.setActiveAccount(account)
     }
   }
 
