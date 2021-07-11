@@ -36,11 +36,16 @@ export const HeaderConnected: React.FC = (props: any) => {
   const context = useConnectedWeb3Context()
   const networkStore = new NetworkStore()
 
-  const { walletManager } = context
+  const { walletManager, provider } = context
 
   const wallet = walletManager.getWallet()
 
-  const handleLogout = () => {
+  const handleLogoutAsync = async () => {
+    try {
+      await provider.vite.connector?.killSessionAsync()
+    } catch (error) {
+      console.log(error)
+    }
     walletManager.removeWallet()
     networkStore.clear()
     window.location.reload()
@@ -58,7 +63,7 @@ export const HeaderConnected: React.FC = (props: any) => {
           {wallet?.active && (
             <>
               <AccountList></AccountList>
-              <Button color="inherit" onClick={handleLogout}>Logout</Button>
+              <Button color="inherit" onClick={async () => { await handleLogoutAsync() }}>Logout</Button>
             </>
           )}
           {!wallet?.active && (

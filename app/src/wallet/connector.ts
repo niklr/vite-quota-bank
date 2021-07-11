@@ -1,6 +1,6 @@
 import Connector from '@vite/connector';
 import { WalletManager } from '.';
-import { SessionWallet } from './types';
+import { SessionWallet, SessionWalletAccount } from './types';
 
 export interface IWalletConnector {
   readonly uri: string
@@ -19,8 +19,8 @@ export class WalletConnector extends Connector implements IWalletConnector {
     this._walletManager = walletManager;
     this.on('connect', (err: any, payload: any) => {
       console.log('WalletConnector.connect', err, payload)
-      // const { accounts } = payload.params[0];
-      // this.saveSession(accounts);
+      const { accounts } = payload.params[0];
+      this.saveSession(accounts);
     });
     this.on('disconnect', (err: any, payload: any) => {
       console.log('WalletConnector.disconnect', err, payload)
@@ -28,10 +28,10 @@ export class WalletConnector extends Connector implements IWalletConnector {
     });
     this.on('session_update', (err: any, payload: any) => {
       console.log('WalletConnector.session_update', err, payload)
-      // const { session } = payload[0];
-      // if (session && session.accounts) {
-      //   this.saveSession(session.accounts);
-      // }
+      const session = payload[0];
+      if (session && session.accounts) {
+        this.saveSession(session.accounts);
+      }
     });
   }
 
@@ -48,8 +48,20 @@ export class WalletConnector extends Connector implements IWalletConnector {
   }
 
   saveSession(accounts: string[]): void {
-    if (!accounts || !accounts[0]) throw new Error('address is null');
+    if (!accounts || !accounts[0]) {
+      throw new Error('address is null');
+    }
+    const sessionAccounts: SessionWalletAccount[] = []
+    for (let index = 0; index < accounts.length; index++) {
+      const address = accounts[index];
+      sessionAccounts.push(new SessionWalletAccount({
+        id: index.toString(),
+        address: address
+      }))
+    }
     const wallet = new SessionWallet({
+      active: sessionAccounts[0],
+      accounts: sessionAccounts,
       session: this.session,
       timestamp: new Date().getTime()
     })

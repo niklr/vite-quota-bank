@@ -17,6 +17,9 @@ export class WalletStore {
 
     try {
       data = localStorage.getItem(this._webWalletKey);
+      if (!data) {
+        data = sessionStorage.getItem(this._sessionWalletKey);
+      }
     } catch (err) {
       console.error(err);
       return undefined;

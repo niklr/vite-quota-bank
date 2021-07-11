@@ -71,7 +71,6 @@ export class ViteClient implements IViteClient {
 
   dispose(): void {
     console.log("Disposing ViteClient");
-    this._connector?.killSessionAsync();
     this._provider?.disconnect();
     this._isConnected = false;
   }

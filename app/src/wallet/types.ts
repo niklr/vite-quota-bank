@@ -3,19 +3,24 @@ export enum WalletType {
   Session = 'Session'
 }
 
+export enum WalletEvent {
+  Test = 'Test'
+}
+
 export abstract class Wallet<T> {
-  type!: WalletType
+  private readonly _type: WalletType
+
   active?: T
   accounts: T[] = []
 
   constructor(type: WalletType, init?: Partial<Wallet<T>>) {
-    this.type = type
+    this._type = type
     this.baseInitinit(init)
   }
 
   static fromJS(data: any): Maybe<WebWallet | SessionWallet> {
     data = typeof data === 'object' ? data : {}
-    switch (data.type) {
+    switch (data._type) {
       case WalletType.Web:
         return new WebWallet(data)
       case WalletType.Session:
@@ -24,6 +29,10 @@ export abstract class Wallet<T> {
         break
     }
     return undefined
+  }
+
+  get type(): WalletType {
+    return this._type
   }
 
   protected abstract createAccount(data: any): T
@@ -89,18 +98,19 @@ export enum WalletAccountType {
 }
 
 export abstract class WalletAccount {
+  private readonly _type: WalletAccountType
+
   id!: string
-  type!: WalletAccountType
   address!: string
 
   constructor(type: WalletAccountType, init?: Partial<WalletAccount>) {
-    this.type = type
+    this._type = type
     this.baseInit(init)
   }
 
   static fromJS(data: any): Maybe<WalletAccount> {
     data = typeof data === 'object' ? data : {}
-    switch (data.type) {
+    switch (data._type) {
       case WalletType.Web:
         return new WebWalletAccount(data)
       case WalletType.Session:
@@ -109,6 +119,10 @@ export abstract class WalletAccount {
         break
     }
     return undefined
+  }
+
+  get type(): WalletAccountType {
+    return this._type
   }
 
   private baseInit(data?: any): void {
