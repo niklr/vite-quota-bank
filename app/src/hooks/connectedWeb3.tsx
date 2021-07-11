@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useWeb3Context } from '.';
 import { MainLoading } from '../components/MainLoading';
 import { ServiceProvider } from '../providers';
+import { WalletManager } from '../wallet';
 
 export interface IConnectedWeb3Context {
   account?: string
+  walletManager: WalletManager
   provider: ServiceProvider
 }
 
@@ -50,6 +52,7 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
     const value = {
       account: wallet?.active?.address,
+      walletManager,
       provider
     }
 

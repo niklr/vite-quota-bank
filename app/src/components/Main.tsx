@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Grid } from '@material-ui/core'
-import { AddressSummaryTable, Footer, Header, MainScroll, MainWrapper } from './common'
+import { AddressSummaryTable, Footer, HeaderConnected, MainScroll, MainWrapper } from './common'
 import { NetworkCard } from './network'
 import { AccountQuotaRequestTable, CreateQuotaRequest } from './quota_request'
 import { BankQuotaRequestTable } from './quota_request_list'
@@ -21,7 +21,7 @@ export const Main: React.FC = (props: any) => {
   return (
     <>
       <MainWrapper>
-        <Header />
+        <HeaderConnected />
         <MainScroll>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={4}>

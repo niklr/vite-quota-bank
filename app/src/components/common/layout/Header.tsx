@@ -1,6 +1,6 @@
 import { AppBar, Button, Toolbar, Typography } from '@material-ui/core'
 import styled from 'styled-components'
-import { useWeb3Context } from '../../../hooks'
+import { useConnectedWeb3Context } from '../../../hooks'
 import { NetworkStore } from '../../../stores'
 import { AccountList, LoginModal } from '../../account'
 import { NetworkList } from '../../network'
@@ -14,8 +14,26 @@ const TitleTypography = styled(Typography)`
   margin-left: 10px !important;
 `
 
-const HeaderContainer: React.FC = (props: any) => {
-  const context = useWeb3Context()
+export const Header: React.FC = (props: any) => {
+  const networkStore = new NetworkStore()
+
+  return (
+    <Root>
+      <AppBar position="static">
+        <Toolbar>
+          <img src={"./icon_white.png"} alt="logo" width="30" />
+          <TitleTypography variant="h6">
+            Vite Quota Bank
+          </TitleTypography>
+          <NetworkList networkStore={networkStore}></NetworkList>
+        </Toolbar>
+      </AppBar>
+    </Root>
+  )
+}
+
+export const HeaderConnected: React.FC = (props: any) => {
+  const context = useConnectedWeb3Context()
   const networkStore = new NetworkStore()
 
   const { walletManager } = context
@@ -51,5 +69,3 @@ const HeaderContainer: React.FC = (props: any) => {
     </Root>
   )
 }
-
-export const Header = HeaderContainer

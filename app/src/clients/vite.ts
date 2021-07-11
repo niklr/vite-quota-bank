@@ -9,6 +9,7 @@ const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 
 export interface IViteClient {
   readonly isConnected: boolean
+  readonly connector: Maybe<IWalletConnector>
   initAsync(network: Network): Promise<void>
   dispose(): void
   getSnapshotChainHeightAsync(): Promise<string>
@@ -36,6 +37,10 @@ export class ViteClient implements IViteClient {
 
   get isConnected(): boolean {
     return this._isConnected;
+  }
+
+  get connector(): Maybe<IWalletConnector> {
+    return this._connector
   }
 
   initAsync = async (network: Network) => new Promise<void>((resolve, reject) => {

@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import { Backdrop, Button, Fade, Modal, Paper, TextField, Typography } from '@material-ui/core';
+import { QrCode } from '.';
 import { AppConstants } from '../../constants';
-import { useWeb3Context } from '../../hooks';
+import { useConnectedWeb3Context } from '../../hooks';
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -17,6 +18,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
   },
+  codeContainer: {
+    width: '100%',
+    textAlign: 'center'
+  },
   warning: {
     color: '#611a15',
     backgroundColor: '#fdecea',
@@ -27,13 +32,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const LoginModal = () => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [isDisabled, setIsDisabled] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState<string>('');
-  const context = useWeb3Context()
+  const context = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { walletManager } = context
+  const { walletManager, provider } = context
 
   useEffect(() => {
     if (open) {
@@ -80,6 +85,10 @@ export const LoginModal = () => {
       >
         <Fade in={open}>
           <div className={classes.paper}>
+            <div className={classes.codeContainer}>
+              <Typography>Scan the QR code via Vite Wallet App</Typography>
+              <QrCode text={provider.vite.connector?.uri}></QrCode>
+            </div>
             <Paper hidden={!isDisabled}>
               <div className={classes.warning}>
                 <Typography>This login is for showcasing the <strong>proof-of-concept</strong> on TESTNET only.</Typography>

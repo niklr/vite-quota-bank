@@ -3,6 +3,7 @@ import { WalletManager } from '.';
 import { SessionWallet } from './types';
 
 export interface IWalletConnector {
+  readonly uri: string
   sendTransactionAsync(...args: any): Promise<any>
   signMessageAsync(...args: any): Promise<any>
   killSessionAsync(): Promise<void>
@@ -31,6 +32,10 @@ export class WalletConnector extends Connector implements IWalletConnector {
         this.saveSession(session.accounts);
       }
     });
+  }
+
+  get uri(): string {
+    return super.uri
   }
 
   on(event: string | symbol, listener: (...args: any[]) => void): this {
