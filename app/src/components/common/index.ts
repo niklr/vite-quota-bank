@@ -1,5 +1,6 @@
 export { AddressSummaryTable } from './AddressSummaryTable';
 export { ClickOnceButton } from './ClickOnceButton';
+export { ConfirmTransactionDialog } from './ConfirmTransactionDialog';
 export { Footer } from './layout/Footer';
 export { Header, HeaderConnected } from './layout/Header';
 export { MainScroll } from './layout/MainScroll';

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Grid } from '@material-ui/core'
-import { AddressSummaryTable, Footer, HeaderConnected, MainScroll, MainWrapper } from './common'
+import { AddressSummaryTable, ConfirmTransactionDialog, Footer, HeaderConnected, MainScroll, MainWrapper } from './common'
 import { NetworkCard } from './network'
 import { AccountQuotaRequestTable, CreateQuotaRequest } from './quota_request'
 import { BankQuotaRequestTable } from './quota_request_list'
@@ -43,6 +43,7 @@ export const Main: React.FC = (props: any) => {
               <BankQuotaRequestTable></BankQuotaRequestTable>
             </Grid>
           </Grid>
+          <ConfirmTransactionDialog></ConfirmTransactionDialog>
         </MainScroll>
         <Footer />
       </MainWrapper>

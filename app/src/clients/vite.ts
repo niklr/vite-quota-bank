@@ -1,7 +1,7 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
 import { Balance, IVmLog, Network, Quota } from '../types';
 import { Task } from '../util/task';
-import { IWalletConnector, WalletAccount, WalletConnectorFactory, WebWalletAccount } from '../wallet';
+import { IWalletConnector, SessionWalletAccount, WalletAccount, WalletConnectorFactory, WebWalletAccount } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -115,6 +115,15 @@ export class ViteClient implements IViteClient {
       await block.autoSetPreviousAccountBlock();
       const result = await block.sign().send();
       return result;
+    } else if (account instanceof SessionWalletAccount) {
+      if (this.connector) {
+        const result = await this.connector.sendTransactionAsync({
+          block: block.accountBlock
+        });
+        return result;
+      } else {
+        throw new Error("Connector is not defined");
+      }
     } else {
       throw new Error("Account not supported");
     }

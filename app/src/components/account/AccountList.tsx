@@ -3,6 +3,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, FormControl, Icon, IconButton, InputLabel, makeStyles, Select, Theme } from '@material-ui/core';
 import { useWeb3Context } from '../../hooks';
 import { commonUtil } from '../../util/commonUtil';
+import { WalletAccountType } from '../../wallet';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,6 +39,7 @@ export const AccountList = () => {
 
   const wallet = walletManager.getWallet()
 
+  const canAddAddress = wallet?.active?.type === WalletAccountType.Web
   const addAddress = () => {
     const account = walletManager.addAccount()
     if (account) {
@@ -59,9 +61,11 @@ export const AccountList = () => {
 
   return (
     <>
-      <IconButton aria-label="add" onClick={addAddress}>
-        <Icon style={{ color: 'white' }}>add_circle_outline</Icon>
-      </IconButton>
+      <div hidden={!canAddAddress}>
+        <IconButton aria-label="add" onClick={addAddress}>
+          <Icon style={{ color: 'white' }}>add_circle_outline</Icon>
+        </IconButton>
+      </div>
       <FormControl variant="outlined" className={classes.formControl} size="small">
         <InputLabel id="select-address-label"></InputLabel>
         <Select
