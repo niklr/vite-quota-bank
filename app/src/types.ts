@@ -44,7 +44,8 @@ export class Network {
   id?: number
   networkId?: number
   name?: string
-  url?: string
+  rpcUrl?: string
+  connectorUrl?: string
   mock: boolean = false
 
   constructor(init?: Partial<Network>) {
@@ -56,7 +57,8 @@ export class Network {
       this.id = data.id
       this.networkId = data.networkId
       this.name = data.name
-      this.url = data.url
+      this.rpcUrl = data.rpcUrl
+      this.connectorUrl = data.connectorUrl
       this.mock = data.mock ?? false
     }
   }

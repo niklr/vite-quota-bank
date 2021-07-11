@@ -1,5 +1,6 @@
-export { WalletConnector } from './connector';
-export { WalletManager } from './manager';
-export { WalletStore } from './store';
+export * from './connector';
+export * from './factory';
+export * from './manager';
+export * from './store';
 export * from './types';
 

@@ -53,7 +53,7 @@ export const NetworkCard = () => {
           <Typography color="textSecondary">
             Block height
           </Typography>
-          <Chip className={classes.chip} size="small" label={network?.url} />
+          <Chip className={classes.chip} size="small" label={network?.rpcUrl} />
         </CardContent>
       </Card>
     </>

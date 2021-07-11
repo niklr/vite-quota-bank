@@ -32,12 +32,19 @@ export class WalletManager {
 
   setWallet(wallet?: WebWallet | SessionWallet): void {
     this._wallet = wallet;
+    this.updateWalletStore(wallet)
     this.updateWallet()
   }
 
   updateWallet(): void {
     if (this._setWalletCallback) {
       this._setWalletCallback(this._wallet);
+    }
+  }
+
+  updateWalletStore(wallet?: WebWallet | SessionWallet): void {
+    if (wallet) {
+      this._store.setItem(wallet);
     }
   }
 
@@ -54,7 +61,6 @@ export class WalletManager {
         account
       ]
     });
-    this._store.setItem(wallet);
     this.setWallet(wallet);
     return wallet;
   }
@@ -97,6 +103,18 @@ export class WalletManager {
       return this._wallet.accounts;
     }
     return [];
+  }
+
+  getValidSession(): Maybe<string> {
+    const wallet = this._store.getItem();
+    if (wallet && wallet instanceof SessionWallet) {
+      if (new Date().getTime() - wallet.timestamp < 1000 * 60 * 10) {
+        return wallet.session;
+      } else {
+        console.log('Found expired session.', wallet);
+      }
+    }
+    return undefined;
   }
 
   private resetWallet(): void {

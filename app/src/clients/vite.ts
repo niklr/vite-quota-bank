@@ -1,7 +1,7 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
-import { Balance, IVmLog, Quota } from '../types';
+import { Balance, IVmLog, Network, Quota } from '../types';
 import { Task } from '../util/task';
-import { WalletAccount, WebWalletAccount } from '../wallet';
+import { IWalletConnector, WalletAccount, WalletConnectorFactory, WebWalletAccount } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -9,7 +9,7 @@ const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 
 export interface IViteClient {
   readonly isConnected: boolean
-  initAsync(url: string): Promise<void>
+  initAsync(network: Network): Promise<void>
   dispose(): void
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
@@ -24,20 +24,26 @@ export interface IViteClient {
 
 export class ViteClient implements IViteClient {
 
-  private _provider: any;
-  private _client: any;
+  private readonly _factory: WalletConnectorFactory;
+  private _provider?: any;
+  private _client?: any;
+  private _connector?: IWalletConnector;
   private _isConnected = false;
+
+  constructor(factory: WalletConnectorFactory) {
+    this._factory = factory;
+  }
 
   get isConnected(): boolean {
     return this._isConnected;
   }
 
-  initAsync = async (url: string) => new Promise<void>((resolve, reject) => {
+  initAsync = async (network: Network) => new Promise<void>((resolve, reject) => {
     this._isConnected = false;
     if (this._provider) {
       this._provider.destroy();
     }
-    this._provider = new WS_RPC(url, providerTimeout, providerOptions);
+    this._provider = new WS_RPC(network.rpcUrl, providerTimeout, providerOptions);
     let isResolved = false;
     this._provider.on('error', (err: any) => {
       console.log(err);
@@ -51,16 +57,18 @@ export class ViteClient implements IViteClient {
       isResolved = true;
       resolve();
     });
+    this._connector = this._factory.create(network)
   });
 
   dispose(): void {
     console.log("Disposing ViteClient");
-    this._provider.disconnect();
+    this._connector?.killSessionAsync();
+    this._provider?.disconnect();
     this._isConnected = false;
   }
 
   async requestAsync(method: string, ...args: any[]): Promise<any> {
-    if (this._isConnected) {
+    if (this._isConnected && this._client) {
       return this._client.request(method, ...args);
     } else {
       return Promise.reject('Vite client is not ready to make requests.');
@@ -173,13 +181,12 @@ export class ViteClient implements IViteClient {
     };
     let tempPayload = JSON.stringify(payload);
     tempPayload = tempPayload.replace("placeholder", address);
-    const result = await this._client.subscribe("createVmlogSubscription", JSON.parse(tempPayload));
-    console.log(result)
+    const result = await this._client?.subscribe("createVmlogSubscription", JSON.parse(tempPayload));
     return result;
   }
 
   removeListener(event: any): void {
-    this._client.unsubscribe(event);
+    this._client?.unsubscribe(event);
   }
 
   async waitForAccountBlockAsync(address: string, height: string): Promise<any> {

@@ -56,11 +56,11 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
     console.log('ConnectedWeb3.account', wallet?.active?.address)
 
     const initAsync = async () => {
-      console.log('initAsync')
-      if (!value.provider.networkStore.network?.url) {
+      console.log('ConnectedWeb3.initAsync')
+      if (!value.provider.networkStore.network?.rpcUrl) {
         throw new Error('Network is not defined')
       } else {
-        await value.provider.vite.initAsync(value.provider.networkStore.network.url)
+        await value.provider.vite.initAsync(value.provider.networkStore.network)
       }
       await value.provider.bank.initAsync()
       setConnection(value)

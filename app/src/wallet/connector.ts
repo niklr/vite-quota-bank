@@ -1,17 +1,25 @@
 import Connector from '@vite/connector';
-import { WalletStore } from '.';
+import { WalletManager } from '.';
 import { SessionWallet } from './types';
 
-export class WalletConnector extends Connector {
-  private readonly _store: WalletStore;
+export interface IWalletConnector {
+  sendTransactionAsync(...args: any): Promise<any>
+  signMessageAsync(...args: any): Promise<any>
+  killSessionAsync(): Promise<void>
+  on(event: string | symbol, listener: (...args: any[]) => void): this
+  off(event: string | symbol, listener: (...args: any[]) => void): this
+}
 
-  constructor(opts: any, meta: any) {
+export class WalletConnector extends Connector implements IWalletConnector {
+  private readonly _walletManager: WalletManager;
+
+  constructor(walletManager: WalletManager, opts: any, meta?: any) {
     super(opts, meta);
-    this._store = new WalletStore();
+    this._walletManager = walletManager;
     this.on('connect', (err: any, payload: any) => {
       console.log('WalletConnector.connect', payload)
       const { accounts } = payload.params[0];
-      this.setAccState(accounts);
+      this.saveSession(accounts);
     });
     this.on('disconnect', () => {
       console.log('WalletConnector.disconnect')
@@ -21,44 +29,44 @@ export class WalletConnector extends Connector {
     });
   }
 
-  setAccState(accounts = []) {
-    if (!accounts || !accounts[0]) throw new Error('address is null');
-    // setCurrHDAcc({
-    //   activeAddr: accounts[0],
-    //   isBifrost: true,
-    //   isSeparateKey: true
-    // });
-    // getCurrHDAcc().unlock(this);
-    // store.commit('switchHDAcc', {
-    //   activeAddr: accounts[0],
-    //   isBifrost: true,
-    //   isSeparateKey: true
-    // });
-    // store.commit('setCurrHDAccStatus');
-    this.saveSession();
+  on(event: string | symbol, listener: (...args: any[]) => void): this {
+    return super.on(event, listener)
   }
 
-  saveSession() {
+  off(event: string | symbol, listener: (...args: any[]) => void): this {
+    return super.off(event, listener)
+  }
+
+  saveSession(accounts: string[]): void {
+    if (!accounts || !accounts[0]) throw new Error('address is null');
     const wallet = new SessionWallet({
       session: this.session,
       timestamp: new Date().getTime()
     })
-    this._store.setItem(wallet);
+    this._walletManager.setWallet(wallet)
   }
 
-  async createSession() {
+  updateSession(): void {
+    const existing = this._walletManager.getWallet()
+    if (existing && existing instanceof SessionWallet) {
+      existing.timestamp = new Date().getTime()
+      this._walletManager.updateWalletStore(existing)
+    }
+  }
+
+  async createSession(): Promise<string> {
     await super.createSession();
     return this.uri;
   }
 
-  async sendVbTx(...args: any) {
+  async sendTransactionAsync(...args: any): Promise<any> {
     return new Promise((res, rej) => {
       this.on('disconnect', () => {
         rej("Request aborted due to disconnect.");
       });
 
       this.sendCustomRequest({ method: 'vite_signAndSendTx', params: args }).then((r: any) => {
-        this.saveSession();
+        this.updateSession();
         res(r);
       }).catch((e: any) => {
         rej(e);
@@ -66,18 +74,22 @@ export class WalletConnector extends Connector {
     });
   }
 
-  async signVbText(...args: any) {
+  async signMessageAsync(...args: any): Promise<any> {
     return new Promise((res, rej) => {
       this.on('disconnect', () => {
         rej("Request aborted due to disconnect.");
       });
 
       this.sendCustomRequest({ method: 'vite_signMessage', params: args }).then((r: any) => {
-        this.saveSession();
+        this.updateSession();
         res(r);
       }).catch((e: any) => {
         rej(e);
       });
     });
+  }
+
+  async killSessionAsync(): Promise<any> {
+    await super.killSession();
   }
 }
