@@ -1,4 +1,5 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
+import { IGlobalEmitter } from '../emitters';
 import { Balance, IVmLog, Network, Quota } from '../types';
 import { Task } from '../util/task';
 import { IWalletConnector, SessionWalletAccount, WalletAccount, WalletConnectorFactory, WebWalletAccount } from '../wallet';
@@ -24,14 +25,15 @@ export interface IViteClient {
 }
 
 export class ViteClient implements IViteClient {
-
+  private readonly _emitter: IGlobalEmitter;
   private readonly _factory: WalletConnectorFactory;
   private _connector?: IWalletConnector;
   private _provider?: any;
   private _client?: any;
   private _isConnected = false;
 
-  constructor(factory: WalletConnectorFactory) {
+  constructor(emitter: IGlobalEmitter, factory: WalletConnectorFactory) {
+    this._emitter = emitter;
     this._factory = factory;
   }
 
@@ -117,9 +119,11 @@ export class ViteClient implements IViteClient {
       return result;
     } else if (account instanceof SessionWalletAccount) {
       if (this.connector) {
+        this._emitter.emitConfirmTransactionDialog(true);
         const result = await this.connector.sendTransactionAsync({
           block: block.accountBlock
         });
+        this._emitter.emitConfirmTransactionDialog(false);
         return result;
       } else {
         throw new Error("Connector is not defined");

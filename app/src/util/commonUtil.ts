@@ -25,6 +25,10 @@ export abstract class commonUtil {
     return false
   }
 
+  static timeout(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   static truncateString = (str: Maybe<string>, maxLength: number) => {
     if (str) {
       if (maxLength < str.length) {

@@ -3,10 +3,6 @@ export enum WalletType {
   Session = 'Session'
 }
 
-export enum WalletEvent {
-  Test = 'Test'
-}
-
 export abstract class Wallet<T> {
   private readonly _type: WalletType
 

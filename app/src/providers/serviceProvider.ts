@@ -15,10 +15,10 @@ export class ServiceProvider {
     this.networkStore = new NetworkStore(this.emitter)
     const walletConnectorFactory = new WalletConnectorFactory(walletManager)
     if (this.networkStore.network.mock) {
-      this.vite = new ViteMockClient(walletConnectorFactory)
+      this.vite = new ViteMockClient(this.emitter, walletConnectorFactory)
       this.bank = new BankMockService(this.vite, this.emitter, this.networkStore, walletManager)
     } else {
-      this.vite = new ViteClient(walletConnectorFactory)
+      this.vite = new ViteClient(this.emitter, walletConnectorFactory)
       this.bank = new BankService(this.vite, this.emitter, this.networkStore, walletManager)
     }
   }
