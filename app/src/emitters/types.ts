@@ -1,5 +1,6 @@
 export enum GlobalEvent {
   NetworkBlockHeight = 'NetworkBlockHeight',
   QuotaRequestUpdated = 'QuotaRequestUpdated',
-  QuotaRequestDeleted = 'QuotaRequestDeleted'
+  QuotaRequestDeleted = 'QuotaRequestDeleted',
+  ConfirmTransactionDialog = 'ConfirmTransactionDialog'
 }

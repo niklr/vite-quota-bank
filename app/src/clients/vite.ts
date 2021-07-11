@@ -1,7 +1,8 @@
 import { abi as abiutils, accountBlock, utils, ViteAPI } from '@vite/vitejs';
-import { Balance, IVmLog, Quota } from '../types';
+import { IGlobalEmitter } from '../emitters';
+import { Balance, IVmLog, Network, Quota } from '../types';
 import { Task } from '../util/task';
-import { Account } from '../wallet';
+import { IWalletConnector, SessionWalletAccount, WalletAccount, WalletConnectorFactory, WebWalletAccount } from '../wallet';
 const { WS_RPC } = require('@vite/vitejs-ws');
 
 const providerTimeout = 60000;
@@ -9,12 +10,13 @@ const providerOptions = { retryTimes: 10, retryInterval: 5000 };
 
 export interface IViteClient {
   readonly isConnected: boolean
-  initAsync(url: string): Promise<void>
+  readonly connector: Maybe<IWalletConnector>
+  initAsync(network: Network): Promise<void>
   dispose(): void
   getSnapshotChainHeightAsync(): Promise<string>
   getBalanceByAccount(address: string): Promise<Balance>
   getQuotaByAccount(address: string): Promise<Quota>
-  callContractAsync(account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
+  callContractAsync(account: WalletAccount, methodName: string, abi: any, params: any, amount: string, toAddress: string): Promise<any>
   callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any>
   decodeVmLog(vmLog: any, abi: any): Maybe<IVmLog>
   createAddressListenerAsync(address: string): Promise<any>
@@ -23,21 +25,33 @@ export interface IViteClient {
 }
 
 export class ViteClient implements IViteClient {
-
-  private _provider: any;
-  private _client: any;
+  private readonly _emitter: IGlobalEmitter;
+  private readonly _factory: WalletConnectorFactory;
+  private _connector?: IWalletConnector;
+  private _provider?: any;
+  private _client?: any;
   private _isConnected = false;
+
+  constructor(emitter: IGlobalEmitter, factory: WalletConnectorFactory) {
+    this._emitter = emitter;
+    this._factory = factory;
+  }
 
   get isConnected(): boolean {
     return this._isConnected;
   }
 
-  initAsync = async (url: string) => new Promise<void>((resolve, reject) => {
+  get connector(): Maybe<IWalletConnector> {
+    return this._connector
+  }
+
+  initAsync = async (network: Network) => new Promise<void>((resolve, reject) => {
     this._isConnected = false;
     if (this._provider) {
       this._provider.destroy();
     }
-    this._provider = new WS_RPC(url, providerTimeout, providerOptions);
+    this._connector = this._factory.create(network)
+    this._provider = new WS_RPC(network.rpcUrl, providerTimeout, providerOptions);
     let isResolved = false;
     this._provider.on('error', (err: any) => {
       console.log(err);
@@ -53,14 +67,18 @@ export class ViteClient implements IViteClient {
     });
   });
 
+  initConnectorAsync = async (network: Network) => new Promise<void>((resolve, reject) => {
+
+  });
+
   dispose(): void {
     console.log("Disposing ViteClient");
-    this._provider.disconnect();
+    this._provider?.disconnect();
     this._isConnected = false;
   }
 
   async requestAsync(method: string, ...args: any[]): Promise<any> {
-    if (this._isConnected) {
+    if (this._isConnected && this._client) {
       return this._client.request(method, ...args);
     } else {
       return Promise.reject('Vite client is not ready to make requests.');
@@ -82,9 +100,9 @@ export class ViteClient implements IViteClient {
   }
 
   async callContractAsync(
-    account: Account, methodName: string, abi: any, params: any, amount: string, toAddress: string
+    account: WalletAccount, methodName: string, abi: any, params: any, amount: string, toAddress: string
   ): Promise<any> {
-    const block = accountBlock
+    let block = accountBlock
       .createAccountBlock("callContract", {
         address: account.address,
         abi,
@@ -93,12 +111,31 @@ export class ViteClient implements IViteClient {
         toAddress,
         params,
       })
-      .setProvider(this._client)
-      .setPrivateKey(account.privateKey);
 
-    await block.autoSetPreviousAccountBlock();
-    const result = await block.sign().send();
-    return result;
+    if (account instanceof WebWalletAccount) {
+      block = block.setProvider(this._client).setPrivateKey(account.privateKey);
+      await block.autoSetPreviousAccountBlock();
+      const result = await block.sign().send();
+      return result;
+    } else if (account instanceof SessionWalletAccount) {
+      if (this.connector) {
+        this._emitter.emitConfirmTransactionDialog(true);
+        try {
+          const result = await this.connector.sendTransactionAsync({
+            block: block.accountBlock
+          });
+          this._emitter.emitConfirmTransactionDialog(false);
+          return result;
+        } catch (error) {
+          this._emitter.emitConfirmTransactionDialog(false);
+          throw error
+        }
+      } else {
+        throw new Error("Connector is not defined");
+      }
+    } else {
+      throw new Error("Account not supported");
+    }
   }
 
   async callOffChainMethodAsync(contractAddress: string, abi: any, offchaincode: string, params: any): Promise<any> {
@@ -170,13 +207,12 @@ export class ViteClient implements IViteClient {
     };
     let tempPayload = JSON.stringify(payload);
     tempPayload = tempPayload.replace("placeholder", address);
-    const result = await this._client.subscribe("createVmlogSubscription", JSON.parse(tempPayload));
-    console.log(result)
+    const result = await this._client?.subscribe("createVmlogSubscription", JSON.parse(tempPayload));
     return result;
   }
 
   removeListener(event: any): void {
-    this._client.unsubscribe(event);
+    this._client?.unsubscribe(event);
   }
 
   async waitForAccountBlockAsync(address: string, height: string): Promise<any> {

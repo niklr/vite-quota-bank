@@ -1,5 +1,5 @@
 import { AppConstants } from '../constants';
-import { IGlobalEmitter } from '../emitters/globalEmitter';
+import { IGlobalEmitter } from '../emitters';
 import { Network } from '../types';
 
 export interface INetworkStore {
@@ -23,26 +23,30 @@ export class NetworkStore implements INetworkStore {
     //   id: 1,
     //   networkId: 1,
     //   name: 'MAINNET',
-    //   url: 'wss://node.vite.net/gvite/ws'
+    //   rpcUrl: 'wss://node.vite.net/gvite/ws',
+    //   connectorUrl: 'wss://biforst.vite.net
     // }),
     new Network({
       id: 2,
       networkId: 2,
       name: 'TESTNET',
-      url: 'wss://buidl.vite.net/gvite/ws' // https://buidl.vite.net/gvite
+      rpcUrl: 'wss://buidl.vite.net/gvite/ws', // https://buidl.vite.net/gvite
+      connectorUrl: 'wss://biforst.vite.net'
     }),
     new Network({
       id: 3,
       networkId: 2,
       name: 'TESTNET+MOCK',
-      url: 'wss://buidl.vite.net/gvite/ws',
+      rpcUrl: 'wss://buidl.vite.net/gvite/ws',
+      connectorUrl: 'wss://biforst.vite.net',
       mock: true
     }),
     new Network({
       id: 4,
       networkId: 5,
       name: 'DEBUG',
-      url: 'ws://localhost:23457'
+      rpcUrl: 'ws://localhost:23457',
+      connectorUrl: 'wss://biforst.vite.net'
     })
   ]
 

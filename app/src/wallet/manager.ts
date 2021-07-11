@@ -1,14 +1,17 @@
 import { wallet } from '@vite/vitejs';
-import { Account, Wallet } from '.';
+import { EventEmitter } from 'events';
+import { SessionWallet, WalletAccount, WebWallet, WebWalletAccount } from '.';
 import { WalletStore } from './store';
 
 export class WalletManager {
-
+  private readonly _emitter: EventEmitter;
   private readonly _store: WalletStore;
-  private _wallet?: Wallet;
+  private _wallet?: WebWallet | SessionWallet;
   private _mnemonicDeriveIndex = 0;
+  private _setWalletCallback?: (wallet?: WebWallet | SessionWallet | undefined) => void;
 
   constructor() {
+    this._emitter = new EventEmitter();
     this._store = new WalletStore();
     this.initWallet();
   }
@@ -21,39 +24,61 @@ export class WalletManager {
     }
   }
 
-  getWallet(): Maybe<Wallet> {
+  set onSetWalletCallback(cb: (wallet?: WebWallet | SessionWallet | undefined) => void) {
+    this._setWalletCallback = cb;
+  }
+
+  getWallet(): Maybe<WebWallet | SessionWallet> {
     return this._wallet;
   }
 
-  createWallet(mnemonic: string): Maybe<Wallet> {
-    this.removeWallet();
-    if (this.validateMnemonic(mnemonic)) {
-      const account = this.createAccount(mnemonic, 0);
-      this._wallet = new Wallet({
-        active: account,
-        mnemonic,
-        accounts: [
-          account
-        ]
-      });
-      this._store.setItem(this._wallet);
+  setWallet(wallet?: WebWallet | SessionWallet): void {
+    this._wallet = wallet;
+    this.updateWalletStore(wallet)
+    this.updateWallet()
+  }
+
+  updateWallet(): void {
+    if (this._setWalletCallback) {
+      this._setWalletCallback(this._wallet);
     }
-    return this._wallet;
+  }
+
+  updateWalletStore(wallet?: WebWallet | SessionWallet): void {
+    if (wallet) {
+      this._store.setItem(wallet);
+    }
+  }
+
+  createWebWallet(mnemonic: string): Maybe<WebWallet> {
+    if (!this.validateMnemonic(mnemonic)) {
+      return undefined;
+    }
+    this.resetWallet();
+    const account = this.createWebWalletAccount(mnemonic, 0);
+    const wallet = new WebWallet({
+      active: account,
+      mnemonic,
+      accounts: [
+        account
+      ]
+    });
+    this.setWallet(wallet);
+    return wallet;
   }
 
   removeWallet(): void {
-    this._wallet = undefined;
-    this._mnemonicDeriveIndex = 0;
-    this._store.clear();
+    this.resetWallet();
+    this.updateWallet();
   }
 
-  getAccountByAddress(address: string): Maybe<Account> {
+  getAccountByAddress(address: string): Maybe<WalletAccount> {
     return this._wallet?.accounts?.find(e => e.address === address)
   }
 
-  addAccount(): Maybe<Account> {
-    if (this._wallet?.mnemonic) {
-      const account = this.createAccount(this._wallet.mnemonic);
+  addAccount(): Maybe<WalletAccount> {
+    if (this._wallet instanceof WebWallet) {
+      const account = this.createWebWalletAccount(this._wallet.mnemonic);
       this._wallet.accounts.push(account);
       this.setActiveAccount(account);
       return account;
@@ -61,32 +86,51 @@ export class WalletManager {
     return undefined
   }
 
-  getActiveAccount(): Maybe<Account> {
+  getActiveAccount(): Maybe<WalletAccount> {
     return this._wallet?.active
   }
 
-  setActiveAccount(account: Account): boolean {
+  setActiveAccount(account: WalletAccount): boolean {
     if (this._wallet) {
       this._wallet.active = account;
       this._store.setItem(this._wallet);
+      this.updateWallet();
       return true;
     }
     return false;
   }
 
-  getAccounts(): Account[] {
+  getAccounts(): WalletAccount[] {
     if (this._wallet) {
       return this._wallet.accounts;
     }
     return [];
   }
 
-  private createAccount(mnemonic: string, index = this._mnemonicDeriveIndex): Account {
+  getValidSession(): Maybe<string> {
+    const wallet = this._store.getItem();
+    if (wallet && wallet instanceof SessionWallet) {
+      if (new Date().getTime() - wallet.timestamp < 1000 * 60 * 10) {
+        return wallet.session;
+      } else {
+        console.log('Found expired session.', wallet);
+      }
+    }
+    return undefined;
+  }
+
+  private resetWallet(): void {
+    this._wallet = undefined;
+    this._mnemonicDeriveIndex = 0;
+    this._store.clear();
+  }
+
+  private createWebWalletAccount(mnemonic: string, index = this._mnemonicDeriveIndex): WebWalletAccount {
     const { privateKey } = wallet.deriveAddress({
       mnemonics: mnemonic,
       index
     });
-    let account = new Account({
+    let account = new WebWalletAccount({
       id: index.toString(),
       privateKey,
       address: wallet.createAddressByPrivateKey(privateKey).address

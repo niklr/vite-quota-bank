@@ -3,6 +3,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { createStyles, FormControl, Icon, IconButton, InputLabel, makeStyles, Select, Theme } from '@material-ui/core';
 import { useWeb3Context } from '../../hooks';
 import { commonUtil } from '../../util/commonUtil';
+import { WalletAccountType } from '../../wallet';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,18 +35,23 @@ export const AccountList = () => {
   const classes = useStyles()
   const context = useWeb3Context()
 
-  const { wallet } = context
+  const { walletManager } = context
 
+  const wallet = walletManager.getWallet()
+
+  const canAddAddress = wallet?.active?.type === WalletAccountType.Web
   const addAddress = () => {
-    context.walletManager.addAccount()
-    context.setWallet(context.walletManager.getWallet())
+    const account = walletManager.addAccount()
+    if (account) {
+      walletManager.setActiveAccount(account)
+    }
   }
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     console.log(event.target.value)
-    const account = context.walletManager.getAccountByAddress(event.target.value as string)
-    if (account && context.walletManager.setActiveAccount(account)) {
-      context.setWallet(context.walletManager.getWallet())
+    const account = walletManager.getAccountByAddress(event.target.value as string)
+    if (account) {
+      walletManager.setActiveAccount(account)
     }
   }
 
@@ -55,9 +61,11 @@ export const AccountList = () => {
 
   return (
     <>
-      <IconButton aria-label="add" onClick={addAddress}>
-        <Icon style={{ color: 'white' }}>add_circle_outline</Icon>
-      </IconButton>
+      <div hidden={!canAddAddress}>
+        <IconButton aria-label="add" onClick={addAddress}>
+          <Icon style={{ color: 'white' }}>add_circle_outline</Icon>
+        </IconButton>
+      </div>
       <FormControl variant="outlined" className={classes.formControl} size="small">
         <InputLabel id="select-address-label"></InputLabel>
         <Select

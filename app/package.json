@@ -1,6 +1,6 @@
 {
   "name": "vite-quota-bank",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.4",
@@ -12,12 +12,14 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@vite/connector": "^0.0.2",
     "@vite/vitejs": "^2.3.12",
     "@vite/vitejs-ws": "^2.3.12",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "moment": "^2.29.1",
     "notistack": "^1.0.9",
+    "qrcode.es": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",

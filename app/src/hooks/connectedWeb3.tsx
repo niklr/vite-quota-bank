@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useWeb3Context } from '.';
 import { MainLoading } from '../components/MainLoading';
 import { ServiceProvider } from '../providers';
+import { WalletManager } from '../wallet';
 
 export interface IConnectedWeb3Context {
   account?: string
+  walletManager: WalletManager
   provider: ServiceProvider
 }
 
@@ -36,7 +38,9 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
   const [isConnected, setIsConnected] = useState(false)
   const context = useWeb3Context()
 
-  const { wallet, walletManager } = context
+  const { walletManager } = context
+
+  const wallet = walletManager.getWallet()
 
   const provider = useMemo(() => {
     return new ServiceProvider(walletManager)
@@ -48,17 +52,18 @@ export const ConnectedWeb3: React.FC<Props> = (props: Props) => {
 
     const value = {
       account: wallet?.active?.address,
+      walletManager,
       provider
     }
 
     console.log('ConnectedWeb3.account', wallet?.active?.address)
 
     const initAsync = async () => {
-      console.log('initAsync')
-      if (!value.provider.networkStore.network?.url) {
+      console.log('ConnectedWeb3.initAsync')
+      if (!value.provider.networkStore.network?.rpcUrl) {
         throw new Error('Network is not defined')
       } else {
-        await value.provider.vite.initAsync(value.provider.networkStore.network.url)
+        await value.provider.vite.initAsync(value.provider.networkStore.network)
       }
       await value.provider.bank.initAsync()
       setConnection(value)
