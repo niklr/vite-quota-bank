@@ -1,15 +1,17 @@
 import { wallet } from '@vite/vitejs';
+import { EventEmitter } from 'events';
 import { SessionWallet, WalletAccount, WebWallet, WebWalletAccount } from '.';
 import { WalletStore } from './store';
 
 export class WalletManager {
-
+  private readonly _emitter: EventEmitter;
   private readonly _store: WalletStore;
   private _wallet?: WebWallet | SessionWallet;
   private _mnemonicDeriveIndex = 0;
   private _setWalletCallback?: (wallet?: WebWallet | SessionWallet | undefined) => void;
 
   constructor() {
+    this._emitter = new EventEmitter();
     this._store = new WalletStore();
     this.initWallet();
   }

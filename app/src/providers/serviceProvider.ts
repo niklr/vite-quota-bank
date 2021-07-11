@@ -1,5 +1,5 @@
 import { IViteClient, ViteClient, ViteMockClient } from '../clients';
-import { GlobalEmitter, IGlobalEmitter } from '../emitters/globalEmitter';
+import { GlobalEmitter, IGlobalEmitter } from '../emitters';
 import { BankMockService, BankService, IBankService } from '../services';
 import { INetworkStore, NetworkStore } from '../stores';
 import { WalletConnectorFactory, WalletManager } from '../wallet';
@@ -13,11 +13,12 @@ export class ServiceProvider {
   constructor(walletManager: WalletManager) {
     this.emitter = new GlobalEmitter()
     this.networkStore = new NetworkStore(this.emitter)
+    const walletConnectorFactory = new WalletConnectorFactory(walletManager)
     if (this.networkStore.network.mock) {
-      this.vite = new ViteMockClient(new WalletConnectorFactory(walletManager))
+      this.vite = new ViteMockClient(walletConnectorFactory)
       this.bank = new BankMockService(this.vite, this.emitter, this.networkStore, walletManager)
     } else {
-      this.vite = new ViteClient(new WalletConnectorFactory(walletManager))
+      this.vite = new ViteClient(walletConnectorFactory)
       this.bank = new BankService(this.vite, this.emitter, this.networkStore, walletManager)
     }
   }

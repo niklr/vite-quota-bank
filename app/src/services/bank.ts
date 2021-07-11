@@ -1,6 +1,6 @@
 import { IViteClient } from '../clients';
 import { AppConstants } from '../constants';
-import { IGlobalEmitter } from '../emitters/globalEmitter';
+import { IGlobalEmitter } from '../emitters';
 import { INetworkStore } from '../stores';
 import { Contract, IVmLog, QuotaRequest, VmLogEvent } from '../types';
 import { commonUtil } from '../util/commonUtil';

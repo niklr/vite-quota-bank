@@ -1,5 +1,5 @@
 import { AppConstants } from '../constants';
-import { IGlobalEmitter } from '../emitters/globalEmitter';
+import { IGlobalEmitter } from '../emitters';
 import { Network } from '../types';
 
 export interface INetworkStore {
