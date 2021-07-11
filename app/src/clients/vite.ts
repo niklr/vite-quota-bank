@@ -120,11 +120,16 @@ export class ViteClient implements IViteClient {
     } else if (account instanceof SessionWalletAccount) {
       if (this.connector) {
         this._emitter.emitConfirmTransactionDialog(true);
-        const result = await this.connector.sendTransactionAsync({
-          block: block.accountBlock
-        });
-        this._emitter.emitConfirmTransactionDialog(false);
-        return result;
+        try {
+          const result = await this.connector.sendTransactionAsync({
+            block: block.accountBlock
+          });
+          this._emitter.emitConfirmTransactionDialog(false);
+          return result;
+        } catch (error) {
+          this._emitter.emitConfirmTransactionDialog(false);
+          throw error
+        }
       } else {
         throw new Error("Connector is not defined");
       }
