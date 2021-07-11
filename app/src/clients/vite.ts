@@ -26,9 +26,9 @@ export interface IViteClient {
 export class ViteClient implements IViteClient {
 
   private readonly _factory: WalletConnectorFactory;
+  private _connector?: IWalletConnector;
   private _provider?: any;
   private _client?: any;
-  private _connector?: IWalletConnector;
   private _isConnected = false;
 
   constructor(factory: WalletConnectorFactory) {
@@ -48,6 +48,7 @@ export class ViteClient implements IViteClient {
     if (this._provider) {
       this._provider.destroy();
     }
+    this._connector = this._factory.create(network)
     this._provider = new WS_RPC(network.rpcUrl, providerTimeout, providerOptions);
     let isResolved = false;
     this._provider.on('error', (err: any) => {
@@ -62,7 +63,10 @@ export class ViteClient implements IViteClient {
       isResolved = true;
       resolve();
     });
-    this._connector = this._factory.create(network)
+  });
+
+  initConnectorAsync = async (network: Network) => new Promise<void>((resolve, reject) => {
+
   });
 
   dispose(): void {

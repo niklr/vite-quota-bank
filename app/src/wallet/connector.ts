@@ -19,18 +19,19 @@ export class WalletConnector extends Connector implements IWalletConnector {
     this._walletManager = walletManager;
     this.on('connect', (err: any, payload: any) => {
       console.log('WalletConnector.connect', err, payload)
-      const { accounts } = payload.params[0];
-      this.saveSession(accounts);
+      // const { accounts } = payload.params[0];
+      // this.saveSession(accounts);
     });
-    this.on('disconnect', () => {
-      console.log('WalletConnector.disconnect')
+    this.on('disconnect', (err: any, payload: any) => {
+      console.log('WalletConnector.disconnect', err, payload)
+      this.stopBizHeartBeat()
     });
     this.on('session_update', (err: any, payload: any) => {
       console.log('WalletConnector.session_update', err, payload)
-      const { session } = payload[0];
-      if (session && session.accounts) {
-        this.saveSession(session.accounts);
-      }
+      // const { session } = payload[0];
+      // if (session && session.accounts) {
+      //   this.saveSession(session.accounts);
+      // }
     });
   }
 

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
-import { Backdrop, Button, Fade, Modal, Paper, TextField, Typography } from '@material-ui/core';
+import { Backdrop, Button, Fade, Modal, Typography } from '@material-ui/core';
 import { QrCode } from '.';
 import { AppConstants } from '../../constants';
 import { useConnectedWeb3Context } from '../../hooks';
@@ -17,10 +17,12 @@ const useStyles = makeStyles((theme) => ({
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    textAlign: 'center'
   },
   codeContainer: {
     width: '100%',
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: '10px'
   },
   warning: {
     color: '#611a15',
@@ -32,8 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const LoginModal = () => {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
-  const [isDisabled, setIsDisabled] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
   const [mnemonic, setMnemonic] = React.useState<string>('');
   const context = useConnectedWeb3Context();
   const { enqueueSnackbar } = useSnackbar();
@@ -44,8 +45,8 @@ export const LoginModal = () => {
     if (open) {
       if (AppConstants.DefaultMnemonic) {
         setMnemonic(AppConstants.DefaultMnemonic)
-        setIsDisabled(true)
       }
+      // TODO: init wallet connector to avoid stale URIs
       console.log('login modal opened')
     }
   }, [open])
@@ -63,11 +64,6 @@ export const LoginModal = () => {
     if (!wallet) {
       enqueueSnackbar('Invalid mnemonic')
     }
-  }
-
-  const handleInput = (e: any) => {
-    const newMnemonic = e.target.value
-    setMnemonic(newMnemonic)
   }
 
   return (
@@ -89,24 +85,7 @@ export const LoginModal = () => {
               <Typography>Scan the QR code via Vite Wallet App</Typography>
               <QrCode text={provider.vite.connector?.uri}></QrCode>
             </div>
-            <Paper hidden={!isDisabled}>
-              <div className={classes.warning}>
-                <Typography>This login is for showcasing the <strong>proof-of-concept</strong> on TESTNET only.</Typography>
-                <Typography>Entering your own mnemonic is not supported or recommended!</Typography>
-              </div>
-            </Paper>
-            <TextField
-              id="outlined-full-width"
-              label="Default mnemonic"
-              placeholder="..."
-              fullWidth
-              margin="normal"
-              variant="outlined"
-              value={mnemonic}
-              onChange={handleInput}
-              disabled={isDisabled}
-            />
-            <Button onClick={handleLogin}>Login</Button>
+            <Button variant="contained" onClick={handleLogin}>Use test account</Button>
           </div>
         </Fade>
       </Modal>
