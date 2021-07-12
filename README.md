@@ -12,6 +12,12 @@ Live Demo: [https://niklr.github.io/vite-quota-bank/](https://niklr.github.io/vi
 	<img src="assets/app.gif" alt="VITE Quota Bank">
 </h1>
 
+## ViteConnect integration
+
+<h1 align="center">
+	<img src="assets/viteconnect.gif" alt="ViteConnect integration">
+</h1>
+
 ## Features/requirements
 
 - A frontend for Quota Bank, where users can apply for Quota (the Quota Bank can set its own standards for who would be eligible)
