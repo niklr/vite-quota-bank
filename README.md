@@ -40,6 +40,14 @@ To overcome the mentioned limitations temporarily, the following measures have b
 - reduced the functionality of the `QuotaBank` contract to its bare minimum to showcase the PoC on `TestNet`
 - a mock service on client-side to simulate and test the behaviour of functionalities currently missing by the `QuotaBank` contract
 
+## Minimal setup
+
+- Download [gvite](https://github.com/vitelabs/go-vite/releases/tag/v2.10.2)
+- Copy content of `assets/gvite-v2.10.2.zip` into gvite folder
+- Run `./gvite --config node_config_dev.json`
+- Download [soliditypp](https://github.com/vitelabs/soliditypp-bin/releases/tag/v0.4.3) executable and modify `const solppc` in `scripts/deploy.js`
+- Run `node ./scripts/init.js` to fund test accounts
+
 ## Deploy contract
 
 1. Modify `./scripts/constants.js`

@@ -45,6 +45,10 @@ function subtractBigNumbers(number1, number2) {
   return BigNumber(number1).minus(number2).toFixed();
 }
 
+async function getBalanceByAddress(address) {
+  return provider.request("ledger_getAccountInfoByAddress", address);
+}
+
 async function getQuotaByAddress(address) {
   return provider.request("contract_getQuotaByAccount", address);
 }
@@ -281,26 +285,26 @@ async function waitForAccountBlock(address, height) {
           address,
           height
         );
-  
+
         if (!blockByHeight) {
           return true;
         }
-  
+
         let receiveBlockHash = blockByHeight.receiveBlockHash;
         if (!receiveBlockHash) {
           return true;
         }
-  
+
         let blockByHash = await provider.request('ledger_getAccountBlockByHash', receiveBlockHash);
         if (!blockByHash) {
           return true;
         }
-  
+
         result = {
           ...getAccountBlockStatus(blockByHash),
           accountBlock: blockByHash
         }
-  
+
         return false;
       } catch (err) {
         console.log(err);
@@ -356,11 +360,11 @@ function getAccountBlockStatus(accountBlock) {
 
 async function fundAccount(account, amount = 100) {
   const block = new AccountBlock({
-      blockType: 2,
-      address: account0.address,
-      toAddress: account.address,
-      tokenId: constants.VITE_TOKEN_ID,
-      amount: toTokenAmount(amount)
+    blockType: 2,
+    address: account0.address,
+    toAddress: account.address,
+    tokenId: constants.VITE_TOKEN_ID,
+    amount: toTokenAmount(amount)
   });
   block.setProvider(provider).setPrivateKey(account0.privateKey);
 
@@ -393,6 +397,7 @@ module.exports = {
     fromTokenAmount: fromTokenAmount,
     addBigNumbers: addBigNumbers,
     subtractBigNumbers: subtractBigNumbers,
+    getBalanceByAddress: getBalanceByAddress,
     getQuotaByAddress: getQuotaByAddress,
     receiveTransaction: receiveTransaction,
     receiveAllOnroadTx: receiveAllOnroadTx,
