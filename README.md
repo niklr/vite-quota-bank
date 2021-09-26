@@ -9,13 +9,13 @@ Video Walkthrough: [YouTube](https://www.youtube.com/watch?v=3pDNr3Qd60Y)
 Live Demo: [https://niklr.github.io/vite-quota-bank/](https://niklr.github.io/vite-quota-bank/)
 
 <h1 align="center">
-	<img src="assets/app.gif" alt="VITE Quota Bank">
+	<img src="https://raw.githubusercontent.com/niklr/vite-quota-bank/main/assets/app.gif" alt="VITE Quota Bank">
 </h1>
 
 ## ViteConnect integration
 
 <h1 align="center">
-	<img src="assets/viteconnect.gif" alt="ViteConnect integration">
+	<img src="https://raw.githubusercontent.com/niklr/vite-quota-bank/main/assets/viteconnect.gif" alt="ViteConnect integration">
 </h1>
 
 ## Features/requirements
